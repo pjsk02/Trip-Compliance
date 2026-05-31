@@ -93,12 +93,13 @@ OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
     const comfortScore    = groupMean(ctx.members.map(m => m.scores.logistics.flightComfort));
     const budgetScore     = groupMean(ctx.members.map(m => m.scores.logistics.budgetConsciousness));
     const perPersonBudget = ctx.lockedBudget / ctx.groupSize;
+    const nights          = ctx.tripDuration;  // tripDays - 1
 
     // Accommodation should be ~30% of the total per-person budget.
     // Hard cap: pricePerNightPerPersonUsd must not exceed this.
     const accommodationSharePP  = Math.round(perPersonBudget * 0.30);
-    const maxPricePerNightPP    = ctx.tripDuration > 0
-      ? Math.round(accommodationSharePP / ctx.tripDuration)
+    const maxPricePerNightPP    = nights > 0
+      ? Math.round(accommodationSharePP / nights)
       : accommodationSharePP;
 
     const mobilityMembers = ctx.members
