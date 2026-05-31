@@ -218,4 +218,22 @@ export const api = {
       'member',
     );
   },
+
+  // -- Finalization ----------------------------------------------------------
+
+  finalizeTrip(code: string, itineraryId: string) {
+    return request<FinalizeResponse>(
+      'POST', `/groups/${code}/finalize`, { itineraryId }, 'member',
+    );
+  },
+
+  unfinalizeTrip(code: string) {
+    return request<{ unfinalized: boolean }>(
+      'POST', `/groups/${code}/unfinalize`, {}, 'member',
+    );
+  },
+
+  getFinalItinerary(code: string) {
+    return request<FinalResponse>('GET', `/groups/${code}/final`, undefined, 'member');
+  },
 };
