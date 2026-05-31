@@ -238,37 +238,40 @@ export async function runEvaluation(options: {
       const weaveDataset = new weaveSDK.Dataset({
         name:        dataset.id,
         description: dataset.description,
-        rows:        [{ dataset }],
+        rows:        [{ dataset }],  // each row has { dataset } — matches WeaveDatasetRow
       });
 
       const evaluation = new weaveSDK.Evaluation({
         name:    `tripsync_eval_${dataset.id}`,
         dataset: weaveDataset,
         scorers: [
-          weaveSatisfactionScorer,
-          weaveFairnessScorer,
-          weaveBudgetScorer,
-          weaveDiversityScorer,
-          weaveConstraintScorer,
+          weaveSatisfactionScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
+          weaveFairnessScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
+          weaveBudgetScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
+          weaveDiversityScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
+          weaveConstraintScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
         ],
       });
 
       // Run evaluation — Weave automatically traces model + all scorers
-      const evalResults = weaveReady
-        ? await evaluation.evaluate({ model: weaveSDK.op(planningModel, { name: `model:${dataset.id}` }) })
-        : await evaluation.evaluate({ model: planningModel });
+      const model = weaveReady
+        ? weaveSDK.op(planningModel, { name: `model:${dataset.id}` })
+        : planningModel;
+
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const evalResults = await evaluation.evaluate({ model: model as any });
 
       // Extract per-scorer means from Weave summary
       const summary = evalResults as Record<string, { mean?: number }>;
 
-      const satisfactionScore    = summary['scorer:satisfaction']?.mean    ?? 0;
-      const fairnessScore        = summary['scorer:fairness']?.mean        ?? 0;
-      const budgetScore          = summary['scorer:budget_compliance']?.mean ?? 0;
-      const diversityScore       = summary['scorer:diversity']?.mean       ?? 0;
-      const constraintScore      = summary['scorer:constraint_satisfaction']?.mean ?? 0;
+      const satisfactionScore = summary['scorer:satisfaction']?.mean    ?? 0;
+      const fairnessScore     = summary['scorer:fairness']?.mean        ?? 0;
+      const budgetScore       = summary['scorer:budget_compliance']?.mean ?? 0;
+      const diversityScore    = summary['scorer:diversity']?.mean       ?? 0;
+      const constraintScore   = summary['scorer:constraint_satisfaction']?.mean ?? 0;
 
-      // Also run non-Weave version to get reasons and metadata
-      const output = await planningModel({ dataset });
+      // Also run directly to get reasons and typed metadata
+      const output = await planningModel({ datasetRow: { dataset } });
       const satResult   = scoreSatisfaction({ dataset }, output);
       const fairResult  = scoreFairness({ dataset }, output);
       const budResult   = scoreBudgetCompliance({ dataset }, output);
