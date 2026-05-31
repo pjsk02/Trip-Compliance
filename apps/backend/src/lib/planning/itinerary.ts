@@ -297,8 +297,9 @@ function preferenceMatchesMeal(pref: string, meal: Meal): boolean {
   return false;
 }
 
-function buildDayTheme(blocks: ScheduledBlock[]): string {
-  const types = blocks.map(b => b.type);
+function buildDayTheme(blocks: ScheduledBlock[], isArrival = false, isDeparture = false): string {
+  if (isArrival)   return 'Arrival Day';
+  if (isDeparture) return 'Departure Day';
   const activityBlocks = blocks.filter(b => b.type === 'activity');
   if (activityBlocks.length === 0) return 'Rest & Exploration Day';
   if (activityBlocks.length === 1) return `${activityBlocks[0]!.title} Day`;
