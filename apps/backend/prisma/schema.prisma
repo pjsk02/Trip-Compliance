@@ -36,20 +36,15 @@ enum ChatRole {
 model Group {
   id            String      @id @default(cuid())
   name          String
-  // Short, human-typeable invite code (e.g. "BEACH42") — unique so it can be
-  // used as a URL slug without collision.
   groupCode     String      @unique
   passwordHash  String
   destination   String?
-  // Soft FK to Member; nullable so the row can be inserted before its first
-  // Member row exists, then updated atomically.
   adminMemberId String?
   status        GroupStatus @default(COLLECTING)
-  // Null until the group votes to lock a budget in BUDGET_NEGOTIATION.
   lockedBudget  Decimal?    @db.Decimal(12, 2)
   createdAt     DateTime    @default(now())
 
-  members    Member[]
+  members     Member[]
   itineraries Itinerary[]
 
   @@index([groupCode])
@@ -61,7 +56,6 @@ model Member {
   name             String
   isAdmin          Boolean          @default(false)
   preferenceStatus PreferenceStatus @default(PENDING)
-  // Kept private — only the agent and admin see it during negotiation.
   privateBudget    Decimal?         @db.Decimal(12, 2)
   joinedAt         DateTime         @default(now())
 
@@ -76,12 +70,7 @@ model PreferenceProfile {
   id       String @id @default(cuid())
   memberId String @unique
 
-  // Scores 0-100 per dimension, stored as JSON for schema flexibility as we
-  // iterate on dimensions without a migration per tweak.
-  // Shape: { activities: {...}, food: {...}, logistics: {...}, constraints: {...} }
-  scores Json
-
-  // Shape: { mustHave: string[], niceToHave: string[], neutral: string[], avoid: string[] }
+  scores     Json
   priorities Json
 
   member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
@@ -90,7 +79,6 @@ model PreferenceProfile {
 model ChatMessage {
   id        String   @id @default(cuid())
   memberId  String
-  // Enum-constrained so the app layer can never accidentally store an invalid role.
   role      ChatRole
   content   String
   createdAt DateTime @default(now())
@@ -103,22 +91,12 @@ model ChatMessage {
 model Itinerary {
   id      String @id @default(cuid())
   groupId String
-  // Monotonically-incrementing version so the UI can show history and the
-  // agent can diff between re-plans without relying on createdAt ordering.
   version Int    @default(1)
 
-  // Array of day objects; shape owned by the agent layer, not the DB.
-  // { day: number, date: string, activities: Activity[], meals: Meal[] }
-  dayPlans Json
-
-  // { total: number, perMember: number, breakdown: CategoryBreakdown[] }
-  budgetBreakdown Json
-
-  // Per-member satisfaction scores keyed by memberId: { [memberId]: number }
+  dayPlans           Json
+  budgetBreakdown    Json
   satisfactionScores Json
-
-  // Free-text explanation of tradeoffs the agent made (why X was chosen over Y).
-  tradeoffReport String
+  tradeoffReport     String
 
   createdAt DateTime @default(now())
 

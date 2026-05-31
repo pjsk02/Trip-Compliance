@@ -15,7 +15,32 @@
       "PowerShell(cd \"d:\\\\vsc\\\\NEU\\\\Trip\"; $key = \\(Get-Content .env | Where-Object { $_ -match \"^ANTHROPIC_API_KEY\" } | ForEach-Object { \\($_ -split \"=\", 2\\)[1].Trim\\(\\) }\\); if \\($key -and $key -ne '\"sk-ant-...\"'\\) { $env:ANTHROPIC_API_KEY = $key; graphify . 2>&1 } else { Write-Output \"ANTHROPIC_API_KEY not set in .env — please add your real key\" })",
       "PowerShell(cd \"d:\\\\vsc\\\\NEU\\\\Trip\\\\apps\\\\backend\"; $content = Get-Content \"d:\\\\vsc\\\\NEU\\\\Trip\\\\.env\" -ErrorAction SilentlyContinue; if \\(-not $content\\) { $content = Get-Content \"d:\\\\vsc\\\\NEU\\\\Trip\\\\.env.example\" }; $dbUrl = \\($content | Where-Object { $_ -match \"^DATABASE_URL\" } | ForEach-Object { \\($_ -split \"=\", 2\\)[1].Trim\\(\\).Trim\\('\"'\\) }\\); $env:DATABASE_URL = $dbUrl; Write-Output \"Using DATABASE_URL: $dbUrl\"; npx prisma migrate dev --name init 2>&1)",
       "PowerShell(cd \"d:\\\\vsc\\\\NEU\\\\Trip\\\\apps\\\\backend\"; $env:JWT_SECRET = \"test-secret-do-not-use-in-production\"; $env:DATABASE_URL = \"postgresql://tripsync:tripsync@localhost:5432/tripsync\"; npx jest --runInBand --forceExit 2>&1)",
-      "PowerShell(cd \"d:\\\\vsc\\\\NEU\\\\Trip\\\\apps\\\\backend\"; $env:DATABASE_URL = \"postgresql://tripsync:tripsync@localhost:5432/tripsync\"; npx prisma generate 2>&1)"
+      "PowerShell(cd \"d:\\\\vsc\\\\NEU\\\\Trip\\\\apps\\\\backend\"; $env:DATABASE_URL = \"postgresql://tripsync:tripsync@localhost:5432/tripsync\"; npx prisma generate 2>&1)",
+      "Bash(which chromium-browser chromium google-chrome 2>/dev/null || echo \"no chromium found\" *)",
+      "Read(//usr/**)",
+      "Bash(openssl rand *)",
+      "Bash(echo \"JWT_SECRET=dev-secret-tripsync-$\\(openssl rand -hex 8\\)\")",
+      "Bash(npm install *)",
+      "Bash(npx prisma *)",
+      "Bash(DATABASE_URL=\"postgresql://tripsync:tripsync@localhost:5432/tripsync\" npx prisma generate)",
+      "Bash(JWT_SECRET=dev-secret-tripsync DATABASE_URL=postgresql://tripsync:tripsync@localhost:5432/tripsync NODE_ENV=development npx ts-node-dev --respawn --transpile-only src/index.ts)",
+      "Bash(curl -s http://localhost:3001/health)",
+      "Bash(curl -v -X POST http://localhost:3001/groups -H 'Content-Type: application/json' -d '{\"name\":\"Tokyo Adventure\",\"destination\":\"Tokyo\",\"adminName\":\"Kailash\",\"password\":\"fuji9876\"}')",
+      "Bash(npx tsc *)",
+      "Bash(npm --version)",
+      "Bash(docker --version)",
+      "Bash(pg_isready)",
+      "Bash(psql --version)",
+      "Bash(netstat -tlnp)",
+      "Bash(apt-get install *)",
+      "Bash(which apk brew yum dnf pacman 2>/dev/null | head -3 *)",
+      "Read(//etc/**)",
+      "PowerShell(winget --version 2>&1)",
+      "PowerShell(winget install -e --id PostgreSQL.PostgreSQL.17 --accept-package-agreements --accept-source-agreements 2>&1)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:3001/groups\" -Method Post -ContentType \"application/json\" -Body '{\"name\":\"Paris Trip\",\"destination\":\"Paris\",\"adminName\":\"Je\",\"password\":\"breeze611\"}' 2>&1)",
+      "PowerShell(netstat -ano)",
+      "Bash(python graphify-out/.graphify_chunk_02_build.py)",
+      "Bash(python -c \"import json; d=json.loads\\(open\\('D:/vsc/NEU/Trip/graphify-out/.graphify_chunk_02.json',encoding='utf-8'\\).read\\(\\)\\); print\\(len\\(d['nodes']\\), 'nodes,', len\\(d['edges']\\), 'edges,', len\\(d['hyperedges']\\), 'hyperedges'\\)\")"
     ]
   }
 }
