@@ -964,18 +964,18 @@ function ItineraryViewInner() {
 
         {activeTab === 'plan' && (
           <div className="grid grid-cols-3 gap-3">
-            <StatPill label="Days" value={String(itinerary.dayPlans.length)}
-              sub={`${itinerary.dayPlans.reduce((s, d) => s + d.blocks.length, 0)} activities`} />
-            <StatPill label="Per person" value={fmt(itinerary.budgetBreakdown.totalPerPersonUsd)} sub="estimated total" />
-            <StatPill label="Group score" value={pct(itinerary.satisfactionScores.groupSatisfactionPct)}
-              sub={itinerary.satisfactionScores.fairnessFloorMet ? 'fairness ✓' : 'fairness ⚠'}
-              highlight={itinerary.satisfactionScores.fairnessFloorMet} />
+            <StatPill label="Days" value={String(itinerary.dayPlans?.length ?? 0)}
+              sub={`${(itinerary.dayPlans ?? []).reduce((s, d) => s + (d.blocks?.length ?? 0), 0)} activities`} />
+            <StatPill label="Per person" value={fmt(itinerary.budgetBreakdown?.totalPerPersonUsd ?? 0)} sub="estimated total" />
+            <StatPill label="Group score" value={pct(itinerary.satisfactionScores?.groupSatisfactionPct ?? 0)}
+              sub={(itinerary.satisfactionScores?.fairnessFloorMet) ? 'fairness ✓' : 'fairness ⚠'}
+              highlight={itinerary.satisfactionScores?.fairnessFloorMet ?? false} />
           </div>
         )}
 
-        {activeTab === 'plan'      && <DayByDaySection dayPlans={itinerary.dayPlans} myMemberId={myMemberRecordId} />}
-        {activeTab === 'budget'    && <BudgetSection budget={itinerary.budgetBreakdown} />}
-        {activeTab === 'scores'    && <SatisfactionSection scores={itinerary.satisfactionScores} myUserId={myUserId} memberAvatars={memberAvatars} />}
+        {activeTab === 'plan'      && <DayByDaySection dayPlans={itinerary.dayPlans ?? []} myMemberId={myMemberRecordId} />}
+        {activeTab === 'budget'    && itinerary.budgetBreakdown && <BudgetSection budget={itinerary.budgetBreakdown} />}
+        {activeTab === 'scores'    && itinerary.satisfactionScores && <SatisfactionSection scores={itinerary.satisfactionScores} myUserId={myUserId} memberAvatars={memberAvatars} />}
         {activeTab === 'tradeoffs' && (
           <TradeoffSection
             report={itinerary.tradeoffReport}
