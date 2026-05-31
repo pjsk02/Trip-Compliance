@@ -97,7 +97,7 @@ export class BudgetAgent extends BaseAgent<BudgetProposal> {
   // ---------------------------------------------------------------------------
 
   private computeFromAgents(ctx: PlanningContext): Omit<BudgetProposal, 'substitutions'> {
-    const { activity, food, accommodation, transportation } = this.input;
+    const { activity, food, accommodation, transportation, realLockedBudget } = this.input;
     const { groupSize, lockedBudget, tripDuration } = ctx;
 
     const rec =
@@ -132,13 +132,18 @@ export class BudgetAgent extends BaseAgent<BudgetProposal> {
     ];
 
     const totalEstimatedUsd = lines.reduce((s, l) => s + l.totalUsd, 0);
-    const surplus           = lockedBudget - totalEstimatedUsd;
+
+    // Report against the real group-agreed budget, not the internally-buffered
+    // planning budget. The buffer is an implementation detail; the group sees 8000,
+    // not 7040.
+    const reportedBudget = realLockedBudget ?? lockedBudget;
+    const surplus        = reportedBudget - totalEstimatedUsd;
 
     return {
       agent: 'budget',
       lines,
       totalEstimatedUsd,
-      lockedBudgetUsd: lockedBudget,
+      lockedBudgetUsd: reportedBudget,
       surplus,
       overrunFlag: surplus < 0,
     };
