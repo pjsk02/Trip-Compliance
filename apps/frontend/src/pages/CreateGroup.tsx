@@ -17,20 +17,37 @@ export function CreateGroup() {
   const { loginGroup, userSession } = useAuth();
   const navigate = useNavigate();
 
+  const today = new Date().toISOString().slice(0, 10);
+
   const [form, setForm] = useState({
     name: '',
     destination: '',
     password: randomPassword(),
+    startDate: '',
+    endDate: '',
   });
-  const [errors, setErrors] = useState<Partial<typeof form>>({});
+  const [errors, setErrors] = useState<Partial<Record<keyof typeof form, string>>>({});
   const [loading, setLoading] = useState(false);
   const [apiError, setApiError] = useState('');
   const [created, setCreated] = useState<CreateGroupResponse | null>(null);
 
+  // Compute trip length for display
+  const tripDays = form.startDate && form.endDate
+    ? Math.round((new Date(form.endDate).getTime() - new Date(form.startDate).getTime()) / 86400000) + 1
+    : null;
+
   function validate() {
-    const e: Partial<typeof form> = {};
+    const e: Partial<Record<keyof typeof form, string>> = {};
     if (!form.name.trim()) e.name = 'Trip name is required';
     if (form.password.length < 4) e.password = 'Password must be at least 4 characters';
+    if (form.startDate && form.endDate) {
+      if (new Date(form.endDate) < new Date(form.startDate)) e.endDate = 'End date must be after start date';
+      if (tripDays && tripDays > 30) e.endDate = 'Trip cannot exceed 30 days';
+    } else if (form.startDate && !form.endDate) {
+      e.endDate = 'Please set an end date';
+    } else if (!form.startDate && form.endDate) {
+      e.startDate = 'Please set a start date';
+    }
     setErrors(e);
     return Object.keys(e).length === 0;
   }
@@ -45,6 +62,8 @@ export function CreateGroup() {
         name: form.name.trim(),
         destination: form.destination.trim() || undefined,
         password: form.password,
+        startDate: form.startDate || undefined,
+        endDate:   form.endDate   || undefined,
       });
       setCreated(res);
       loginGroup({
