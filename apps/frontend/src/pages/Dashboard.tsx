@@ -185,8 +185,13 @@ export function Dashboard() {
       if (action === 'lock') {
         await api.lockPreferences(code);
       } else if (action === 'generate') {
-        // Navigate to the live negotiation view — generation runs there via SSE.
-        navigate(`/group/${code}/negotiate?tripDuration=3`);
+        // Use stored trip duration if dates are set; otherwise fall back to 3
+        let fallbackDuration = 3;
+        if (group?.startDate && group?.endDate) {
+          const days = Math.round((new Date(group.endDate).getTime() - new Date(group.startDate).getTime()) / 86400000) + 1;
+          fallbackDuration = Math.max(1, days - 1);
+        }
+        navigate(`/group/${code}/negotiate?tripDuration=${fallbackDuration}`);
         return;
       }
       await fetchGroup();
