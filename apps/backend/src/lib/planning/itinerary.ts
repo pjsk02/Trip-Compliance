@@ -91,6 +91,32 @@ export interface SatisfactionScores {
   fairnessFloorMet:  boolean;
 }
 
+// ---------------------------------------------------------------------------
+// Agent execution timeline (for the Observe tab)
+// ---------------------------------------------------------------------------
+
+export interface AgentTimelineEntry {
+  agent:       string;
+  wave:        1 | 2 | 3;
+  startedAt:   number;   // ms since orchestrator start
+  completedAt: number;
+  durationMs:  number;
+  status:      'ok' | 'repaired' | 'fallback';
+  outputSummary: string;
+}
+
+// ---------------------------------------------------------------------------
+// Decision audit trail (for the Observe tab)
+// ---------------------------------------------------------------------------
+
+export interface DecisionAuditEntry {
+  decision:   string;
+  chosen:     string;
+  rejected:   string[];
+  reason:     string;
+  scores?:    Record<string, number>;
+}
+
 export interface FinalItinerary {
   dayPlans:           DayPlan[];
   budgetBreakdown:    BudgetBreakdown;
@@ -99,6 +125,12 @@ export interface FinalItinerary {
   adminOverrideFlag:  boolean;
   negotiationRounds:  number;
   generatedAt:        string;   // ISO timestamp
+  /** Agent execution order, duration, and status for the Observe tab. */
+  agentTimeline?:     AgentTimelineEntry[];
+  /** Decision audit: why each key choice was made. */
+  decisionAudit?:     DecisionAuditEntry[];
+  /** W&B Weave trace URL if observability is enabled. */
+  weaveTraceUrl?:     string;
 }
 
 // ---------------------------------------------------------------------------
