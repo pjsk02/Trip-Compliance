@@ -183,7 +183,8 @@ async function _runOrchestratorImpl(
     : budgetRaw;
 
   // ── Consensus — score against the REAL locked budget (not buffered) ───────
-  const consensus = runConsensus({
+  const tracedConsensus = wop('pipeline:consensus', async (input: Parameters<typeof runConsensus>[0]) => runConsensus(input));
+  const consensus = await tracedConsensus({
     candidates:      buildCandidates(activity, food, budget, agentCtx),
     members:         ctx.members,
     lockedBudgetUsd: ctx.lockedBudget,
