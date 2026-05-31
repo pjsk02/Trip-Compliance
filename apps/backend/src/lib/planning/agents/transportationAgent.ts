@@ -100,7 +100,12 @@ OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
       mobilityNotes ? `  Mobility constraints: ${mobilityNotes}` : '',
       visaNotes     ? `  Visa notes: ${visaNotes}` : '',
       '',
-      `Plan transport for a ${ctx.tripDuration}-night trip to ${ctx.destination} for ${ctx.groupSize} people.`,
+      `TRIP DATES:`,
+      `  Arrival:   Day 1  — ${ctx.startDate}  (plan arrival leg for this date)`,
+      `  Departure: Day ${ctx.tripDays} — ${ctx.endDate}  (plan return leg for this date)`,
+      `  Duration:  ${ctx.tripDuration} night${ctx.tripDuration !== 1 ? 's' : ''} (${ctx.tripDays} days)`,
+      '',
+      `Plan round-trip transport to ${ctx.destination} for ${ctx.groupSize} people, arriving ${ctx.startDate} and departing ${ctx.endDate}.`,
     ].filter(Boolean).join('\n');
   }
 }
