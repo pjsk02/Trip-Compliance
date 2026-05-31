@@ -3,12 +3,13 @@ import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import { GroupStatus } from '@prisma/client';
 import { prisma } from '../lib/prisma';
-import { signToken } from '../lib/jwt';
+import { signToken, verifyToken, isMemberToken } from '../lib/jwt';
 import { generateUniqueGroupCode } from '../lib/groupCode';
 import { authenticate, requireUser, requireAdmin } from '../middleware/auth';
 import { runOrchestrator } from '../lib/planning/orchestrator';
 import type { MemberPreferenceSnapshot } from '../lib/planning/schemas';
 import type { PreferenceScores, PreferencePriorities, ConstraintFields } from '../lib/preferenceSchema';
+import type { StreamEvent } from '../lib/planning/streamEvents';
 
 export const groupsRouter = Router();
 
