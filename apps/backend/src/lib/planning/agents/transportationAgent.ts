@@ -14,6 +14,25 @@ export class TransportationAgent extends BaseAgent<TransportationProposal> {
     return TransportationProposalSchema;
   }
 
+  protected safeDefault(ctx: PlanningContext): TransportationProposal {
+    const flightEstimate = Math.round((ctx.lockedBudget / ctx.groupSize) * 0.20);
+    return {
+      agent: 'transportation',
+      legs: [
+        {
+          from: 'Origin city',
+          to: ctx.destination,
+          mode: 'flight',
+          estimatedCostPerPersonUsd: flightEstimate,
+          estimatedDurationHours: 4,
+          notes: 'Estimated round-trip flight cost',
+        },
+      ],
+      localTransportSummary: `Day-to-day transport in ${ctx.destination} via public transit, taxis, and walking.`,
+      totalTransportCostPerPersonUsd: flightEstimate,
+    };
+  }
+
   protected systemPrompt(): string {
     return `You are the TripSync Transportation Planner agent. You create a transport plan covering:
 1. Arrival leg (origin city / major hub → destination)
