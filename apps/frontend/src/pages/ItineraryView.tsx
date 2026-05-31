@@ -356,7 +356,7 @@ function BudgetRow({ line }: { line: BudgetBreakdownLine }) {
         <span className="text-sm text-gray-700 truncate">{line.category}</span>
       </div>
       <p className="text-sm text-gray-700 text-right tabular-nums">{fmt(line.totalGroupUsd)}</p>
-      <p className="text-sm text-gray-500 text-right tabular-nums hidden sm:block">{pct(line.pctOfBudget)}</p>
+      <p className="text-sm text-gray-500 text-right tabular-nums hidden sm:block">{pct(Math.min(line.pctOfBudget, 999))}</p>
       <p className="text-sm text-gray-700 text-right tabular-nums">{fmt(line.estimatedCostPerPersonUsd)}</p>
     </div>
   );
