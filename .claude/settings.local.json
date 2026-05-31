@@ -41,7 +41,26 @@
       "PowerShell(netstat -ano)",
       "Bash(python graphify-out/.graphify_chunk_02_build.py)",
       "Bash(python -c \"import json; d=json.loads\\(open\\('D:/vsc/NEU/Trip/graphify-out/.graphify_chunk_02.json',encoding='utf-8'\\).read\\(\\)\\); print\\(len\\(d['nodes']\\), 'nodes,', len\\(d['edges']\\), 'edges,', len\\(d['hyperedges']\\), 'hyperedges'\\)\")",
-      "PowerShell(Start-Process \"d:\\\\vsc\\\\NEU\\\\Trip\\\\graphify-out\\\\graph.html\")"
+      "PowerShell(Start-Process \"d:\\\\vsc\\\\NEU\\\\Trip\\\\graphify-out\\\\graph.html\")",
+      "PowerShell(Get-ChildItem -Path \"d:\\\\vsc\\\\NEU\\\\Trip\\\\apps\\\\frontend\\\\src\\\\pages\" -File | ForEach-Object { $_.FullName })",
+      "PowerShell(New-Item -ItemType Directory -Force -Path graphify-out)",
+      "Bash(cat)",
+      "Read(//tmp/**)",
+      "Bash(npx ts-node *)",
+      "Bash(netstat -ano)",
+      "Bash(findstr :3001)",
+      "Bash(findstr LISTENING)",
+      "PowerShell(Get-NetTCPConnection -LocalPort 3001 -State Listen)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3001/health)",
+      "Bash(curl -s -I -X OPTIONS http://localhost:3001/groups -H \"Origin: http://localhost:5173\" -H \"Access-Control-Request-Method: POST\")",
+      "Bash(npx jest *)",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\(JSON.stringify\\(p.jest, null, 2\\)\\)\")",
+      "Bash(node -e \"require\\('dotenv/config'\\); console.log\\('KEY:', process.env.ANTHROPIC_API_KEY ? process.env.ANTHROPIC_API_KEY.slice\\(0,20\\)+'...' : 'NOT SET'\\)\")",
+      "Bash(npx tsx *)",
+      "Bash(DOTENV_CONFIG_PATH=apps/backend/.env npx tsx --env-file=apps/backend/.env apps/backend/scripts/test-itinerary-pipeline.ts)",
+      "Bash(Get-ChildItem -Path \"d:\\\\vsc\\\\NEU\\\\Trip\" -Recurse -Directory)",
+      "Bash(Select-Object -First 20)",
+      "Bash(Format-Table FullName)"
     ]
   }
 }

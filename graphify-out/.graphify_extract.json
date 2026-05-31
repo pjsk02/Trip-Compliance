@@ -656,49 +656,63 @@
       "label": "client",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L5"
+      "source_location": "L11"
     },
     {
       "id": "lib_preferenceagent_model",
       "label": "model()",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L7"
+      "source_location": "L13"
+    },
+    {
+      "id": "lib_preferenceagent_buildchatsystemprompt",
+      "label": "buildChatSystemPrompt()",
+      "file_type": "code",
+      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
+      "source_location": "L24"
     },
     {
       "id": "lib_preferenceagent_coverage_keywords",
       "label": "COVERAGE_KEYWORDS",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L99"
+      "source_location": "L104"
     },
     {
       "id": "lib_preferenceagent_detectcoverage",
       "label": "detectCoverage()",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L106"
+      "source_location": "L111"
     },
     {
       "id": "lib_preferenceagent_iscomplete",
       "label": "isComplete()",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L121"
+      "source_location": "L124"
     },
     {
       "id": "lib_preferenceagent_chatturn",
       "label": "chatTurn()",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L129"
+      "source_location": "L132"
+    },
+    {
+      "id": "lib_preferenceagent_extractchatnuance",
+      "label": "extractChatNuance()",
+      "file_type": "code",
+      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
+      "source_location": "L176"
     },
     {
       "id": "lib_preferenceagent_extractpreferences",
       "label": "extractPreferences()",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L169"
+      "source_location": "L220"
     },
     {
       "id": "apps_backend_src_lib_preferenceschema_ts",
@@ -708,60 +722,109 @@
       "source_location": "L1"
     },
     {
+      "id": "lib_preferenceschema_slidervaluesschema",
+      "label": "SliderValuesSchema",
+      "file_type": "code",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L7"
+    },
+    {
+      "id": "lib_preferenceschema_constraintfieldsschema",
+      "label": "ConstraintFieldsSchema",
+      "file_type": "code",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L31"
+    },
+    {
       "id": "lib_preferenceschema_scoremap",
       "label": "ScoreMap",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L5"
+      "source_location": "L47"
     },
     {
       "id": "lib_preferenceschema_preferencescoresschema",
       "label": "PreferenceScoresSchema",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L7"
+      "source_location": "L49"
     },
     {
       "id": "lib_preferenceschema_preferenceprioritiesschema",
       "label": "PreferencePrioritiesSchema",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L37"
+      "source_location": "L80"
     },
     {
       "id": "lib_preferenceschema_preferenceprofileschema",
       "label": "PreferenceProfileSchema",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L44"
+      "source_location": "L87"
+    },
+    {
+      "id": "lib_preferenceschema_slidervalues",
+      "label": "SliderValues",
+      "file_type": "code",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L98"
+    },
+    {
+      "id": "lib_preferenceschema_constraintfields",
+      "label": "ConstraintFields",
+      "file_type": "code",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L99"
     },
     {
       "id": "lib_preferenceschema_preferencescores",
       "label": "PreferenceScores",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L51"
+      "source_location": "L100"
     },
     {
       "id": "lib_preferenceschema_preferencepriorities",
       "label": "PreferencePriorities",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L52"
+      "source_location": "L101"
     },
     {
       "id": "lib_preferenceschema_preferenceprofile",
       "label": "PreferenceProfile",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L53"
+      "source_location": "L102"
+    },
+    {
+      "id": "lib_preferenceschema_derivepriorities",
+      "label": "derivePriorities()",
+      "file_type": "code",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L109"
+    },
+    {
+      "id": "lib_preferenceschema_scoresfromsliders",
+      "label": "scoresFromSliders()",
+      "file_type": "code",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L145"
+    },
+    {
+      "id": "lib_preferenceschema_stepcoverage",
+      "label": "StepCoverage",
+      "file_type": "code",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L183"
     },
     {
       "id": "lib_preferenceschema_categorycoverage",
       "label": "CategoryCoverage",
       "file_type": "code",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L56"
+      "source_location": "L190"
     },
     {
       "id": "apps_backend_src_lib_prisma_ts",
@@ -845,28 +908,35 @@
       "label": "membersRouter",
       "file_type": "code",
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "L9"
+      "source_location": "L17"
     },
     {
       "id": "routes_members_dbmessagestoparams",
       "label": "dbMessagesToParams()",
       "file_type": "code",
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "L18"
+      "source_location": "L25"
     },
     {
       "id": "routes_members_loadownedmember",
       "label": "loadOwnedMember()",
       "file_type": "code",
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "L28"
+      "source_location": "L34"
+    },
+    {
+      "id": "routes_members_saveslidersbodyschema",
+      "label": "SaveSlidersBodySchema",
+      "file_type": "code",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L85"
     },
     {
       "id": "routes_members_chatbodyschema",
       "label": "ChatBodySchema",
       "file_type": "code",
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "L71"
+      "source_location": "L149"
     },
     {
       "id": "apps_backend_src_tests_groups_test_ts",
@@ -1230,49 +1300,49 @@
       "label": "_token",
       "file_type": "code",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L11"
+      "source_location": "L8"
     },
     {
       "id": "api_client_settoken",
       "label": "setToken()",
       "file_type": "code",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L13"
+      "source_location": "L10"
     },
     {
       "id": "api_client_gettoken",
       "label": "getToken()",
       "file_type": "code",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L19"
+      "source_location": "L16"
     },
     {
       "id": "api_client_request",
       "label": "request()",
       "file_type": "code",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L25"
+      "source_location": "L22"
     },
     {
       "id": "api_client_apierror",
       "label": "ApiError",
       "file_type": "code",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L47"
+      "source_location": "L44"
     },
     {
       "id": "api_client_apierror_constructor",
       "label": ".constructor()",
       "file_type": "code",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L48"
+      "source_location": "L45"
     },
     {
       "id": "api_client_api",
       "label": "api",
       "file_type": "code",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L61"
+      "source_location": "L58"
     },
     {
       "id": "apps_frontend_src_components_button_tsx",
@@ -1412,28 +1482,133 @@
       "label": "Props",
       "file_type": "code",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L4"
+      "source_location": "L5"
     },
     {
       "id": "components_preferencereview_scorebar",
       "label": "ScoreBar()",
       "file_type": "code",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L11"
+      "source_location": "L16"
+    },
+    {
+      "id": "components_preferencereview_priority_styles",
+      "label": "PRIORITY_STYLES",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
+      "source_location": "L32"
+    },
+    {
+      "id": "components_preferencereview_prioritybucket",
+      "label": "PriorityBucket",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
+      "source_location": "L39"
     },
     {
       "id": "components_preferencereview_prioritychip",
       "label": "PriorityChip()",
       "file_type": "code",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L27"
+      "source_location": "L41"
+    },
+    {
+      "id": "components_preferencereview_prioritieseditor",
+      "label": "PrioritiesEditor()",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
+      "source_location": "L65"
     },
     {
       "id": "components_preferencereview_preferencereview",
       "label": "PreferenceReview()",
       "file_type": "code",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L41"
+      "source_location": "L160"
+    },
+    {
+      "id": "apps_frontend_src_components_sliderpanel_tsx",
+      "label": "SliderPanel.tsx",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_sliderpanel_derivepriorities",
+      "label": "derivePriorities()",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L8"
+    },
+    {
+      "id": "components_sliderpanel_default_sliders",
+      "label": "DEFAULT_SLIDERS",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L38"
+    },
+    {
+      "id": "components_sliderpanel_default_constraints",
+      "label": "DEFAULT_CONSTRAINTS",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L44"
+    },
+    {
+      "id": "components_sliderpanel_dietary_options",
+      "label": "DIETARY_OPTIONS",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L56"
+    },
+    {
+      "id": "components_sliderpanel_sliderrowprops",
+      "label": "SliderRowProps",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L64"
+    },
+    {
+      "id": "components_sliderpanel_sliderrow",
+      "label": "SliderRow()",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L73"
+    },
+    {
+      "id": "components_sliderpanel_sectionheader",
+      "label": "SectionHeader()",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L118"
+    },
+    {
+      "id": "components_sliderpanel_chip_styles",
+      "label": "CHIP_STYLES",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L131"
+    },
+    {
+      "id": "components_sliderpanel_prioritypreview",
+      "label": "PriorityPreview()",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L138"
+    },
+    {
+      "id": "components_sliderpanel_props",
+      "label": "Props",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L177"
+    },
+    {
+      "id": "components_sliderpanel_sliderpanel",
+      "label": "SliderPanel()",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L187"
     },
     {
       "id": "apps_frontend_src_components_spinner_tsx",
@@ -1469,6 +1644,27 @@
       "file_type": "code",
       "source_file": "apps/frontend/src/components/StatusBadge.tsx",
       "source_location": "L21"
+    },
+    {
+      "id": "apps_frontend_src_components_stepprogress_tsx",
+      "label": "StepProgress.tsx",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/StepProgress.tsx",
+      "source_location": "L1"
+    },
+    {
+      "id": "components_stepprogress_steps",
+      "label": "STEPS",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/StepProgress.tsx",
+      "source_location": "L3"
+    },
+    {
+      "id": "components_stepprogress_stepprogress",
+      "label": "StepProgress()",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/components/StepProgress.tsx",
+      "source_location": "L9"
     },
     {
       "id": "apps_frontend_src_context_authcontext_tsx",
@@ -1615,21 +1811,21 @@
       "label": "Screen",
       "file_type": "code",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L12"
+      "source_location": "L16"
     },
     {
       "id": "pages_preferencechat_empty_coverage",
       "label": "EMPTY_COVERAGE",
       "file_type": "code",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L14"
+      "source_location": "L18"
     },
     {
       "id": "pages_preferencechat_preferencechat",
       "label": "PreferenceChat()",
       "file_type": "code",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L18"
+      "source_location": "L22"
     },
     {
       "id": "apps_frontend_src_types_index_ts",
@@ -1674,67 +1870,102 @@
       "source_location": "L25"
     },
     {
-      "id": "types_index_preferencescores",
-      "label": "PreferenceScores",
+      "id": "types_index_slidervalues",
+      "label": "SliderValues",
       "file_type": "code",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L35"
+      "source_location": "L38"
     },
     {
-      "id": "types_index_preferencepriorities",
-      "label": "PreferencePriorities",
+      "id": "types_index_alcoholpreference",
+      "label": "AlcoholPreference",
       "file_type": "code",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L42"
+      "source_location": "L58"
     },
     {
-      "id": "types_index_preferenceprofiledata",
-      "label": "PreferenceProfileData",
+      "id": "types_index_constraintfields",
+      "label": "ConstraintFields",
       "file_type": "code",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L49"
+      "source_location": "L60"
+    },
+    {
+      "id": "types_index_stepcoverage",
+      "label": "StepCoverage",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L76"
     },
     {
       "id": "types_index_categorycoverage",
       "label": "CategoryCoverage",
       "file_type": "code",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L54"
+      "source_location": "L83"
+    },
+    {
+      "id": "types_index_preferencescores",
+      "label": "PreferenceScores",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L94"
+    },
+    {
+      "id": "types_index_preferencepriorities",
+      "label": "PreferencePriorities",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L101"
+    },
+    {
+      "id": "types_index_preferenceprofiledata",
+      "label": "PreferenceProfileData",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L108"
     },
     {
       "id": "types_index_chatmessagedata",
       "label": "ChatMessageData",
       "file_type": "code",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L61"
+      "source_location": "L120"
     },
     {
       "id": "types_index_chatresponse",
       "label": "ChatResponse",
       "file_type": "code",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L68"
+      "source_location": "L127"
     },
     {
       "id": "types_index_chathistoryresponse",
       "label": "ChatHistoryResponse",
       "file_type": "code",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L74"
+      "source_location": "L133"
     },
     {
       "id": "types_index_creategroupresponse",
       "label": "CreateGroupResponse",
       "file_type": "code",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L81"
+      "source_location": "L145"
     },
     {
       "id": "types_index_joingroupresponse",
       "label": "JoinGroupResponse",
       "file_type": "code",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L88"
+      "source_location": "L152"
+    },
+    {
+      "id": "types_index_saveslidersresponse",
+      "label": "SaveSlidersResponse",
+      "file_type": "code",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L158"
     },
     {
       "id": "packages_shared_package_json",
@@ -1961,10 +2192,10 @@
       "source_location": "L21"
     },
     {
-      "id": "root_tripsync_ai",
-      "label": "TripSync AI Monorepo",
-      "file_type": "code",
-      "source_file": "package.json",
+      "id": "PROJECT_TripSync",
+      "label": "TripSync",
+      "file_type": "rationale",
+      "source_file": "PROJECT",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
@@ -1972,10 +2203,10 @@
       "contributor": null
     },
     {
-      "id": "backend_app",
-      "label": "Backend Application (@tripsync/backend)",
+      "id": "PreferenceAgent",
+      "label": "Preference Agent",
       "file_type": "code",
-      "source_file": "apps/backend/package.json",
+      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
@@ -1983,10 +2214,10 @@
       "contributor": null
     },
     {
-      "id": "frontend_app",
-      "label": "Frontend Application (@tripsync/frontend)",
+      "id": "PreferenceSchema",
+      "label": "Preference Schema",
       "file_type": "code",
-      "source_file": "apps/frontend/package.json",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
       "source_location": null,
       "source_url": null,
       "captured_at": null,
@@ -1994,29 +2225,7 @@
       "contributor": null
     },
     {
-      "id": "backend_index",
-      "label": "Express Server Entry Point",
-      "file_type": "code",
-      "source_file": "apps/backend/src/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "groups_router",
-      "label": "Groups Router",
-      "file_type": "code",
-      "source_file": "apps/backend/src/routes/groups.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "members_router",
+      "id": "MembersRouter",
       "label": "Members Router",
       "file_type": "code",
       "source_file": "apps/backend/src/routes/members.ts",
@@ -2027,305 +2236,8 @@
       "contributor": null
     },
     {
-      "id": "lib_groupcode",
-      "label": "Group Code Generator",
-      "file_type": "code",
-      "source_file": "apps/backend/src/lib/groupCode.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "lib_jwt",
-      "label": "JWT Sign/Verify Utilities",
-      "file_type": "code",
-      "source_file": "apps/backend/src/lib/jwt.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "lib_preferenceagent",
-      "label": "AI Preference Agent (Claude)",
-      "file_type": "code",
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "lib_preferenceschema",
-      "label": "Preference Profile Schema (Zod)",
-      "file_type": "code",
-      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "lib_prisma",
-      "label": "Prisma Singleton Client",
-      "file_type": "code",
-      "source_file": "apps/backend/src/lib/prisma.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "middleware_auth",
-      "label": "Authentication Middleware (authenticate, requireAdmin)",
-      "file_type": "code",
-      "source_file": "apps/backend/src/middleware/auth.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "prisma_seed",
-      "label": "Database Seed Script",
-      "file_type": "code",
-      "source_file": "apps/backend/prisma/seed.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "groups_test",
-      "label": "Groups Integration Tests",
-      "file_type": "code",
-      "source_file": "apps/backend/src/__tests__/groups.test.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "frontend_app_tsx",
-      "label": "React App Root (App.tsx)",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "frontend_main_tsx",
-      "label": "React Entry Point (main.tsx)",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/main.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "frontend_vite_config",
-      "label": "Vite Config with API Proxy",
-      "file_type": "code",
-      "source_file": "apps/frontend/vite.config.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "concept_group_status_machine",
-      "label": "Group Status State Machine (COLLECTING → BUDGET_NEGOTIATION → PLANNING → COMPLETE)",
-      "file_type": "rationale",
-      "source_file": "apps/backend/src/routes/groups.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "concept_preference_collection_flow",
-      "label": "AI Preference Collection Flow (Chat → Extract → Profile)",
-      "file_type": "rationale",
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "concept_jwt_member_identity",
-      "label": "JWT-Based Member Identity (memberId, groupId, isAdmin)",
-      "file_type": "rationale",
-      "source_file": "apps/backend/src/lib/jwt.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "concept_private_budget",
-      "label": "Private Budget (admin-only field, extracted from AI chat)",
-      "file_type": "rationale",
-      "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "page_landing",
-      "label": "Landing Page",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "import Landing",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "page_create_group",
-      "label": "CreateGroup Page",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "import CreateGroup",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "page_join_group",
-      "label": "JoinGroup Page",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "import JoinGroup",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "page_dashboard",
-      "label": "Dashboard Page",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "import Dashboard",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "page_preference_chat",
-      "label": "PreferenceChat Page",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "import PreferenceChat",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "context_auth",
-      "label": "AuthContext (AuthProvider, useAuth)",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "import AuthProvider, useAuth",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "anthropic_sdk",
-      "label": "Anthropic Claude SDK (@anthropic-ai/sdk)",
-      "file_type": "code",
-      "source_file": "apps/backend/package.json",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "claude_haiku_model",
-      "label": "Claude Haiku Model (claude-haiku-4-5-20251001)",
-      "file_type": "rationale",
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "line 8",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "chat_system_prompt",
-      "label": "Chat System Prompt (4-category preference gathering)",
-      "file_type": "rationale",
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "CHAT_SYSTEM_PROMPT",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "extraction_system_prompt",
-      "label": "Extraction System Prompt (conversation to structured JSON)",
-      "file_type": "rationale",
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "EXTRACTION_SYSTEM_PROMPT",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "category_coverage",
-      "label": "CategoryCoverage (activities, food, logistics, constraints)",
-      "file_type": "code",
-      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "preferences_complete_token",
-      "label": "[PREFERENCES_COMPLETE] Sentinel Token",
-      "file_type": "rationale",
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "line 158",
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "client_apiclient",
-      "label": "API Client (client.ts)",
+      "id": "APIClient",
+      "label": "API Client",
       "file_type": "code",
       "source_file": "apps/frontend/src/api/client.ts",
       "source_location": null,
@@ -2335,151 +2247,8 @@
       "contributor": null
     },
     {
-      "id": "client_apierror",
-      "label": "ApiError Class",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "client_settoken",
-      "label": "setToken Function",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "client_gettoken",
-      "label": "getToken Function",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "client_tokenrationale",
-      "label": "Token Storage Strategy (sessionStorage over localStorage)",
-      "file_type": "rationale",
-      "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "component_button",
-      "label": "Button Component",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/components/Button.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "component_categoryprogress",
-      "label": "CategoryProgress Component",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/components/CategoryProgress.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "component_chatbubble",
-      "label": "ChatBubble Component",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/components/ChatBubble.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "component_typingbubble",
-      "label": "TypingBubble Component",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/components/ChatBubble.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "component_copycard",
-      "label": "CopyCard Component",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/components/CopyCard.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "component_input",
-      "label": "Input Component",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/components/Input.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "component_preferencereview",
-      "label": "PreferenceReview Component",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "component_spinner",
-      "label": "Spinner Component",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/components/Spinner.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "component_statusbadge",
-      "label": "StatusBadge Component",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/components/StatusBadge.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "context_authcontext",
-      "label": "AuthContext / AuthProvider",
+      "id": "AuthContext",
+      "label": "Auth Context",
       "file_type": "code",
       "source_file": "apps/frontend/src/context/AuthContext.tsx",
       "source_location": null,
@@ -2489,273 +2258,9 @@
       "contributor": null
     },
     {
-      "id": "context_useauth",
-      "label": "useAuth Hook",
+      "id": "PreferenceChatUI",
+      "label": "Preference Chat UI",
       "file_type": "code",
-      "source_file": "apps/frontend/src/context/AuthContext.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "page_creategroup",
-      "label": "CreateGroup Page",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/pages/CreateGroup.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "page_joingroup",
-      "label": "JoinGroup Page",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/pages/JoinGroup.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "page_preferencechat",
-      "label": "PreferenceChat Page",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_session",
-      "label": "Session Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_group",
-      "label": "Group Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_member",
-      "label": "Member Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_preferencestatus",
-      "label": "PreferenceStatus Enum",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_groupstatus",
-      "label": "GroupStatus Enum",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_preferenceprofiledata",
-      "label": "PreferenceProfileData Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_categorycoverage",
-      "label": "CategoryCoverage Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_chatmessagedata",
-      "label": "ChatMessageData Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_chatresponse",
-      "label": "ChatResponse Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_chathistoryresponse",
-      "label": "ChatHistoryResponse Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_creategroupresponse",
-      "label": "CreateGroupResponse Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "types_joingroupresponse",
-      "label": "JoinGroupResponse Type",
-      "file_type": "code",
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "shared_user",
-      "label": "Shared User Type",
-      "file_type": "code",
-      "source_file": "packages/shared/src/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "shared_trip",
-      "label": "Shared Trip Type",
-      "file_type": "code",
-      "source_file": "packages/shared/src/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "shared_apiresponse",
-      "label": "Shared ApiResponse Type",
-      "file_type": "code",
-      "source_file": "packages/shared/src/index.ts",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "docker_postgres",
-      "label": "PostgreSQL Docker Service",
-      "file_type": "code",
-      "source_file": "docker-compose.yml",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "readme_tripsyncai",
-      "label": "TripSync AI Project README",
-      "file_type": "document",
-      "source_file": "README.md",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "frontend_indexhtml",
-      "label": "Frontend Entry HTML",
-      "file_type": "code",
-      "source_file": "apps/frontend/index.html",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "rationale_sessionstoragetoken",
-      "label": "Session Storage Token Rehydration Rationale",
-      "file_type": "rationale",
-      "source_file": "apps/frontend/src/context/AuthContext.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "rationale_pollgroup",
-      "label": "Group Polling Strategy (10s interval) Rationale",
-      "file_type": "rationale",
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "source_url": null,
-      "captured_at": null,
-      "author": null,
-      "contributor": null
-    },
-    {
-      "id": "rationale_optimisticmsg",
-      "label": "Optimistic UI Message Insertion Rationale",
-      "file_type": "rationale",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
       "source_location": null,
       "source_url": null,
@@ -3312,6 +2817,56 @@
     {
       "source": "claude_settings_local_permissions_allow",
       "target": "ref_powershell_netstat_ano",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_python_graphify_out_graphify_chunk_02_build_py",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_bash_python_c_import_json_d_json_loads_open_d_vsc_neu_trip_graphify_out_graphify_chunk_02_json_encoding_utf_8_read_print_len_d_nodes_nodes_len_d_edges_edges_len_d_hyperedges_hyperedges",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_start_process_d_vsc_neu_trip_graphify_out_graph_html",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_get_childitem_path_d_vsc_neu_trip_apps_frontend_src_pages_file_foreach_object_fullname",
+      "relation": "extends",
+      "confidence": "EXTRACTED",
+      "source_file": ".claude/settings.local.json",
+      "source_location": "L3",
+      "weight": 1.0,
+      "context": "import"
+    },
+    {
+      "source": "claude_settings_local_permissions_allow",
+      "target": "ref_powershell_new_item_itemtype_directory_force_path_graphify_out",
       "relation": "extends",
       "confidence": "EXTRACTED",
       "source_file": ".claude/settings.local.json",
@@ -4434,11 +3989,31 @@
     },
     {
       "source": "apps_backend_src_lib_preferenceagent_ts",
+      "target": "lib_preferenceschema_slidervalues",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceagent_ts",
+      "target": "lib_preferenceschema_constraintfields",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceagent_ts",
       "target": "lib_preferenceagent_client",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L5",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -4447,7 +4022,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L7",
+      "source_location": "L13",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceagent_ts",
+      "target": "lib_preferenceagent_buildchatsystemprompt",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
+      "source_location": "L24",
       "weight": 1.0
     },
     {
@@ -4456,7 +4040,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L99",
+      "source_location": "L104",
       "weight": 1.0
     },
     {
@@ -4465,7 +4049,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L106",
+      "source_location": "L111",
       "weight": 1.0
     },
     {
@@ -4474,7 +4058,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L121",
+      "source_location": "L124",
       "weight": 1.0
     },
     {
@@ -4483,7 +4067,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L129",
+      "source_location": "L132",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceagent_ts",
+      "target": "lib_preferenceagent_extractchatnuance",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
+      "source_location": "L176",
       "weight": 1.0
     },
     {
@@ -4492,7 +4085,17 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L169",
+      "source_location": "L220",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_preferenceagent_chatturn",
+      "target": "lib_preferenceagent_buildchatsystemprompt",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
+      "source_location": "L146",
       "weight": 1.0
     },
     {
@@ -4502,7 +4105,17 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L147",
+      "source_location": "L154",
+      "weight": 1.0
+    },
+    {
+      "source": "lib_preferenceagent_extractchatnuance",
+      "target": "lib_preferenceagent_model",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
+      "source_location": "L192",
       "weight": 1.0
     },
     {
@@ -4512,7 +4125,7 @@
       "context": "call",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "L181",
+      "source_location": "L232",
       "weight": 1.0
     },
     {
@@ -4527,16 +4140,7 @@
     },
     {
       "source": "apps_backend_src_lib_preferenceschema_ts",
-      "target": "lib_preferenceschema_scoremap",
-      "relation": "contains",
-      "confidence": "EXTRACTED",
-      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L5",
-      "weight": 1.0
-    },
-    {
-      "source": "apps_backend_src_lib_preferenceschema_ts",
-      "target": "lib_preferenceschema_preferencescoresschema",
+      "target": "lib_preferenceschema_slidervaluesschema",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
@@ -4545,11 +4149,38 @@
     },
     {
       "source": "apps_backend_src_lib_preferenceschema_ts",
+      "target": "lib_preferenceschema_constraintfieldsschema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L31",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceschema_ts",
+      "target": "lib_preferenceschema_scoremap",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L47",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceschema_ts",
+      "target": "lib_preferenceschema_preferencescoresschema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L49",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceschema_ts",
       "target": "lib_preferenceschema_preferenceprioritiesschema",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L37",
+      "source_location": "L80",
       "weight": 1.0
     },
     {
@@ -4558,7 +4189,25 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L44",
+      "source_location": "L87",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceschema_ts",
+      "target": "lib_preferenceschema_slidervalues",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L98",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceschema_ts",
+      "target": "lib_preferenceschema_constraintfields",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L99",
       "weight": 1.0
     },
     {
@@ -4567,7 +4216,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L51",
+      "source_location": "L100",
       "weight": 1.0
     },
     {
@@ -4576,7 +4225,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L52",
+      "source_location": "L101",
       "weight": 1.0
     },
     {
@@ -4585,7 +4234,34 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L53",
+      "source_location": "L102",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceschema_ts",
+      "target": "lib_preferenceschema_derivepriorities",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L109",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceschema_ts",
+      "target": "lib_preferenceschema_scoresfromsliders",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L145",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_lib_preferenceschema_ts",
+      "target": "lib_preferenceschema_stepcoverage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/lib/preferenceSchema.ts",
+      "source_location": "L183",
       "weight": 1.0
     },
     {
@@ -4594,7 +4270,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/lib/preferenceSchema.ts",
-      "source_location": "L56",
+      "source_location": "L190",
       "weight": 1.0
     },
     {
@@ -4942,6 +4618,16 @@
     },
     {
       "source": "apps_backend_src_routes_members_ts",
+      "target": "lib_preferenceagent_extractchatnuance",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_routes_members_ts",
       "target": "lib_preferenceagent_extractpreferences",
       "relation": "imports",
       "context": "import",
@@ -4962,11 +4648,81 @@
     },
     {
       "source": "apps_backend_src_routes_members_ts",
+      "target": "apps_backend_src_lib_preferenceschema_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_routes_members_ts",
+      "target": "lib_preferenceschema_slidervaluesschema",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_routes_members_ts",
+      "target": "lib_preferenceschema_constraintfieldsschema",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_routes_members_ts",
+      "target": "lib_preferenceschema_derivepriorities",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_routes_members_ts",
+      "target": "lib_preferenceschema_scoresfromsliders",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_routes_members_ts",
+      "target": "lib_preferenceschema_slidervalues",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_routes_members_ts",
+      "target": "lib_preferenceschema_constraintfields",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_routes_members_ts",
       "target": "routes_members_membersrouter",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "L9",
+      "source_location": "L17",
       "weight": 1.0
     },
     {
@@ -4975,7 +4731,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "L18",
+      "source_location": "L25",
       "weight": 1.0
     },
     {
@@ -4984,7 +4740,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "L28",
+      "source_location": "L34",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_backend_src_routes_members_ts",
+      "target": "routes_members_saveslidersbodyschema",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/backend/src/routes/members.ts",
+      "source_location": "L85",
       "weight": 1.0
     },
     {
@@ -4993,7 +4758,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "L71",
+      "source_location": "L149",
       "weight": 1.0
     },
     {
@@ -5866,11 +5631,41 @@
     },
     {
       "source": "apps_frontend_src_api_client_ts",
+      "target": "types_index_slidervalues",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/api/client.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_api_client_ts",
+      "target": "types_index_constraintfields",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/api/client.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_api_client_ts",
+      "target": "types_index_saveslidersresponse",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/api/client.ts",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_api_client_ts",
       "target": "api_client_token",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L11",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -5879,7 +5674,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L13",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -5888,7 +5683,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L19",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -5897,7 +5692,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L25",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -5906,7 +5701,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L47",
+      "source_location": "L44",
       "weight": 1.0
     },
     {
@@ -5915,7 +5710,7 @@
       "relation": "method",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L48",
+      "source_location": "L45",
       "weight": 1.0
     },
     {
@@ -5924,7 +5719,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": "L61",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
@@ -6116,12 +5911,22 @@
     },
     {
       "source": "apps_frontend_src_components_preferencereview_tsx",
-      "target": "apps_frontend_src_types_index_ts",
+      "target": "react",
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
       "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_preferencereview_tsx",
+      "target": "apps_frontend_src_types_index_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
+      "source_location": "L2",
       "weight": 1.0
     },
     {
@@ -6131,22 +5936,12 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L1",
-      "weight": 1.0
-    },
-    {
-      "source": "apps_frontend_src_components_preferencereview_tsx",
-      "target": "apps_frontend_src_components_button_tsx",
-      "relation": "imports_from",
-      "context": "import",
-      "confidence": "EXTRACTED",
-      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
       "source_location": "L2",
       "weight": 1.0
     },
     {
       "source": "apps_frontend_src_components_preferencereview_tsx",
-      "target": "components_button_button",
+      "target": "types_index_preferencepriorities",
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -6156,11 +5951,31 @@
     },
     {
       "source": "apps_frontend_src_components_preferencereview_tsx",
+      "target": "apps_frontend_src_components_button_tsx",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_preferencereview_tsx",
+      "target": "components_button_button",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_preferencereview_tsx",
       "target": "components_preferencereview_props",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L4",
+      "source_location": "L5",
       "weight": 1.0
     },
     {
@@ -6169,7 +5984,25 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L11",
+      "source_location": "L16",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_preferencereview_tsx",
+      "target": "components_preferencereview_priority_styles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
+      "source_location": "L32",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_preferencereview_tsx",
+      "target": "components_preferencereview_prioritybucket",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
+      "source_location": "L39",
       "weight": 1.0
     },
     {
@@ -6178,7 +6011,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L27",
+      "source_location": "L41",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_preferencereview_tsx",
+      "target": "components_preferencereview_prioritieseditor",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
+      "source_location": "L65",
       "weight": 1.0
     },
     {
@@ -6187,7 +6029,176 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L41",
+      "source_location": "L160",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "react",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "apps_frontend_src_types_index_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "types_index_slidervalues",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "types_index_constraintfields",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "types_index_alcoholpreference",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "types_index_preferencepriorities",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L2",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_derivepriorities",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L8",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_default_sliders",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L38",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_default_constraints",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L44",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_dietary_options",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L56",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_sliderrowprops",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L64",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_sliderrow",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L73",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_sectionheader",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L118",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_chip_styles",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L131",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_prioritypreview",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L138",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_props",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L177",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_sliderpanel_tsx",
+      "target": "components_sliderpanel_sliderpanel",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L187",
+      "weight": 1.0
+    },
+    {
+      "source": "components_sliderpanel_sliderpanel",
+      "target": "components_sliderpanel_derivepriorities",
+      "relation": "calls",
+      "context": "call",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/SliderPanel.tsx",
+      "source_location": "L191",
       "weight": 1.0
     },
     {
@@ -6235,6 +6246,44 @@
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/components/StatusBadge.tsx",
       "source_location": "L21",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_stepprogress_tsx",
+      "target": "apps_frontend_src_types_index_ts",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/StepProgress.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_stepprogress_tsx",
+      "target": "types_index_stepcoverage",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/StepProgress.tsx",
+      "source_location": "L1",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_stepprogress_tsx",
+      "target": "components_stepprogress_steps",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/StepProgress.tsx",
+      "source_location": "L3",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_components_stepprogress_tsx",
+      "target": "components_stepprogress_stepprogress",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/components/StepProgress.tsx",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -6965,7 +7014,7 @@
     },
     {
       "source": "apps_frontend_src_pages_preferencechat_tsx",
-      "target": "apps_frontend_src_components_categoryprogress_tsx",
+      "target": "apps_frontend_src_components_stepprogress_tsx",
       "relation": "imports_from",
       "context": "import",
       "confidence": "EXTRACTED",
@@ -6975,12 +7024,52 @@
     },
     {
       "source": "apps_frontend_src_pages_preferencechat_tsx",
-      "target": "components_categoryprogress_categoryprogress",
+      "target": "components_stepprogress_stepprogress",
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
       "source_location": "L6",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_pages_preferencechat_tsx",
+      "target": "apps_frontend_src_components_sliderpanel_tsx",
+      "relation": "imports_from",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_pages_preferencechat_tsx",
+      "target": "components_sliderpanel_sliderpanel",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_pages_preferencechat_tsx",
+      "target": "components_sliderpanel_default_sliders",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
+      "source_location": "L7",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_pages_preferencechat_tsx",
+      "target": "components_sliderpanel_default_constraints",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
+      "source_location": "L7",
       "weight": 1.0
     },
     {
@@ -6990,7 +7079,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -7000,7 +7089,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L7",
+      "source_location": "L8",
       "weight": 1.0
     },
     {
@@ -7010,7 +7099,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -7020,7 +7109,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L8",
+      "source_location": "L9",
       "weight": 1.0
     },
     {
@@ -7030,7 +7119,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -7040,7 +7129,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L9",
+      "source_location": "L10",
       "weight": 1.0
     },
     {
@@ -7050,7 +7139,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -7060,17 +7149,37 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
       "source": "apps_frontend_src_pages_preferencechat_tsx",
-      "target": "types_index_categorycoverage",
+      "target": "types_index_stepcoverage",
       "relation": "imports",
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L10",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_pages_preferencechat_tsx",
+      "target": "types_index_slidervalues",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
+      "source_location": "L11",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_pages_preferencechat_tsx",
+      "target": "types_index_constraintfields",
+      "relation": "imports",
+      "context": "import",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -7080,7 +7189,7 @@
       "context": "import",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L10",
+      "source_location": "L11",
       "weight": 1.0
     },
     {
@@ -7089,7 +7198,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L12",
+      "source_location": "L16",
       "weight": 1.0
     },
     {
@@ -7098,7 +7207,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L14",
+      "source_location": "L18",
       "weight": 1.0
     },
     {
@@ -7107,7 +7216,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L18",
+      "source_location": "L22",
       "weight": 1.0
     },
     {
@@ -7157,29 +7266,38 @@
     },
     {
       "source": "apps_frontend_src_types_index_ts",
-      "target": "types_index_preferencescores",
+      "target": "types_index_slidervalues",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L35",
+      "source_location": "L38",
       "weight": 1.0
     },
     {
       "source": "apps_frontend_src_types_index_ts",
-      "target": "types_index_preferencepriorities",
+      "target": "types_index_alcoholpreference",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L42",
+      "source_location": "L58",
       "weight": 1.0
     },
     {
       "source": "apps_frontend_src_types_index_ts",
-      "target": "types_index_preferenceprofiledata",
+      "target": "types_index_constraintfields",
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L49",
+      "source_location": "L60",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_types_index_ts",
+      "target": "types_index_stepcoverage",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L76",
       "weight": 1.0
     },
     {
@@ -7188,7 +7306,34 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L54",
+      "source_location": "L83",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_types_index_ts",
+      "target": "types_index_preferencescores",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L94",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_types_index_ts",
+      "target": "types_index_preferencepriorities",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L101",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_types_index_ts",
+      "target": "types_index_preferenceprofiledata",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L108",
       "weight": 1.0
     },
     {
@@ -7197,7 +7342,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L61",
+      "source_location": "L120",
       "weight": 1.0
     },
     {
@@ -7206,7 +7351,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L68",
+      "source_location": "L127",
       "weight": 1.0
     },
     {
@@ -7215,7 +7360,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L74",
+      "source_location": "L133",
       "weight": 1.0
     },
     {
@@ -7224,7 +7369,7 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L81",
+      "source_location": "L145",
       "weight": 1.0
     },
     {
@@ -7233,7 +7378,16 @@
       "relation": "contains",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": "L88",
+      "source_location": "L152",
+      "weight": 1.0
+    },
+    {
+      "source": "apps_frontend_src_types_index_ts",
+      "target": "types_index_saveslidersresponse",
+      "relation": "contains",
+      "confidence": "EXTRACTED",
+      "source_file": "apps/frontend/src/types/index.ts",
+      "source_location": "L158",
       "weight": 1.0
     },
     {
@@ -7583,7 +7737,7 @@
       "context": "field",
       "confidence": "EXTRACTED",
       "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": "L5",
+      "source_location": "L6",
       "weight": 1.0
     },
     {
@@ -7659,1141 +7813,71 @@
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": "L19",
+      "source_location": "L23",
       "weight": 1.0
     },
     {
-      "source": "root_tripsync_ai",
-      "target": "backend_app",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "package.json",
-      "source_location": "workspaces",
-      "weight": 1.0
-    },
-    {
-      "source": "root_tripsync_ai",
-      "target": "frontend_app",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "package.json",
-      "source_location": "workspaces",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_index",
-      "target": "groups_router",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/index.ts",
-      "source_location": "app.use(/groups)",
-      "weight": 1.0
-    },
-    {
-      "source": "backend_index",
-      "target": "members_router",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/index.ts",
-      "source_location": "app.use(/members)",
-      "weight": 1.0
-    },
-    {
-      "source": "groups_router",
-      "target": "lib_prisma",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/groups.ts",
-      "source_location": "prisma.$transaction",
-      "weight": 1.0
-    },
-    {
-      "source": "groups_router",
-      "target": "lib_jwt",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/groups.ts",
-      "source_location": "signToken()",
-      "weight": 1.0
-    },
-    {
-      "source": "groups_router",
-      "target": "lib_groupcode",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/groups.ts",
-      "source_location": "generateUniqueGroupCode()",
-      "weight": 1.0
-    },
-    {
-      "source": "groups_router",
-      "target": "middleware_auth",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/groups.ts",
-      "source_location": "authenticate, requireAdmin middleware",
-      "weight": 1.0
-    },
-    {
-      "source": "groups_router",
-      "target": "concept_group_status_machine",
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/groups.ts",
-      "source_location": "lock-preferences, trigger-planning endpoints",
-      "weight": 1.0
-    },
-    {
-      "source": "members_router",
-      "target": "lib_prisma",
-      "relation": "calls",
+      "source": "MembersRouter",
+      "target": "PreferenceAgent",
+      "relation": "uses",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "prisma.member, prisma.chatMessage, prisma.preferenceProfile",
+      "source_location": null,
       "weight": 1.0
     },
     {
-      "source": "members_router",
-      "target": "middleware_auth",
-      "relation": "calls",
+      "source": "MembersRouter",
+      "target": "PreferenceSchema",
+      "relation": "uses",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "membersRouter.use(authenticate)",
+      "source_location": null,
       "weight": 1.0
     },
     {
-      "source": "members_router",
-      "target": "lib_preferenceagent",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "chatTurn, extractPreferences, detectCoverage",
-      "weight": 1.0
-    },
-    {
-      "source": "members_router",
-      "target": "concept_preference_collection_flow",
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "POST /members/:id/chat, POST /members/:id/finalize-preferences",
-      "weight": 1.0
-    },
-    {
-      "source": "members_router",
-      "target": "concept_private_budget",
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/members.ts",
-      "source_location": "finalize-preferences: estimatedBudget to privateBudget",
-      "weight": 1.0
-    },
-    {
-      "source": "middleware_auth",
-      "target": "lib_jwt",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/middleware/auth.ts",
-      "source_location": "verifyToken()",
-      "weight": 1.0
-    },
-    {
-      "source": "middleware_auth",
-      "target": "concept_jwt_member_identity",
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/middleware/auth.ts",
-      "source_location": "req.member = verifyToken(...)",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_groupcode",
-      "target": "lib_prisma",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/lib/groupCode.ts",
-      "source_location": "prisma.group.findUnique()",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_preferenceagent",
-      "target": "lib_preferenceschema",
-      "relation": "references",
+      "source": "PreferenceAgent",
+      "target": "PreferenceSchema",
+      "relation": "uses",
       "confidence": "EXTRACTED",
       "confidence_score": 1.0,
       "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "PreferenceProfileSchema.safeParse()",
+      "source_location": null,
       "weight": 1.0
     },
     {
-      "source": "lib_preferenceagent",
-      "target": "anthropic_sdk",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "new Anthropic(); client.messages.create()",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_preferenceagent",
-      "target": "claude_haiku_model",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "model() = CLAUDE_MODEL ?? claude-haiku-4-5-20251001",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_preferenceagent",
-      "target": "chat_system_prompt",
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "CHAT_SYSTEM_PROMPT constant",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_preferenceagent",
-      "target": "extraction_system_prompt",
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "EXTRACTION_SYSTEM_PROMPT constant",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_preferenceagent",
-      "target": "category_coverage",
-      "relation": "shares_data_with",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "detectCoverage() returns CategoryCoverage",
-      "weight": 1.0
-    },
-    {
-      "source": "lib_preferenceagent",
-      "target": "preferences_complete_token",
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
-      "source_location": "reply.includes([PREFERENCES_COMPLETE])",
-      "weight": 1.0
-    },
-    {
-      "source": "prisma_seed",
-      "target": "lib_prisma",
+      "source": "PreferenceChatUI",
+      "target": "APIClient",
       "relation": "calls",
       "confidence": "INFERRED",
       "confidence_score": 0.95,
-      "source_file": "apps/backend/prisma/seed.ts",
-      "source_location": "new PrismaClient() directly in seed",
-      "weight": 0.9
-    },
-    {
-      "source": "prisma_seed",
-      "target": "concept_group_status_machine",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/prisma/seed.ts",
-      "source_location": "GroupStatus.COLLECTING",
-      "weight": 1.0
-    },
-    {
-      "source": "groups_test",
-      "target": "backend_index",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/__tests__/groups.test.ts",
-      "source_location": "import { app } from ../index",
-      "weight": 1.0
-    },
-    {
-      "source": "groups_test",
-      "target": "lib_prisma",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/__tests__/groups.test.ts",
-      "source_location": "prisma.group.deleteMany cleanup",
-      "weight": 1.0
-    },
-    {
-      "source": "groups_test",
-      "target": "concept_group_status_machine",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/__tests__/groups.test.ts",
-      "source_location": "COLLECTING to BUDGET_NEGOTIATION to PLANNING tests",
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_main_tsx",
-      "target": "frontend_app_tsx",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/main.tsx",
-      "source_location": "import App",
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_app_tsx",
-      "target": "context_auth",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "import AuthProvider, useAuth",
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_app_tsx",
-      "target": "page_landing",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "Route path=/",
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_app_tsx",
-      "target": "page_create_group",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "Route path=/create",
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_app_tsx",
-      "target": "page_join_group",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "Route path=/join",
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_app_tsx",
-      "target": "page_dashboard",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "Route path=/group/:code",
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_app_tsx",
-      "target": "page_preference_chat",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": "Route path=/group/:code/preferences",
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_vite_config",
-      "target": "backend_app",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/vite.config.ts",
-      "source_location": "proxy /api to localhost:3001",
-      "weight": 1.0
-    },
-    {
-      "source": "chat_system_prompt",
-      "target": "extraction_system_prompt",
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.75,
-      "source_file": "apps/backend/src/lib/preferenceAgent.ts",
+      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
       "source_location": null,
-      "weight": 0.75
+      "weight": 1.0
     },
     {
-      "source": "concept_private_budget",
-      "target": "concept_group_status_machine",
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.65,
-      "source_file": "apps/backend/src/routes/groups.ts",
-      "source_location": null,
-      "weight": 0.65
-    },
-    {
-      "source": "page_preference_chat",
-      "target": "concept_preference_collection_flow",
-      "relation": "semantically_similar_to",
+      "source": "APIClient",
+      "target": "MembersRouter",
+      "relation": "references",
       "confidence": "INFERRED",
       "confidence_score": 0.85,
-      "source_file": "apps/frontend/src/App.tsx",
-      "source_location": null,
-      "weight": 0.85
-    },
-    {
-      "source": "client_tokenrationale",
-      "target": "client_settoken",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
       "source_file": "apps/frontend/src/api/client.ts",
       "source_location": null,
       "weight": 1.0
     },
     {
-      "source": "context_authcontext",
-      "target": "client_settoken",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/context/AuthContext.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "context_authcontext",
-      "target": "client_gettoken",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/context/AuthContext.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "context_authcontext",
-      "target": "types_session",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/context/AuthContext.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "context_authcontext",
-      "target": "context_useauth",
-      "relation": "implements",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/context/AuthContext.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "rationale_sessionstoragetoken",
-      "target": "context_authcontext",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/context/AuthContext.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_creategroup",
-      "target": "client_apiclient",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/CreateGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_creategroup",
-      "target": "context_useauth",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/CreateGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_creategroup",
-      "target": "component_button",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/CreateGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_creategroup",
-      "target": "component_input",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/CreateGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_creategroup",
-      "target": "component_copycard",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/CreateGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_creategroup",
-      "target": "types_creategroupresponse",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/CreateGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_creategroup",
-      "target": "client_apierror",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/CreateGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_joingroup",
-      "target": "client_apiclient",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/JoinGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_joingroup",
-      "target": "context_useauth",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/JoinGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_joingroup",
-      "target": "component_button",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/JoinGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_joingroup",
-      "target": "component_input",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/JoinGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_joingroup",
-      "target": "client_apierror",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/JoinGroup.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_dashboard",
-      "target": "client_apiclient",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_dashboard",
-      "target": "context_useauth",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_dashboard",
-      "target": "component_statusbadge",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_dashboard",
-      "target": "component_button",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_dashboard",
-      "target": "component_spinner",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_dashboard",
-      "target": "types_group",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_dashboard",
-      "target": "types_groupstatus",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_dashboard",
-      "target": "client_apierror",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "rationale_pollgroup",
-      "target": "page_dashboard",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Dashboard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "client_apiclient",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "context_useauth",
-      "relation": "calls",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "component_chatbubble",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "component_typingbubble",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "component_categoryprogress",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "component_preferencereview",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "component_button",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "component_spinner",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "types_chatmessagedata",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "types_categorycoverage",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "types_preferenceprofiledata",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_preferencechat",
-      "target": "client_apierror",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "rationale_optimisticmsg",
-      "target": "page_preferencechat",
-      "relation": "rationale_for",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "component_copycard",
-      "target": "component_button",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/components/CopyCard.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "component_preferencereview",
-      "target": "component_button",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "component_preferencereview",
-      "target": "types_preferenceprofiledata",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/components/PreferenceReview.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "component_categoryprogress",
-      "target": "types_categorycoverage",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/components/CategoryProgress.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "component_statusbadge",
-      "target": "types_preferencestatus",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/components/StatusBadge.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "types_group",
-      "target": "types_member",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "types_member",
-      "target": "types_preferencestatus",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "types_group",
-      "target": "types_groupstatus",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "types_chathistoryresponse",
-      "target": "types_chatmessagedata",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "types_chathistoryresponse",
-      "target": "types_categorycoverage",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "types_chathistoryresponse",
-      "target": "types_preferencestatus",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "types_chatresponse",
-      "target": "types_categorycoverage",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "types_preferenceprofiledata",
-      "target": "types_categorycoverage",
-      "relation": "conceptually_related_to",
+      "source": "PreferenceChatUI",
+      "target": "AuthContext",
+      "relation": "uses",
       "confidence": "INFERRED",
-      "confidence_score": 0.75,
-      "source_file": "apps/frontend/src/types/index.ts",
-      "source_location": null,
-      "weight": 0.75
-    },
-    {
-      "source": "page_landing",
-      "target": "page_creategroup",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Landing.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "page_landing",
-      "target": "page_joingroup",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/pages/Landing.tsx",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "shared_trip",
-      "target": "types_group",
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.85,
-      "source_file": "packages/shared/src/index.ts",
-      "source_location": null,
-      "weight": 0.85
-    },
-    {
-      "source": "shared_user",
-      "target": "types_member",
-      "relation": "semantically_similar_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.75,
-      "source_file": "packages/shared/src/index.ts",
-      "source_location": null,
-      "weight": 0.75
-    },
-    {
-      "source": "readme_tripsyncai",
-      "target": "docker_postgres",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "README.md",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "frontend_indexhtml",
-      "target": "page_landing",
-      "relation": "conceptually_related_to",
-      "confidence": "INFERRED",
-      "confidence_score": 0.65,
-      "source_file": "apps/frontend/index.html",
-      "source_location": null,
-      "weight": 0.65
-    },
-    {
-      "source": "client_apiclient",
-      "target": "types_creategroupresponse",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "client_apiclient",
-      "target": "types_joingroupresponse",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "client_apiclient",
-      "target": "types_group",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "client_apiclient",
-      "target": "types_chatresponse",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "client_apiclient",
-      "target": "types_chathistoryresponse",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/api/client.ts",
-      "source_location": null,
-      "weight": 1.0
-    },
-    {
-      "source": "client_apiclient",
-      "target": "types_preferenceprofiledata",
-      "relation": "references",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/frontend/src/api/client.ts",
+      "confidence_score": 0.9,
+      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx",
       "source_location": null,
       "weight": 1.0
     }
   ],
-  "hyperedges": [
-    {
-      "id": "ai_preference_pipeline",
-      "label": "AI Preference Collection Pipeline (Agent → Chat Route → Finalize → PreferenceProfile)",
-      "nodes": [
-        "lib_preferenceagent",
-        "members_router",
-        "lib_preferenceschema"
-      ],
-      "relation": "implement",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/members.ts"
-    },
-    {
-      "id": "group_auth_flow",
-      "label": "Group Auth Flow (Create/Join → JWT → Authenticate Middleware)",
-      "nodes": [
-        "groups_router",
-        "lib_jwt",
-        "middleware_auth"
-      ],
-      "relation": "implement",
-      "confidence": "EXTRACTED",
-      "confidence_score": 1.0,
-      "source_file": "apps/backend/src/routes/groups.ts"
-    },
-    {
-      "id": "frontend_auth_routing",
-      "label": "Frontend Auth-Gated Routing (App.tsx + AuthContext + RequireAuth guard)",
-      "nodes": [
-        "frontend_app_tsx",
-        "context_auth",
-        "page_dashboard"
-      ],
-      "relation": "participate_in",
-      "confidence": "EXTRACTED",
-      "confidence_score": 0.95,
-      "source_file": "apps/frontend/src/App.tsx"
-    },
-    {
-      "id": "auth_token_flow",
-      "label": "Auth Token Lifecycle: client storage, AuthContext state, session rehydration",
-      "nodes": [
-        "client_settoken",
-        "context_authcontext",
-        "types_session"
-      ],
-      "relation": "participate_in",
-      "confidence": "EXTRACTED",
-      "confidence_score": 0.95,
-      "source_file": "apps/frontend/src/context/AuthContext.tsx"
-    },
-    {
-      "id": "preference_collection_flow",
-      "label": "Preference Collection Flow: chat UI, category tracking, review/confirm",
-      "nodes": [
-        "page_preferencechat",
-        "component_categoryprogress",
-        "component_preferencereview"
-      ],
-      "relation": "implement",
-      "confidence": "EXTRACTED",
-      "confidence_score": 0.95,
-      "source_file": "apps/frontend/src/pages/PreferenceChat.tsx"
-    },
-    {
-      "id": "group_onboarding_flow",
-      "label": "Group Onboarding Flow: landing, create group, join group, dashboard",
-      "nodes": [
-        "page_landing",
-        "page_creategroup",
-        "page_joingroup",
-        "page_dashboard"
-      ],
-      "relation": "form",
-      "confidence": "INFERRED",
-      "confidence_score": 0.95,
-      "source_file": "apps/frontend/src/pages/Landing.tsx"
-    }
-  ],
-  "input_tokens": 6800,
-  "output_tokens": 1200
+  "hyperedges": [],
+  "input_tokens": 0,
+  "output_tokens": 0
 }

@@ -1,55 +1,86 @@
 {
   "communities": {
     "0": [
-      "api_client_api",
-      "api_client_apierror",
-      "api_client_apierror_constructor",
-      "api_client_gettoken",
       "api_client_request",
-      "api_client_settoken",
       "api_client_token",
       "apps_frontend_src_api_client_ts",
-      "apps_frontend_src_app_tsx",
-      "apps_frontend_src_components_button_tsx",
       "apps_frontend_src_components_categoryprogress_tsx",
       "apps_frontend_src_components_chatbubble_tsx",
-      "apps_frontend_src_components_copycard_tsx",
-      "apps_frontend_src_components_input_tsx",
       "apps_frontend_src_components_preferencereview_tsx",
-      "apps_frontend_src_components_spinner_tsx",
-      "apps_frontend_src_components_statusbadge_tsx",
-      "apps_frontend_src_context_authcontext_tsx",
-      "apps_frontend_src_main_tsx",
-      "apps_frontend_src_pages_creategroup_tsx",
-      "apps_frontend_src_pages_dashboard_tsx",
-      "apps_frontend_src_pages_joingroup_tsx",
-      "apps_frontend_src_pages_landing_tsx",
+      "apps_frontend_src_components_sliderpanel_tsx",
+      "apps_frontend_src_components_stepprogress_tsx",
       "apps_frontend_src_pages_preferencechat_tsx",
       "apps_frontend_src_types_index_ts",
-      "components_button_button",
-      "components_button_props",
-      "components_button_variant",
-      "components_button_variants",
       "components_categoryprogress_categories",
       "components_categoryprogress_categoryprogress",
       "components_chatbubble_chatbubble",
       "components_chatbubble_props",
       "components_chatbubble_typingbubble",
+      "components_preferencereview_preferencereview",
+      "components_preferencereview_prioritieseditor",
+      "components_preferencereview_priority_styles",
+      "components_preferencereview_prioritybucket",
+      "components_preferencereview_prioritychip",
+      "components_preferencereview_props",
+      "components_preferencereview_scorebar",
+      "components_sliderpanel_chip_styles",
+      "components_sliderpanel_default_constraints",
+      "components_sliderpanel_default_sliders",
+      "components_sliderpanel_derivepriorities",
+      "components_sliderpanel_dietary_options",
+      "components_sliderpanel_prioritypreview",
+      "components_sliderpanel_props",
+      "components_sliderpanel_sectionheader",
+      "components_sliderpanel_sliderpanel",
+      "components_sliderpanel_sliderrow",
+      "components_sliderpanel_sliderrowprops",
+      "components_stepprogress_stepprogress",
+      "components_stepprogress_steps",
+      "pages_preferencechat_empty_coverage",
+      "pages_preferencechat_screen",
+      "types_index_alcoholpreference",
+      "types_index_categorycoverage",
+      "types_index_chathistoryresponse",
+      "types_index_chatmessagedata",
+      "types_index_chatresponse",
+      "types_index_constraintfields",
+      "types_index_creategroupresponse",
+      "types_index_group",
+      "types_index_joingroupresponse",
+      "types_index_member",
+      "types_index_preferencepriorities",
+      "types_index_preferenceprofiledata",
+      "types_index_preferencescores",
+      "types_index_saveslidersresponse",
+      "types_index_slidervalues",
+      "types_index_stepcoverage"
+    ],
+    "1": [
+      "api_client_api",
+      "api_client_apierror",
+      "api_client_apierror_constructor",
+      "apps_frontend_src_app_tsx",
+      "apps_frontend_src_components_button_tsx",
+      "apps_frontend_src_components_copycard_tsx",
+      "apps_frontend_src_components_input_tsx",
+      "apps_frontend_src_components_spinner_tsx",
+      "apps_frontend_src_components_statusbadge_tsx",
+      "apps_frontend_src_main_tsx",
+      "apps_frontend_src_pages_creategroup_tsx",
+      "apps_frontend_src_pages_dashboard_tsx",
+      "apps_frontend_src_pages_joingroup_tsx",
+      "apps_frontend_src_pages_landing_tsx",
+      "components_button_button",
+      "components_button_props",
+      "components_button_variant",
+      "components_button_variants",
       "components_copycard_copycard",
       "components_copycard_props",
       "components_input_input",
       "components_input_props",
-      "components_preferencereview_preferencereview",
-      "components_preferencereview_prioritychip",
-      "components_preferencereview_props",
-      "components_preferencereview_scorebar",
       "components_spinner_spinner",
       "components_statusbadge_config",
       "components_statusbadge_statusbadge",
-      "context_authcontext_authcontext",
-      "context_authcontext_authcontextvalue",
-      "context_authcontext_authprovider",
-      "context_authcontext_loadinitialsession",
       "context_authcontext_useauth",
       "pages_creategroup_creategroup",
       "pages_creategroup_randompassword",
@@ -60,28 +91,47 @@
       "pages_dashboard_status_steps",
       "pages_joingroup_joingroup",
       "pages_landing_landing",
-      "pages_preferencechat_empty_coverage",
       "pages_preferencechat_preferencechat",
-      "pages_preferencechat_screen",
       "src_app_app",
       "src_app_approutes",
       "src_app_requireauth",
-      "types_index_categorycoverage",
-      "types_index_chathistoryresponse",
-      "types_index_chatmessagedata",
-      "types_index_chatresponse",
-      "types_index_creategroupresponse",
-      "types_index_group",
       "types_index_groupstatus",
-      "types_index_joingroupresponse",
-      "types_index_member",
-      "types_index_preferencepriorities",
-      "types_index_preferenceprofiledata",
-      "types_index_preferencescores",
-      "types_index_preferencestatus",
-      "types_index_session"
+      "types_index_preferencestatus"
     ],
-    "1": [
+    "2": [
+      "apps_backend_src_lib_preferenceagent_ts",
+      "apps_backend_src_lib_preferenceschema_ts",
+      "apps_backend_src_routes_members_ts",
+      "lib_preferenceagent_buildchatsystemprompt",
+      "lib_preferenceagent_chatturn",
+      "lib_preferenceagent_client",
+      "lib_preferenceagent_coverage_keywords",
+      "lib_preferenceagent_detectcoverage",
+      "lib_preferenceagent_extractchatnuance",
+      "lib_preferenceagent_extractpreferences",
+      "lib_preferenceagent_iscomplete",
+      "lib_preferenceagent_model",
+      "lib_preferenceschema_categorycoverage",
+      "lib_preferenceschema_constraintfields",
+      "lib_preferenceschema_constraintfieldsschema",
+      "lib_preferenceschema_derivepriorities",
+      "lib_preferenceschema_preferencepriorities",
+      "lib_preferenceschema_preferenceprioritiesschema",
+      "lib_preferenceschema_preferenceprofile",
+      "lib_preferenceschema_preferenceprofileschema",
+      "lib_preferenceschema_preferencescores",
+      "lib_preferenceschema_preferencescoresschema",
+      "lib_preferenceschema_scoremap",
+      "lib_preferenceschema_scoresfromsliders",
+      "lib_preferenceschema_slidervalues",
+      "lib_preferenceschema_slidervaluesschema",
+      "lib_preferenceschema_stepcoverage",
+      "routes_members_chatbodyschema",
+      "routes_members_dbmessagestoparams",
+      "routes_members_loadownedmember",
+      "routes_members_saveslidersbodyschema"
+    ],
+    "3": [
       "apps_backend_package_json",
       "backend_package_dependencies",
       "backend_package_dependencies_anthropic_ai_sdk",
@@ -94,21 +144,6 @@
       "backend_package_dependencies_prisma_client",
       "backend_package_dependencies_tripsync_shared",
       "backend_package_dependencies_zod",
-      "backend_package_devdependencies",
-      "backend_package_devdependencies_jest",
-      "backend_package_devdependencies_prisma",
-      "backend_package_devdependencies_supertest",
-      "backend_package_devdependencies_ts_jest",
-      "backend_package_devdependencies_ts_node",
-      "backend_package_devdependencies_ts_node_dev",
-      "backend_package_devdependencies_types_bcrypt",
-      "backend_package_devdependencies_types_cors",
-      "backend_package_devdependencies_types_express",
-      "backend_package_devdependencies_types_jest",
-      "backend_package_devdependencies_types_jsonwebtoken",
-      "backend_package_devdependencies_types_node",
-      "backend_package_devdependencies_types_supertest",
-      "backend_package_devdependencies_typescript",
       "backend_package_jest",
       "backend_package_jest_testenvironment",
       "backend_package_jest_testmatch",
@@ -128,54 +163,7 @@
       "backend_package_transform_tsx",
       "backend_package_version"
     ],
-    "2": [
-      "client_apiclient",
-      "client_apierror",
-      "client_gettoken",
-      "client_settoken",
-      "client_tokenrationale",
-      "component_button",
-      "component_categoryprogress",
-      "component_chatbubble",
-      "component_copycard",
-      "component_input",
-      "component_preferencereview",
-      "component_spinner",
-      "component_statusbadge",
-      "component_typingbubble",
-      "context_auth",
-      "context_authcontext",
-      "context_useauth",
-      "frontend_app_tsx",
-      "frontend_indexhtml",
-      "frontend_main_tsx",
-      "page_create_group",
-      "page_creategroup",
-      "page_dashboard",
-      "page_join_group",
-      "page_joingroup",
-      "page_landing",
-      "page_preference_chat",
-      "page_preferencechat",
-      "rationale_optimisticmsg",
-      "rationale_pollgroup",
-      "rationale_sessionstoragetoken",
-      "shared_trip",
-      "shared_user",
-      "types_categorycoverage",
-      "types_chathistoryresponse",
-      "types_chatmessagedata",
-      "types_chatresponse",
-      "types_creategroupresponse",
-      "types_group",
-      "types_groupstatus",
-      "types_joingroupresponse",
-      "types_member",
-      "types_preferenceprofiledata",
-      "types_preferencestatus",
-      "types_session"
-    ],
-    "3": [
+    "4": [
       "apps_frontend_package_json",
       "frontend_package_dependencies",
       "frontend_package_dependencies_react",
@@ -200,7 +188,7 @@
       "frontend_package_type",
       "frontend_package_version"
     ],
-    "4": [
+    "5": [
       "apps_backend_src_index_ts",
       "apps_backend_src_lib_groupcode_ts",
       "apps_backend_src_lib_jwt_ts",
@@ -225,53 +213,7 @@
       "routes_members_membersrouter",
       "src_index_app"
     ],
-    "5": [
-      "apps_backend_src_lib_preferenceagent_ts",
-      "apps_backend_src_lib_preferenceschema_ts",
-      "apps_backend_src_routes_members_ts",
-      "lib_preferenceagent_chatturn",
-      "lib_preferenceagent_client",
-      "lib_preferenceagent_coverage_keywords",
-      "lib_preferenceagent_detectcoverage",
-      "lib_preferenceagent_extractpreferences",
-      "lib_preferenceagent_iscomplete",
-      "lib_preferenceagent_model",
-      "lib_preferenceschema_categorycoverage",
-      "lib_preferenceschema_preferencepriorities",
-      "lib_preferenceschema_preferenceprioritiesschema",
-      "lib_preferenceschema_preferenceprofile",
-      "lib_preferenceschema_preferenceprofileschema",
-      "lib_preferenceschema_preferencescores",
-      "lib_preferenceschema_preferencescoresschema",
-      "lib_preferenceschema_scoremap",
-      "routes_members_chatbodyschema",
-      "routes_members_dbmessagestoparams",
-      "routes_members_loadownedmember"
-    ],
     "6": [
-      "anthropic_sdk",
-      "backend_index",
-      "category_coverage",
-      "chat_system_prompt",
-      "claude_haiku_model",
-      "concept_group_status_machine",
-      "concept_jwt_member_identity",
-      "concept_preference_collection_flow",
-      "concept_private_budget",
-      "extraction_system_prompt",
-      "groups_router",
-      "groups_test",
-      "lib_groupcode",
-      "lib_jwt",
-      "lib_preferenceagent",
-      "lib_preferenceschema",
-      "lib_prisma",
-      "members_router",
-      "middleware_auth",
-      "preferences_complete_token",
-      "prisma_seed"
-    ],
-    "7": [
       "apps_frontend_tsconfig_json",
       "frontend_tsconfig_compileroptions",
       "frontend_tsconfig_compileroptions_allowimportingtsextensions",
@@ -291,6 +233,23 @@
       "frontend_tsconfig_compileroptions_usedefineforclassfields",
       "frontend_tsconfig_include"
     ],
+    "7": [
+      "backend_package_devdependencies",
+      "backend_package_devdependencies_jest",
+      "backend_package_devdependencies_prisma",
+      "backend_package_devdependencies_supertest",
+      "backend_package_devdependencies_ts_jest",
+      "backend_package_devdependencies_ts_node",
+      "backend_package_devdependencies_ts_node_dev",
+      "backend_package_devdependencies_types_bcrypt",
+      "backend_package_devdependencies_types_cors",
+      "backend_package_devdependencies_types_express",
+      "backend_package_devdependencies_types_jest",
+      "backend_package_devdependencies_types_jsonwebtoken",
+      "backend_package_devdependencies_types_node",
+      "backend_package_devdependencies_types_supertest",
+      "backend_package_devdependencies_typescript"
+    ],
     "8": [
       "apps_backend_tsconfig_json",
       "backend_tsconfig_compileroptions",
@@ -308,22 +267,6 @@
       "backend_tsconfig_include"
     ],
     "9": [
-      "packages_shared_package_json",
-      "shared_package_devdependencies",
-      "shared_package_devdependencies_typescript",
-      "shared_package_exports",
-      "shared_package_import",
-      "shared_package_main",
-      "shared_package_name",
-      "shared_package_private",
-      "shared_package_require",
-      "shared_package_scripts",
-      "shared_package_scripts_build",
-      "shared_package_scripts_dev",
-      "shared_package_types",
-      "shared_package_version"
-    ],
-    "10": [
       "packages_shared_tsconfig_json",
       "shared_tsconfig_compileroptions",
       "shared_tsconfig_compileroptions_declaration",
@@ -338,6 +281,22 @@
       "shared_tsconfig_compileroptions_strict",
       "shared_tsconfig_compileroptions_target",
       "shared_tsconfig_include"
+    ],
+    "10": [
+      "packages_shared_package_json",
+      "shared_package_devdependencies",
+      "shared_package_devdependencies_typescript",
+      "shared_package_exports",
+      "shared_package_import",
+      "shared_package_main",
+      "shared_package_name",
+      "shared_package_private",
+      "shared_package_require",
+      "shared_package_scripts",
+      "shared_package_scripts_build",
+      "shared_package_scripts_dev",
+      "shared_package_types",
+      "shared_package_version"
     ],
     "11": [
       "package_json",
@@ -355,35 +314,43 @@
       "trip_package_workspaces"
     ],
     "12": [
-      "backend_app",
-      "frontend_app",
-      "frontend_vite_config",
-      "root_tripsync_ai"
+      "api_client_gettoken",
+      "api_client_settoken",
+      "apps_frontend_src_context_authcontext_tsx",
+      "context_authcontext_authcontext",
+      "context_authcontext_authcontextvalue",
+      "context_authcontext_authprovider",
+      "context_authcontext_loadinitialsession",
+      "types_index_session"
     ],
     "13": [
+      "APIClient",
+      "AuthContext",
+      "MembersRouter",
+      "PreferenceAgent",
+      "PreferenceChatUI",
+      "PreferenceSchema"
+    ],
+    "14": [
       "packages_shared_src_index_ts",
       "src_index_apiresponse",
       "src_index_trip",
       "src_index_user"
     ],
-    "14": [
+    "15": [
       "apps_backend_prisma_seed_ts",
       "prisma_seed_main",
       "prisma_seed_prisma"
     ],
-    "15": [
+    "16": [
       "claude_settings_hooks",
       "claude_settings_hooks_pretooluse",
       "claude_settings_json"
     ],
-    "16": [
+    "17": [
       "claude_settings_local_json",
       "claude_settings_local_permissions",
       "claude_settings_local_permissions_allow"
-    ],
-    "17": [
-      "docker_postgres",
-      "readme_tripsyncai"
     ],
     "18": [
       "apps_frontend_postcss_config_js"
@@ -395,28 +362,28 @@
       "apps_frontend_vite_config_ts"
     ],
     "21": [
-      "shared_apiresponse"
+      "PROJECT_TripSync"
     ]
   },
   "cohesion": {
-    "0": 0.05322947095098994,
-    "1": 0.044444444444444446,
-    "2": 0.07171717171717172,
-    "3": 0.08695652173913043,
-    "4": 0.15019762845849802,
-    "5": 0.13333333333333333,
-    "6": 0.1380952380952381,
-    "7": 0.1111111111111111,
+    "0": 0.06313497822931785,
+    "1": 0.08658536585365853,
+    "2": 0.10752688172043011,
+    "3": 0.06666666666666667,
+    "4": 0.08695652173913043,
+    "5": 0.15019762845849802,
+    "6": 0.1111111111111111,
+    "7": 0.13333333333333333,
     "8": 0.14285714285714285,
-    "9": 0.15384615384615385,
-    "10": 0.14285714285714285,
+    "9": 0.14285714285714285,
+    "10": 0.15384615384615385,
     "11": 0.15384615384615385,
-    "12": 0.5,
-    "13": 0.5,
-    "14": 0.6666666666666666,
+    "12": 0.35714285714285715,
+    "13": 0.4,
+    "14": 0.5,
     "15": 0.6666666666666666,
     "16": 0.6666666666666666,
-    "17": 1.0,
+    "17": 0.6666666666666666,
     "18": 1.0,
     "19": 1.0,
     "20": 1.0,
@@ -427,11 +394,6 @@
       "id": "frontend_tsconfig_compileroptions",
       "label": "compilerOptions",
       "degree": 16
-    },
-    {
-      "id": "page_preferencechat",
-      "label": "PreferenceChat Page",
-      "degree": 13
     },
     {
       "id": "context_authcontext_useauth",
@@ -449,123 +411,128 @@
       "degree": 11
     },
     {
-      "id": "page_dashboard",
-      "label": "Dashboard Page",
-      "degree": 10
-    },
-    {
-      "id": "client_apiclient",
-      "label": "API Client (client.ts)",
-      "degree": 10
-    },
-    {
       "id": "backend_package_scripts",
       "label": "scripts",
       "degree": 8
     },
     {
-      "id": "lib_preferenceagent",
-      "label": "AI Preference Agent (Claude)",
-      "degree": 8
+      "id": "trip_package_scripts",
+      "label": "scripts",
+      "degree": 7
     },
     {
-      "id": "page_creategroup",
-      "label": "CreateGroup Page",
-      "degree": 8
+      "id": "components_button_button",
+      "label": "Button()",
+      "degree": 7
+    },
+    {
+      "id": "api_client_apierror",
+      "label": "ApiError",
+      "degree": 6
+    },
+    {
+      "id": "api_client_api",
+      "label": "api",
+      "degree": 5
+    },
+    {
+      "id": "types_index_preferenceprofiledata",
+      "label": "PreferenceProfileData",
+      "degree": 5
     }
   ],
   "surprises": [
     {
-      "source": "Shared Trip Type",
-      "target": "Group Type",
-      "source_files": [
-        "packages/shared/src/index.ts",
-        "apps/frontend/src/types/index.ts"
-      ],
-      "confidence": "INFERRED",
-      "relation": "semantically_similar_to",
-      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; semantically similar concepts with no structural link; peripheral node `Shared Trip Type` unexpectedly reaches hub `Group Type`"
-    },
-    {
-      "source": "Shared User Type",
-      "target": "Member Type",
-      "source_files": [
-        "packages/shared/src/index.ts",
-        "apps/frontend/src/types/index.ts"
-      ],
-      "confidence": "INFERRED",
-      "relation": "semantically_similar_to",
-      "why": "inferred connection - not explicitly stated in source; connects across different repos/directories; semantically similar concepts with no structural link"
-    },
-    {
-      "source": "PreferenceChat Page",
-      "target": "AI Preference Collection Flow (Chat → Extract → Profile)",
+      "source": "RequireAuth()",
+      "target": "useAuth()",
       "source_files": [
         "apps/frontend/src/App.tsx",
-        "apps/backend/src/lib/preferenceAgent.ts"
+        "apps/frontend/src/context/AuthContext.tsx"
       ],
-      "confidence": "INFERRED",
-      "relation": "semantically_similar_to",
-      "why": "inferred connection - not explicitly stated in source; bridges separate communities; semantically similar concepts with no structural link"
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `RequireAuth()` unexpectedly reaches hub `useAuth()`"
     },
     {
-      "source": "Frontend Entry HTML",
-      "target": "Landing Page",
+      "source": "AppRoutes()",
+      "target": "useAuth()",
       "source_files": [
-        "apps/frontend/index.html",
-        "apps/frontend/src/App.tsx"
+        "apps/frontend/src/App.tsx",
+        "apps/frontend/src/context/AuthContext.tsx"
       ],
-      "confidence": "INFERRED",
-      "relation": "conceptually_related_to",
-      "why": "inferred connection - not explicitly stated in source; crosses file types (code ↔ doc)"
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "peripheral node `AppRoutes()` unexpectedly reaches hub `useAuth()`"
     },
     {
-      "source": "TripSync AI Monorepo",
-      "target": "Backend Application (@tripsync/backend)",
+      "source": "Props",
+      "target": "PreferenceProfileData",
       "source_files": [
-        "package.json",
-        "apps/backend/package.json"
+        "apps/frontend/src/components/PreferenceReview.tsx",
+        "apps/frontend/src/types/index.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "references",
-      "why": "connects across different repos/directories"
+      "why": "peripheral node `Props` unexpectedly reaches hub `PreferenceProfileData`"
+    },
+    {
+      "source": "API Client",
+      "target": "Members Router",
+      "source_files": [
+        "apps/frontend/src/api/client.ts",
+        "apps/backend/src/routes/members.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "references",
+      "why": "inferred connection - not explicitly stated in source"
+    },
+    {
+      "source": "Preference Chat UI",
+      "target": "API Client",
+      "source_files": [
+        "apps/frontend/src/pages/PreferenceChat.tsx",
+        "apps/frontend/src/api/client.ts"
+      ],
+      "confidence": "INFERRED",
+      "relation": "calls",
+      "why": "inferred connection - not explicitly stated in source"
     }
   ],
   "questions": [
     {
+      "type": "bridge_node",
+      "question": "Why does `devDependencies` connect `Community 7` to `Community 3`?",
+      "why": "High betweenness centrality (0.010) - this node is a cross-community bridge."
+    },
+    {
       "type": "isolated_nodes",
       "question": "What connects `name`, `private`, `workspaces` to the rest of the system?",
-      "why": "178 weakly-connected nodes found - possible documentation gaps or missing edges."
+      "why": "160 weakly-connected nodes found - possible documentation gaps or missing edges."
     },
     {
       "type": "low_cohesion",
       "question": "Should `Community 0` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.05322947095098994 - nodes in this community are weakly interconnected."
+      "why": "Cohesion score 0.06313497822931785 - nodes in this community are weakly interconnected."
     },
     {
       "type": "low_cohesion",
       "question": "Should `Community 1` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.044444444444444446 - nodes in this community are weakly interconnected."
+      "why": "Cohesion score 0.08658536585365853 - nodes in this community are weakly interconnected."
     },
     {
       "type": "low_cohesion",
       "question": "Should `Community 2` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.07171717171717172 - nodes in this community are weakly interconnected."
+      "why": "Cohesion score 0.10752688172043011 - nodes in this community are weakly interconnected."
     },
     {
       "type": "low_cohesion",
       "question": "Should `Community 3` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.06666666666666667 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `Community 4` be split into smaller, more focused modules?",
       "why": "Cohesion score 0.08695652173913043 - nodes in this community are weakly interconnected."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `Community 5` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.13333333333333333 - nodes in this community are weakly interconnected."
-    },
-    {
-      "type": "low_cohesion",
-      "question": "Should `Community 6` be split into smaller, more focused modules?",
-      "why": "Cohesion score 0.1380952380952381 - nodes in this community are weakly interconnected."
     }
   ]
 }
