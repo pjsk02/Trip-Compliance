@@ -235,9 +235,33 @@ itineraryRouter.post(
     }
     const adjustment = adjustmentValidation.data as FeedbackAdjustment;
 
+    // Resolve dates from group or fall back to body param
+    let fbTripDuration: number;
+    let fbTripDays: number;
+    let fbStartDate: string;
+    let fbEndDate: string;
+
+    if (group.startDate && group.endDate) {
+      fbStartDate = group.startDate.toISOString().slice(0, 10);
+      fbEndDate   = group.endDate.toISOString().slice(0, 10);
+      const msPerDay = 1000 * 60 * 60 * 24;
+      fbTripDays     = Math.round((group.endDate.getTime() - group.startDate.getTime()) / msPerDay) + 1;
+      fbTripDuration = fbTripDays - 1;
+    } else {
+      fbTripDuration = parsed.data.tripDuration;
+      fbTripDays     = fbTripDuration + 1;
+      const today    = new Date();
+      fbStartDate    = today.toISOString().slice(0, 10);
+      const endDt    = new Date(today); endDt.setUTCDate(today.getUTCDate() + fbTripDuration);
+      fbEndDate      = endDt.toISOString().slice(0, 10);
+    }
+
     const ctx = {
       destination:  group.destination,
-      tripDuration: parsed.data.tripDuration,
+      tripDuration: fbTripDuration,
+      tripDays:     fbTripDays,
+      startDate:    fbStartDate,
+      endDate:      fbEndDate,
       groupSize:    members.length,
       lockedBudget,
       members,
