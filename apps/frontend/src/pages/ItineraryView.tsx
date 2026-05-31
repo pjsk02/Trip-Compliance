@@ -492,7 +492,7 @@ function SatisfactionSection({
   myUserId: string;
   memberAvatars: Record<string, string | null>;
 }) {
-  const anyBelowFloor = scores.perMember.some(m => m.satisfactionPct < 70);
+  const anyBelowFloor = (scores.perMember ?? []).some(m => m.satisfactionPct < 70);
 
   return (
     <section className="space-y-3">
