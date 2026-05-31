@@ -344,6 +344,140 @@ groupsRouter.post(
 );
 
 // ---------------------------------------------------------------------------
+// GET /groups/:code/stream-generate  [admin only, token in query param]
+// SSE endpoint: runs the pipeline with event callbacks, streams events to
+// the client, saves the itinerary, then emits 'done'. Generation continues
+// even if the client disconnects — the save always happens.
+// EventSource can't send custom headers, so auth token comes in ?token=
+// ---------------------------------------------------------------------------
+
+groupsRouter.get(
+  '/:code/stream-generate',
+  async (req: Request, res: Response): Promise<void> => {
+    // ── Auth via query param (EventSource limitation) ──────────────────────
+    const tokenParam = req.query.token as string | undefined;
+    if (!tokenParam) { res.status(401).json({ error: 'Missing token query param' }); return; }
+    let memberInfo: import('../lib/jwt').MemberTokenPayload;
+    try {
+      const payload = verifyToken(tokenParam);
+      if (!isMemberToken(payload)) { res.status(401).json({ error: 'Member token required' }); return; }
+      memberInfo = payload;
+    } catch {
+      res.status(401).json({ error: 'Invalid or expired token' }); return;
+    }
+    if (!memberInfo.isAdmin) { res.status(403).json({ error: 'Admin access required' }); return; }
+
+    // ── Validate query params ──────────────────────────────────────────────
+    const tripDuration        = parseInt(req.query.tripDuration as string, 10);
+    const maxNegotiationRounds = Math.min(parseInt((req.query.maxNegotiationRounds as string) ?? '3', 10) || 3, 5);
+    if (isNaN(tripDuration) || tripDuration < 1 || tripDuration > 30) {
+      res.status(400).json({ error: 'tripDuration must be 1–30' }); return;
+    }
+
+    // ── Load group (same guards as the POST route) ─────────────────────────
+    const group = await prisma.group.findUnique({
+      where: { groupCode: req.params.code.toUpperCase() },
+      include: {
+        members: { include: { user: true, preferenceProfile: true } },
+        budgetRounds: { orderBy: { roundNum: 'desc' }, take: 1 },
+      },
+    });
+    if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
+    if (memberInfo.groupId !== group.id) { res.status(403).json({ error: 'Forbidden' }); return; }
+
+    if (group.status !== GroupStatus.PLANNING && group.status !== GroupStatus.BUDGET_NEGOTIATION) {
+      res.status(409).json({ error: `Cannot generate from status "${group.status}"` }); return;
+    }
+    if (!group.destination) {
+      res.status(409).json({ error: 'Group must have a destination set.' }); return;
+    }
+
+    const lockedBudget = group.lockedBudget
+      ? parseFloat(group.lockedBudget.toString())
+      : (group.budgetRounds[0]?.proposed ? parseFloat(group.budgetRounds[0].proposed.toString()) : null);
+    if (!lockedBudget || lockedBudget <= 0) {
+      res.status(409).json({ error: 'Locked budget required before generating.' }); return;
+    }
+
+    const MIN_GROUP_SIZE = parseInt(process.env.MIN_PLANNING_GROUP_SIZE ?? '3', 10);
+    const completedCount = group.members.filter(m => m.preferenceStatus === 'COMPLETE').length;
+    if (completedCount < MIN_GROUP_SIZE) {
+      res.status(409).json({ error: `Need ${MIN_GROUP_SIZE} completed profiles, have ${completedCount}.` }); return;
+    }
+
+    const defaultConstraints: ConstraintFields = { dietaryRestrictions: [], alcoholPreference: 'sometimes' };
+    const members: MemberPreferenceSnapshot[] = [];
+    for (const m of group.members) {
+      if (!m.preferenceProfile) continue;
+      const profile = m.preferenceProfile as unknown as {
+        scores: PreferenceScores; priorities: PreferencePriorities;
+        constraintFields?: ConstraintFields; chatNuance?: string;
+      };
+      members.push({
+        memberId: m.id, userId: m.userId ?? m.id, name: m.name,
+        scores: profile.scores, priorities: profile.priorities,
+        constraints: profile.constraintFields ?? defaultConstraints,
+        chatNuance: profile.chatNuance ?? null,
+      });
+    }
+    if (members.length === 0) {
+      res.status(409).json({ error: 'No members with complete preference profiles.' }); return;
+    }
+
+    const ctx = { destination: group.destination, tripDuration, groupSize: members.length, lockedBudget, members };
+
+    // ── Open SSE stream ────────────────────────────────────────────────────
+    res.setHeader('Content-Type',  'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection',    'keep-alive');
+    res.setHeader('X-Accel-Buffering', 'no');
+    res.flushHeaders();
+
+    function sendEvent(event: StreamEvent): void {
+      if (!res.writableEnded) res.write(`data: ${JSON.stringify(event)}\n\n`);
+    }
+
+    // ── Run pipeline — save completes even if client disconnects ───────────
+    try {
+      const result = await runOrchestrator(ctx, maxNegotiationRounds, sendEvent);
+
+      const itinerary = result.itinerary as {
+        dayPlans: unknown; budgetBreakdown: unknown;
+        satisfactionScores: unknown; tradeoffReport: string; adminOverrideFlag: boolean;
+      };
+
+      const existing = await prisma.itinerary.findFirst({
+        where: { groupId: group.id }, orderBy: { version: 'desc' }, select: { version: true },
+      });
+      const version = (existing?.version ?? 0) + 1;
+
+      const saved = await prisma.$transaction(async tx => {
+        const record = await tx.itinerary.create({
+          data: {
+            groupId: group.id, version,
+            dayPlans:           itinerary.dayPlans           as object,
+            budgetBreakdown:    itinerary.budgetBreakdown    as object,
+            satisfactionScores: itinerary.satisfactionScores as object,
+            tradeoffReport:     itinerary.tradeoffReport,
+          },
+        });
+        if (!itinerary.adminOverrideFlag && group.status !== GroupStatus.COMPLETE) {
+          await tx.group.update({ where: { id: group.id }, data: { status: GroupStatus.COMPLETE } });
+        }
+        return record;
+      });
+
+      sendEvent({ type: 'done', itineraryId: saved.id, version: saved.version });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Pipeline failed';
+      sendEvent({ type: 'agent_error', agent: 'orchestrator', message: msg });
+    } finally {
+      res.end();
+    }
+  },
+);
+
+// ---------------------------------------------------------------------------
 // POST /groups/:code/generate-itinerary  [admin only, member token]
 // Runs the full planning pipeline: agent proposals → negotiation → consensus
 // → itinerary assembly → save Itinerary v1 to DB.
