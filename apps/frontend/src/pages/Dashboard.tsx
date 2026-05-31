@@ -280,6 +280,20 @@ export function Dashboard() {
     }
   }
 
+  async function handleSetDates() {
+    if (!code || !datesStart || !datesEnd) return;
+    setDatesLoading(true);
+    setDatesError('');
+    try {
+      await api.setTripDates(code, datesStart, datesEnd);
+      await fetchGroup();
+    } catch (err) {
+      setDatesError(err instanceof ApiError ? err.message : 'Could not save dates');
+    } finally {
+      setDatesLoading(false);
+    }
+  }
+
   // -------------------------------------------------------------------------
   // Render
   // -------------------------------------------------------------------------
