@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
+import { groupsRouter } from './routes/groups';
 
 const app = express();
 const port = process.env.PORT ?? 3001;
@@ -12,6 +13,13 @@ app.get('/health', (_req, res) => {
   res.json({ status: 'ok', service: 'tripsync-backend' });
 });
 
-app.listen(port, () => {
-  console.log(`Backend running at http://localhost:${port}`);
-});
+app.use('/groups', groupsRouter);
+
+// Only start listening when run directly, not when imported by tests.
+if (require.main === module) {
+  app.listen(port, () => {
+    console.log(`Backend running at http://localhost:${port}`);
+  });
+}
+
+export { app };

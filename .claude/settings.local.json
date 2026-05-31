@@ -3,7 +3,19 @@
     "allow": [
       "Bash(git init *)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "Bash(git remote *)",
+      "Bash(git branch *)",
+      "Bash(git push *)",
+      "Bash(gh repo *)",
+      "WebFetch(domain:github.com)",
+      "Bash(uv tool *)",
+      "Bash(graphify install *)",
+      "Bash(graphify .)",
+      "PowerShell(cd \"d:\\\\vsc\\\\NEU\\\\Trip\"; $key = \\(Get-Content .env | Where-Object { $_ -match \"^ANTHROPIC_API_KEY\" } | ForEach-Object { \\($_ -split \"=\", 2\\)[1].Trim\\(\\) }\\); if \\($key -and $key -ne '\"sk-ant-...\"'\\) { $env:ANTHROPIC_API_KEY = $key; graphify . 2>&1 } else { Write-Output \"ANTHROPIC_API_KEY not set in .env — please add your real key\" })",
+      "PowerShell(cd \"d:\\\\vsc\\\\NEU\\\\Trip\\\\apps\\\\backend\"; $content = Get-Content \"d:\\\\vsc\\\\NEU\\\\Trip\\\\.env\" -ErrorAction SilentlyContinue; if \\(-not $content\\) { $content = Get-Content \"d:\\\\vsc\\\\NEU\\\\Trip\\\\.env.example\" }; $dbUrl = \\($content | Where-Object { $_ -match \"^DATABASE_URL\" } | ForEach-Object { \\($_ -split \"=\", 2\\)[1].Trim\\(\\).Trim\\('\"'\\) }\\); $env:DATABASE_URL = $dbUrl; Write-Output \"Using DATABASE_URL: $dbUrl\"; npx prisma migrate dev --name init 2>&1)",
+      "PowerShell(cd \"d:\\\\vsc\\\\NEU\\\\Trip\\\\apps\\\\backend\"; $env:JWT_SECRET = \"test-secret-do-not-use-in-production\"; $env:DATABASE_URL = \"postgresql://tripsync:tripsync@localhost:5432/tripsync\"; npx jest --runInBand --forceExit 2>&1)",
+      "PowerShell(cd \"d:\\\\vsc\\\\NEU\\\\Trip\\\\apps\\\\backend\"; $env:DATABASE_URL = \"postgresql://tripsync:tripsync@localhost:5432/tripsync\"; npx prisma generate 2>&1)"
     ]
   }
 }

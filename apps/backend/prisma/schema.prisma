@@ -7,38 +7,123 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
+// ---------------------------------------------------------------------------
+// Enums
+// ---------------------------------------------------------------------------
+
+enum GroupStatus {
+  COLLECTING
+  BUDGET_NEGOTIATION
+  PLANNING
+  COMPLETE
+}
+
+enum PreferenceStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETE
+}
+
+enum ChatRole {
+  USER
+  ASSISTANT
+}
+
+// ---------------------------------------------------------------------------
+// Models
+// ---------------------------------------------------------------------------
+
+model Group {
+  id            String      @id @default(cuid())
+  name          String
+  // Short, human-typeable invite code (e.g. "BEACH42") — unique so it can be
+  // used as a URL slug without collision.
+  groupCode     String      @unique
+  passwordHash  String
+  destination   String?
+  // Soft FK to Member; nullable so the row can be inserted before its first
+  // Member row exists, then updated atomically.
+  adminMemberId String?
+  status        GroupStatus @default(COLLECTING)
+  // Null until the group votes to lock a budget in BUDGET_NEGOTIATION.
+  lockedBudget  Decimal?    @db.Decimal(12, 2)
+  createdAt     DateTime    @default(now())
+
+  members    Member[]
+  itineraries Itinerary[]
+
+  @@index([groupCode])
+}
+
+model Member {
+  id               String           @id @default(cuid())
+  groupId          String
+  name             String
+  isAdmin          Boolean          @default(false)
+  preferenceStatus PreferenceStatus @default(PENDING)
+  // Kept private — only the agent and admin see it during negotiation.
+  privateBudget    Decimal?         @db.Decimal(12, 2)
+  joinedAt         DateTime         @default(now())
+
+  group             Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  preferenceProfile PreferenceProfile?
+  chatMessages      ChatMessage[]
+
+  @@index([groupId])
+}
+
+model PreferenceProfile {
+  id       String @id @default(cuid())
+  memberId String @unique
+
+  // Scores 0-100 per dimension, stored as JSON for schema flexibility as we
+  // iterate on dimensions without a migration per tweak.
+  // Shape: { activities: {...}, food: {...}, logistics: {...}, constraints: {...} }
+  scores Json
+
+  // Shape: { mustHave: string[], niceToHave: string[], neutral: string[], avoid: string[] }
+  priorities Json
+
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+}
+
+model ChatMessage {
   id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
+  memberId  String
+  // Enum-constrained so the app layer can never accidentally store an invalid role.
+  role      ChatRole
+  content   String
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  ownedTrips  Trip[]       @relation("TripOwner")
-  memberships TripMember[]
+  member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([memberId, createdAt])
 }
 
-model Trip {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  startDate   DateTime?
-  endDate     DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Itinerary {
+  id      String @id @default(cuid())
+  groupId String
+  // Monotonically-incrementing version so the UI can show history and the
+  // agent can diff between re-plans without relying on createdAt ordering.
+  version Int    @default(1)
 
-  ownerId String
-  owner   User   @relation("TripOwner", fields: [ownerId], references: [id])
+  // Array of day objects; shape owned by the agent layer, not the DB.
+  // { day: number, date: string, activities: Activity[], meals: Meal[] }
+  dayPlans Json
 
-  members TripMember[]
-}
+  // { total: number, perMember: number, breakdown: CategoryBreakdown[] }
+  budgetBreakdown Json
 
-model TripMember {
-  tripId String
-  userId String
+  // Per-member satisfaction scores keyed by memberId: { [memberId]: number }
+  satisfactionScores Json
 
-  trip Trip @relation(fields: [tripId], references: [id])
-  user User @relation(fields: [userId], references: [id])
+  // Free-text explanation of tradeoffs the agent made (why X was chosen over Y).
+  tradeoffReport String
 
-  @@id([tripId, userId])
+  createdAt DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, version])
+  @@index([groupId])
 }
