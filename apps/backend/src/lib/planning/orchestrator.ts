@@ -44,32 +44,53 @@ function logisticsStub(): LogisticsProposal {
 /**
  * Build candidate activity slates by sliding a window over the ranked list.
  * Produces up to 3 candidates for the consensus engine to compare.
+ *
+ * totalCostPerPersonUsd = non-activity costs per person (accommodation + food +
+ * transport + misc, from the budget proposal) PLUS the activity costs for this
+ * specific window slice. Activity costs are NOT part of baseCostPerPerson to
+ * avoid double-counting.
  */
 function buildCandidates(
   activity: ActivityProposal,
+  food: FoodProposal,
   budget: BudgetProposal,
   ctx: PlanningContext,
 ): ItineraryCandidate[] {
   const all = activity.candidates;
   const windowSize = Math.min(all.length, ctx.tripDuration * 2);
-  const baseCostPerPerson = budget.totalEstimatedUsd / ctx.groupSize;
+
+  // Non-activity cost per person (accommodation + food + transport + misc).
+  // Subtract activity costs from the budget total to avoid double-counting.
+  const activityWindowSize = Math.min(all.length, Math.max(4, ctx.tripDuration * 2));
+  const budgetActivityCostPP = Math.round(
+    all.slice(0, activityWindowSize).reduce((s, a) => s + a.estimatedCostPerPersonUsd, 0),
+  );
+  const nonActivityCostPP = Math.max(
+    0,
+    Math.round(budget.totalEstimatedUsd / ctx.groupSize) - budgetActivityCostPP,
+  );
+
   const candidates: ItineraryCandidate[] = [];
 
   const maxStart = Math.min(all.length - windowSize, 2);
   for (let start = 0; start <= maxStart; start++) {
     const slice = all.slice(start, start + windowSize);
+    const sliceActivityCostPP = slice.reduce((s, a) => s + a.estimatedCostPerPersonUsd, 0);
     candidates.push({
       activities:            slice,
-      totalCostPerPersonUsd: slice.reduce((s, a) => s + a.estimatedCostPerPersonUsd, 0) + baseCostPerPerson,
+      meals:                 food.mealPlan,
+      totalCostPerPersonUsd: Math.round(sliceActivityCostPP + nonActivityCostPP),
       totalActivityHours:    slice.reduce((s, a) => s + a.durationHours, 0),
       distinctCategories:    new Set(slice.map(a => a.category)).size,
     });
   }
 
   if (candidates.length === 0) {
+    const allActivityCostPP = all.reduce((s, a) => s + a.estimatedCostPerPersonUsd, 0);
     candidates.push({
       activities:            all,
-      totalCostPerPersonUsd: baseCostPerPerson,
+      meals:                 food.mealPlan,
+      totalCostPerPersonUsd: Math.round(allActivityCostPP + nonActivityCostPP),
       totalActivityHours:    all.reduce((s, a) => s + a.durationHours, 0),
       distinctCategories:    new Set(all.map(a => a.category)).size,
     });
