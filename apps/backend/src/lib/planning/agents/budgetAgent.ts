@@ -12,11 +12,17 @@ import {
 } from '../schemas';
 
 export interface BudgetAgentInput {
-  ctx:            PlanningContext;
-  activity:       ActivityProposal;
-  food:           FoodProposal;
-  accommodation:  AccommodationProposal;
-  transportation: TransportationProposal;
+  ctx:              PlanningContext;
+  activity:         ActivityProposal;
+  food:             FoodProposal;
+  accommodation:    AccommodationProposal;
+  transportation:   TransportationProposal;
+  /**
+   * The group's real locked budget before any planning buffer is applied.
+   * This is what appears in the budget proposal's `lockedBudgetUsd` field —
+   * the group-agreed figure, not the internally-buffered planning budget.
+   */
+  realLockedBudget?: number;
 }
 
 // ---------------------------------------------------------------------------
