@@ -94,7 +94,11 @@ itineraryRouter.get(
       },
     });
 
-    res.json({ itineraries });
+    res.json({
+      itineraries,
+      finalItineraryId: group.finalItineraryId ?? null,
+      finalizedAt:      group.finalizedAt?.toISOString() ?? null,
+    });
   },
 );
 
