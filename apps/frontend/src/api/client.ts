@@ -100,6 +100,24 @@ export const api = {
     return request<{ status: string }>('POST', `/groups/${code}/lock-preferences`, {}, 'member');
   },
 
+  unlockPreferences(code: string, confirm?: boolean) {
+    return request<{ status?: string; downstreamCleared?: boolean; requiresConfirmation?: boolean; warning?: string }>(
+      'POST', `/groups/${code}/unlock-preferences`, { confirm }, 'member',
+    );
+  },
+
+  kickMember(code: string, memberId: string) {
+    return request<{ removed: boolean; memberId: string }>(
+      'DELETE', `/groups/${code}/members/${memberId}`, undefined, 'member',
+    );
+  },
+
+  leaveGroup(code: string) {
+    return request<{ left: boolean; groupDeleted: boolean }>(
+      'POST', `/groups/${code}/leave`, {}, 'member',
+    );
+  },
+
   triggerPlanning(code: string) {
     return request<{ status: string }>('POST', `/groups/${code}/trigger-planning`, {}, 'member');
   },
