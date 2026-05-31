@@ -273,15 +273,33 @@ export function Dashboard() {
           <div className="px-5 pb-4" />
         </div>
 
-        {/* Non-admin hint */}
-        {!session?.isAdmin && group.status === 'COLLECTING' && (
-          <div className="rounded-2xl border border-amber-100 bg-amber-50 px-5 py-4">
-            <p className="text-sm font-medium text-amber-800">Your preferences are needed!</p>
-            <p className="mt-0.5 text-xs text-amber-700">
-              The organizer will unlock planning once everyone has submitted their preferences.
-            </p>
-          </div>
-        )}
+        {/* My preference CTA — shown when collecting and this member isn't done */}
+        {group.status === 'COLLECTING' && (() => {
+          const me = group.members.find(m => m.id === session?.memberId);
+          if (!me || me.preferenceStatus === 'COMPLETE') return null;
+          return (
+            <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 px-5 py-4 space-y-3">
+              <div>
+                <p className="text-sm font-semibold text-indigo-900">
+                  {me.preferenceStatus === 'PENDING'
+                    ? '👋 Share your travel preferences'
+                    : '⏳ Finish your preferences'}
+                </p>
+                <p className="mt-0.5 text-xs text-indigo-700">
+                  {me.preferenceStatus === 'PENDING'
+                    ? 'Chat with the AI agent to tell us what kind of trip you\'d love. Takes ~3 minutes.'
+                    : 'You started but haven\'t finished yet. Pick up where you left off.'}
+                </p>
+              </div>
+              <Button
+                className="w-full"
+                onClick={() => navigate(`/group/${group.groupCode}/preferences`)}
+              >
+                {me.preferenceStatus === 'PENDING' ? 'Set my preferences →' : 'Continue chat →'}
+              </Button>
+            </div>
+          );
+        })()}
       </main>
     </div>
   );

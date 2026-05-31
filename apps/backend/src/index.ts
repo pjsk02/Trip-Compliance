@@ -2,6 +2,7 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { groupsRouter } from './routes/groups';
+import { membersRouter } from './routes/members';
 
 const app = express();
 const port = process.env.PORT ?? 3001;
@@ -14,6 +15,7 @@ app.get('/health', (_req, res) => {
 });
 
 app.use('/groups', groupsRouter);
+app.use('/members', membersRouter);
 
 // Only start listening when run directly, not when imported by tests.
 if (require.main === module) {

@@ -1,5 +1,8 @@
 /// <reference types="vite/client" />
-import type { CreateGroupResponse, JoinGroupResponse, Group } from '../types';
+import type {
+  CreateGroupResponse, JoinGroupResponse, Group,
+  ChatResponse, ChatHistoryResponse, PreferenceProfileData,
+} from '../types';
 
 // Token is kept in a module-level variable (survives React re-renders, dies on
 // hard refresh). We also mirror it into a short-lived sessionStorage entry so a
@@ -79,5 +82,17 @@ export const api = {
 
   triggerPlanning(code: string) {
     return request<{ status: string }>('POST', `/groups/${code}/trigger-planning`, {}, true);
+  },
+
+  getChatHistory(memberId: string) {
+    return request<ChatHistoryResponse>('GET', `/members/${memberId}/chat`, undefined, true);
+  },
+
+  sendChat(memberId: string, message: string) {
+    return request<ChatResponse>('POST', `/members/${memberId}/chat`, { message }, true);
+  },
+
+  finalizePreferences(memberId: string) {
+    return request<{ profile: PreferenceProfileData }>('POST', `/members/${memberId}/finalize-preferences`, {}, true);
   },
 };

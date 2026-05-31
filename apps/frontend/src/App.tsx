@@ -4,6 +4,7 @@ import { Landing } from './pages/Landing';
 import { CreateGroup } from './pages/CreateGroup';
 import { JoinGroup } from './pages/JoinGroup';
 import { Dashboard } from './pages/Dashboard';
+import { PreferenceChat } from './pages/PreferenceChat';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { session } = useAuth();
@@ -25,6 +26,14 @@ function AppRoutes() {
         element={
           <RequireAuth>
             <Dashboard />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/group/:code/preferences"
+        element={
+          <RequireAuth>
+            <PreferenceChat />
           </RequireAuth>
         }
       />
