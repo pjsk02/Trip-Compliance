@@ -250,7 +250,7 @@ async function _runOrchestratorImpl(
   });
 
   // ── Build decision audit trail ────────────────────────────────────────────
-  const decisionAudit = buildDecisionAudit(consensus, activityRaw, food, budget, ctx);
+  const decisionAudit = buildDecisionAudit(consensus, activityRaw, food as FoodProposal, budget, ctx);
 
   // ── Assemble final itinerary ──────────────────────────────────────────────
   const tracedAssemble = wop('pipeline:assemble', assembleItinerary);
