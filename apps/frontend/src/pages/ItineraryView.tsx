@@ -808,10 +808,52 @@ function FeedbackHistory({ versions }: { versions: Itinerary[] }) {
 }
 
 // ---------------------------------------------------------------------------
+// Error boundary — catches render crashes so the page never goes blank
+// ---------------------------------------------------------------------------
+
+class ItineraryErrorBoundary extends Component<
+  { children: ReactNode },
+  { error: Error | null }
+> {
+  constructor(props: { children: ReactNode }) {
+    super(props);
+    this.state = { error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+
+  componentDidCatch(error: Error, info: ErrorInfo) {
+    console.error('[ItineraryView] Render error:', error, info.componentStack);
+  }
+
+  render() {
+    if (this.state.error) {
+      return (
+        <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-50 px-4 text-center">
+          <div className="rounded-2xl border border-red-100 bg-white shadow-sm px-6 py-6 max-w-sm w-full space-y-3">
+            <p className="text-base font-semibold text-red-600">Something went wrong</p>
+            <p className="text-xs text-gray-500 font-mono break-all">{this.state.error.message}</p>
+            <button
+              onClick={() => this.setState({ error: null })}
+              className="mt-2 rounded-lg bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700 transition-colors"
+            >
+              Try again
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
 
-export function ItineraryView() {
+function ItineraryViewInner() {
   const { code } = useParams<{ code: string }>();
   const { session, userSession, logout } = useAuth();
   const navigate = useNavigate();
