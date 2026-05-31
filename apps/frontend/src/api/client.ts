@@ -82,8 +82,14 @@ export const api = {
 
   // -- Groups (now require user token for create/join) ----------------------
 
-  createGroup(payload: { name: string; destination?: string; password: string }) {
+  createGroup(payload: { name: string; destination?: string; password: string; startDate?: string; endDate?: string }) {
     return request<CreateGroupResponse>('POST', '/groups', payload, 'user');
+  },
+
+  setTripDates(code: string, startDate: string, endDate: string) {
+    return request<{ startDate: string; endDate: string; tripDays: number; tripDuration: number }>(
+      'PATCH', `/groups/${code}/set-dates`, { startDate, endDate }, 'member',
+    );
   },
 
   joinGroup(code: string, payload: { password: string }) {
