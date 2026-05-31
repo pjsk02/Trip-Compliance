@@ -26,12 +26,16 @@ export function Home() {
   const [loading, setLoading]         = useState(true);
   const [error, setError]             = useState<string | null>(null);
 
-  useEffect(() => {
+  function load() {
+    setLoading(true);
+    setError(null);
     api.getMe()
       .then((data) => setMemberships(data.memberships))
-      .catch(() => setError('Could not load your groups.'))
+      .catch(() => setError("Couldn't reach the server."))
       .finally(() => setLoading(false));
-  }, []);
+  }
+
+  useEffect(() => { load(); }, []);
 
   async function enterGroup(m: Membership) {
     try {
