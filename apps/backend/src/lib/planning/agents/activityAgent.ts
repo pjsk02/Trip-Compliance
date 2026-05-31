@@ -15,6 +15,39 @@ export class ActivityAgent extends BaseAgent<ActivityProposal> {
     return ActivityProposalSchema;
   }
 
+  protected safeDefault(ctx: PlanningContext): ActivityProposal {
+    return {
+      agent: 'activity',
+      candidates: [
+        {
+          name: 'City exploration',
+          category: 'mixed',
+          description: `Self-guided walking tour of ${ctx.destination}. Explore local neighbourhoods, markets, and landmarks at your own pace.`,
+          groupUtilityScore: 50,
+          estimatedCostPerPersonUsd: 0,
+          durationHours: 4,
+        },
+        {
+          name: 'Local food market visit',
+          category: 'mixed',
+          description: `Visit a local market in ${ctx.destination} to sample street food and browse local goods.`,
+          groupUtilityScore: 50,
+          estimatedCostPerPersonUsd: 15,
+          durationHours: 2,
+        },
+        {
+          name: 'Cultural landmark tour',
+          category: 'museums',
+          description: `Visit the main cultural landmark or museum in ${ctx.destination}.`,
+          groupUtilityScore: 45,
+          estimatedCostPerPersonUsd: 20,
+          durationHours: 3,
+        },
+      ],
+      excluded: [],
+    };
+  }
+
   protected systemPrompt(): string {
     return `You are the TripSync Activity Planner agent. Your job is to propose a ranked list of activity candidates for a group trip.
 
