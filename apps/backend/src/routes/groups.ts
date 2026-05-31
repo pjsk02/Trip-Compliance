@@ -48,8 +48,23 @@ groupsRouter.post('/', requireUser, async (req: Request, res: Response): Promise
     res.status(400).json({ error: parsed.error.flatten() });
     return;
   }
-  const { name, destination, password } = parsed.data;
+  const { name, destination, password, startDate, endDate } = parsed.data;
   const { userId } = req.user!;
+
+  // Validate dates if provided
+  if (startDate && endDate) {
+    const start = new Date(startDate);
+    const end   = new Date(endDate);
+    if (end < start) {
+      res.status(400).json({ error: 'endDate must be on or after startDate' }); return;
+    }
+    const days = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
+    if (days > 30) {
+      res.status(400).json({ error: 'Trip duration cannot exceed 30 days' }); return;
+    }
+  } else if (startDate || endDate) {
+    res.status(400).json({ error: 'Provide both startDate and endDate, or neither' }); return;
+  }
 
   const dbUser = await prisma.user.findUnique({ where: { id: userId } });
   if (!dbUser) {
@@ -62,7 +77,11 @@ groupsRouter.post('/', requireUser, async (req: Request, res: Response): Promise
 
   const { group, adminMember } = await prisma.$transaction(async (tx) => {
     const group = await tx.group.create({
-      data: { name, groupCode, passwordHash, destination },
+      data: {
+        name, groupCode, passwordHash, destination,
+        startDate: startDate ? new Date(startDate) : undefined,
+        endDate:   endDate   ? new Date(endDate)   : undefined,
+      },
     });
     const adminMember = await tx.member.create({
       data: { groupId: group.id, userId: dbUser.id, name: dbUser.name, isAdmin: true },
