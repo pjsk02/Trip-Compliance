@@ -17,18 +17,26 @@ export class FoodAgent extends BaseAgent<FoodProposal> {
   protected safeDefault(ctx: PlanningContext): FoodProposal {
     const mealPlan: FoodProposal['mealPlan'] = [];
     const safe = { vegetarian: true, vegan: false, glutenFree: false, halal: false, kosher: false, nutFree: false };
-    for (let day = 1; day <= ctx.tripDuration; day++) {
-      mealPlan.push(
-        { day, type: 'breakfast', venue: 'Hotel / hostel breakfast', cuisineType: 'Continental', estimatedCostPerPersonUsd: 8, dietaryCompatibility: safe, alcoholServed: false },
-        { day, type: 'lunch', venue: 'Local café', cuisineType: 'Local', estimatedCostPerPersonUsd: 14, dietaryCompatibility: safe, alcoholServed: false },
-        { day, type: 'dinner', venue: 'Local restaurant', cuisineType: 'Local', estimatedCostPerPersonUsd: 20, dietaryCompatibility: safe, alcoholServed: true },
-      );
+    for (let day = 1; day <= ctx.tripDays; day++) {
+      // Arrival day: just dinner; departure day: just breakfast
+      if (day === 1) {
+        mealPlan.push({ day, type: 'dinner', venue: 'Local restaurant', cuisineType: 'Local', estimatedCostPerPersonUsd: 20, dietaryCompatibility: safe, alcoholServed: true });
+      } else if (day === ctx.tripDays) {
+        mealPlan.push({ day, type: 'breakfast', venue: 'Hotel / hostel breakfast', cuisineType: 'Continental', estimatedCostPerPersonUsd: 8, dietaryCompatibility: safe, alcoholServed: false });
+      } else {
+        mealPlan.push(
+          { day, type: 'breakfast', venue: 'Hotel / hostel breakfast', cuisineType: 'Continental', estimatedCostPerPersonUsd: 8, dietaryCompatibility: safe, alcoholServed: false },
+          { day, type: 'lunch', venue: 'Local café', cuisineType: 'Local', estimatedCostPerPersonUsd: 14, dietaryCompatibility: safe, alcoholServed: false },
+          { day, type: 'dinner', venue: 'Local restaurant', cuisineType: 'Local', estimatedCostPerPersonUsd: 20, dietaryCompatibility: safe, alcoholServed: true },
+        );
+      }
     }
+    const totalFoodCostPerPersonUsd = mealPlan.reduce((s, m) => s + m.estimatedCostPerPersonUsd, 0);
     return {
       agent: 'food',
       mealPlan,
       dietaryFlags: [],
-      totalFoodCostPerPersonUsd: 42 * ctx.tripDuration,
+      totalFoodCostPerPersonUsd,
     };
   }
 
