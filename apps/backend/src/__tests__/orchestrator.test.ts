@@ -146,6 +146,9 @@ const MEMBERS: MemberPreferenceSnapshot[] = [
 const CONTEXT: PlanningContext = {
   destination:  'Paris, France',
   tripDuration: 6,
+  tripDays:     7,
+  startDate:    '2025-09-01',
+  endDate:      '2025-09-07',
   groupSize:    4,
   lockedBudget: 8000,   // $2000/person total
   members:      MEMBERS,
