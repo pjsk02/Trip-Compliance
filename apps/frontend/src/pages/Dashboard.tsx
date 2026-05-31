@@ -350,14 +350,31 @@ export function Dashboard() {
       {/* Top bar */}
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-xl items-center justify-between px-4 py-3">
-          <div className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600">
-              <svg className="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
-                  d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064" />
+          <div className="flex items-center gap-3">
+            {/* Logo — always routes home */}
+            <button
+              onClick={() => navigate('/home')}
+              className="flex items-center gap-1.5 group"
+              title="My trips"
+            >
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-indigo-600 group-hover:bg-indigo-700 transition-colors">
+                <svg className="h-3.5 w-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
+                    d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064" />
+                </svg>
+              </div>
+              <span className="font-semibold text-gray-900 text-sm group-hover:text-indigo-600 transition-colors">TripSync AI</span>
+            </button>
+            {/* My trips link */}
+            <button
+              onClick={() => navigate('/home')}
+              className="hidden sm:flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-600 transition-colors"
+            >
+              <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-            </div>
-            <span className="font-semibold text-gray-900 text-sm">TripSync AI</span>
+              My trips
+            </button>
           </div>
           <button
             onClick={() => setConfirmLeave(true)}
