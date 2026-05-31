@@ -73,12 +73,19 @@ export function Dashboard() {
   const [error, setError] = useState('');
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [actionError, setActionError] = useState('');
+  const [nudgeMsg, setNudgeMsg] = useState('');
+  const [deadline, setDeadline] = useState('');
+  const [deadlineLoading, setDeadlineLoading] = useState(false);
 
   const fetchGroup = useCallback(async () => {
     if (!code) return;
     try {
       const g = await api.getGroup(code);
       setGroup(g);
+      if (g.submissionDeadline && !deadline) {
+        // Pre-fill deadline input with existing value (datetime-local format)
+        setDeadline(new Date(g.submissionDeadline).toISOString().slice(0, 16));
+      }
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
         logout();
@@ -89,28 +96,59 @@ export function Dashboard() {
     } finally {
       setLoading(false);
     }
-  }, [code, logout, navigate]);
+  }, [code, logout, navigate, deadline]);
 
   useEffect(() => {
     if (!session) { navigate('/'); return; }
     fetchGroup();
-    // Poll every 10s so member list updates without a full refresh.
     const interval = setInterval(fetchGroup, 10_000);
     return () => clearInterval(interval);
   }, [session, fetchGroup, navigate]);
 
-  async function handleAction(action: 'lock' | 'plan') {
+  async function handleAction(action: 'lock' | 'generate') {
     if (!code) return;
     setActionLoading(action);
     setActionError('');
     try {
-      if (action === 'lock') await api.lockPreferences(code);
-      else await api.triggerPlanning(code);
+      if (action === 'lock') {
+        await api.lockPreferences(code);
+      } else if (action === 'generate') {
+        await api.generateItinerary(code, 3);
+        navigate(`/group/${code}/itinerary`);
+        return;
+      }
       await fetchGroup();
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : 'Action failed');
     } finally {
       setActionLoading(null);
+    }
+  }
+
+  async function handleNudge() {
+    if (!code) return;
+    setActionLoading('nudge');
+    setNudgeMsg('');
+    try {
+      const res = await api.nudgeMembers(code);
+      setNudgeMsg(res.message);
+    } catch (err) {
+      setNudgeMsg(err instanceof ApiError ? err.message : 'Nudge failed');
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleSetDeadline() {
+    if (!code || !deadline) return;
+    setDeadlineLoading(true);
+    try {
+      await api.setDeadline(code, new Date(deadline).toISOString());
+      await fetchGroup();
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : 'Could not set deadline');
+    } finally {
+      setDeadlineLoading(false);
     }
   }
 
@@ -136,8 +174,10 @@ export function Dashboard() {
   const allComplete = completedCount === totalCount && totalCount > 0;
 
   // Admin action button states
-  const canLock = group.status === 'COLLECTING';
-  const canPlan = group.status === 'BUDGET_NEGOTIATION';
+  const canLock     = group.status === 'COLLECTING';
+  const inBudget    = group.status === 'BUDGET_NEGOTIATION';
+  const inPlanning  = group.status === 'PLANNING';
+  const isComplete  = group.status === 'COMPLETE';
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -199,6 +239,7 @@ export function Dashboard() {
             )}
 
             <div className="flex flex-col gap-2 sm:flex-row">
+              {/* Step 1 — Lock preferences */}
               <div className="flex-1">
                 <Button
                   variant={canLock ? 'primary' : 'secondary'}
@@ -209,36 +250,108 @@ export function Dashboard() {
                 >
                   Lock preferences
                 </Button>
-                {!canLock && group.status === 'COLLECTING' && (
+                {canLock && (
                   <p className="mt-1 text-center text-xs text-gray-400">
                     {allComplete
                       ? 'All preferences in — ready to lock!'
                       : `${completedCount}/${totalCount} members done`}
                   </p>
                 )}
-                {group.status !== 'COLLECTING' && (
-                  <p className="mt-1 text-center text-xs text-gray-400">Already locked</p>
+                {!canLock && (
+                  <p className="mt-1 text-center text-xs text-gray-400">Preferences locked ✓</p>
                 )}
               </div>
 
+              {/* Step 2 — Budget negotiation */}
               <div className="flex-1">
                 <Button
-                  variant={canPlan ? 'primary' : 'secondary'}
-                  disabled={!canPlan}
-                  loading={actionLoading === 'plan'}
+                  variant={inBudget ? 'primary' : 'secondary'}
+                  disabled={!inBudget && !inPlanning && !isComplete}
                   className="w-full"
-                  onClick={() => handleAction('plan')}
+                  onClick={() => navigate(`/group/${group.groupCode}/budget`)}
                 >
-                  Start planning
+                  {inBudget ? 'Budget negotiation →' : 'Budget'}
                 </Button>
                 {group.status === 'COLLECTING' && (
                   <p className="mt-1 text-center text-xs text-gray-400">Lock preferences first</p>
                 )}
-                {group.status === 'PLANNING' && (
-                  <p className="mt-1 text-center text-xs text-gray-400">Planning in progress…</p>
+                {(inPlanning || isComplete) && (
+                  <p className="mt-1 text-center text-xs text-gray-400">
+                    Budget locked: ${Number(group.lockedBudget).toLocaleString()}
+                  </p>
                 )}
               </div>
             </div>
+
+            {/* Step 3 — Generate itinerary (PLANNING phase) */}
+            {inPlanning && (
+              <Button
+                variant="primary"
+                loading={actionLoading === 'generate'}
+                className="w-full"
+                onClick={() => handleAction('generate')}
+              >
+                ✨ Generate itinerary
+              </Button>
+            )}
+
+            {/* Step 3 — View itinerary (COMPLETE) */}
+            {isComplete && (
+              <Button
+                variant="primary"
+                className="w-full"
+                onClick={() => navigate(`/group/${group.groupCode}/itinerary`)}
+              >
+                View trip itinerary →
+              </Button>
+            )}
+
+            {/* Nudge pending members */}
+            {group.status === 'COLLECTING' && completedCount < totalCount && (
+              <div className="border-t border-gray-100 pt-3 space-y-2">
+                <p className="text-xs font-semibold text-gray-500">
+                  {totalCount - completedCount} member{totalCount - completedCount !== 1 ? 's' : ''} haven't finished preferences
+                </p>
+                <Button
+                  variant="secondary"
+                  loading={actionLoading === 'nudge'}
+                  className="w-full text-xs"
+                  onClick={handleNudge}
+                >
+                  Nudge pending members
+                </Button>
+                {nudgeMsg && (
+                  <p className="text-xs text-emerald-700">{nudgeMsg}</p>
+                )}
+              </div>
+            )}
+
+            {/* Submission deadline */}
+            {group.status === 'COLLECTING' && (
+              <div className="border-t border-gray-100 pt-3 space-y-2">
+                <p className="text-xs font-semibold text-gray-500">Submission deadline</p>
+                {group.submissionDeadline && (
+                  <p className="text-xs text-amber-700">
+                    Current: {new Date(group.submissionDeadline).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
+                  </p>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    type="datetime-local"
+                    value={deadline}
+                    onChange={e => setDeadline(e.target.value)}
+                    className="flex-1 rounded-xl border border-gray-300 px-3 py-2 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    disabled={!deadline || deadlineLoading}
+                    onClick={handleSetDeadline}
+                    className="shrink-0 rounded-xl bg-gray-100 px-3 py-2 text-xs font-medium text-gray-700 hover:bg-gray-200 disabled:opacity-40 transition"
+                  >
+                    {deadlineLoading ? '…' : 'Set'}
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -272,6 +385,37 @@ export function Dashboard() {
           </div>
           <div className="px-5 pb-4" />
         </div>
+
+        {/* Budget negotiation CTA — shown for all members during BUDGET_NEGOTIATION */}
+        {group.status === 'BUDGET_NEGOTIATION' && (
+          <div className="rounded-2xl border border-amber-100 bg-gradient-to-br from-amber-50 to-orange-50 px-5 py-4 space-y-3">
+            <div>
+              <p className="text-sm font-semibold text-amber-900">💰 Budget negotiation is live</p>
+              <p className="mt-0.5 text-xs text-amber-700">
+                The Budget Bot will propose a group total based on everyone's budgets.
+                Vote to approve or push back — individual budgets stay private.
+              </p>
+            </div>
+            <Button className="w-full" onClick={() => navigate(`/group/${group.groupCode}/budget`)}>
+              Go to budget negotiation →
+            </Button>
+          </div>
+        )}
+
+        {/* Itinerary CTA — shown to all members when plan is complete */}
+        {isComplete && (
+          <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 px-5 py-4 space-y-3">
+            <div>
+              <p className="text-sm font-semibold text-indigo-900">🎉 Your trip is planned!</p>
+              <p className="mt-0.5 text-xs text-indigo-700">
+                The AI has generated a day-by-day itinerary with budget breakdown and satisfaction scores for everyone.
+              </p>
+            </div>
+            <Button className="w-full" onClick={() => navigate(`/group/${group.groupCode}/itinerary`)}>
+              View trip itinerary →
+            </Button>
+          </div>
+        )}
 
         {/* My preference CTA — shown when collecting and this member isn't done */}
         {group.status === 'COLLECTING' && (() => {

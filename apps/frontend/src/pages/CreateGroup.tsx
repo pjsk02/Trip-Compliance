@@ -14,13 +14,12 @@ function randomPassword() {
 }
 
 export function CreateGroup() {
-  const { login } = useAuth();
+  const { loginGroup, userSession } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
     name: '',
     destination: '',
-    adminName: '',
     password: randomPassword(),
   });
   const [errors, setErrors] = useState<Partial<typeof form>>({});
@@ -31,7 +30,6 @@ export function CreateGroup() {
   function validate() {
     const e: Partial<typeof form> = {};
     if (!form.name.trim()) e.name = 'Trip name is required';
-    if (!form.adminName.trim()) e.adminName = 'Your name is required';
     if (form.password.length < 4) e.password = 'Password must be at least 4 characters';
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -46,17 +44,16 @@ export function CreateGroup() {
       const res = await api.createGroup({
         name: form.name.trim(),
         destination: form.destination.trim() || undefined,
-        adminName: form.adminName.trim(),
         password: form.password,
       });
       setCreated(res);
-      login({
-        token: res.token,
-        memberId: res.member.id,
-        groupId: '',   // filled after group fetch; we have groupCode to navigate
-        isAdmin: true,
-        memberName: res.member.name,
-        groupCode: res.groupCode,
+      loginGroup({
+        token:      res.token,
+        memberId:   res.member.id,
+        groupId:    '',          // populated when Dashboard fetches the group
+        isAdmin:    true,
+        memberName: res.member.name ?? userSession?.user.name ?? '',
+        groupCode:  res.groupCode,
       });
     } catch (err) {
       setApiError(err instanceof ApiError ? err.message : 'Something went wrong');
@@ -83,7 +80,7 @@ export function CreateGroup() {
       <div className="w-full max-w-sm">
         {/* Back */}
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/home')}
           className="mb-6 flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-700"
         >
           <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -95,7 +92,9 @@ export function CreateGroup() {
         <div className="rounded-2xl bg-white p-6 shadow-sm border border-gray-100 space-y-5">
           <div>
             <h1 className="text-xl font-bold text-gray-900">Create a group</h1>
-            <p className="mt-1 text-sm text-gray-500">You'll be the organizer for this trip.</p>
+            <p className="mt-1 text-sm text-gray-500">
+              You'll be the organizer.{userSession?.user.name ? ` Joining as ${userSession.user.name}.` : ''}
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -113,14 +112,6 @@ export function CreateGroup() {
               value={form.destination}
               onChange={e => setForm(f => ({ ...f, destination: e.target.value }))}
             />
-            <Input
-              label="Your name"
-              placeholder="How should others know you?"
-              value={form.adminName}
-              onChange={e => setForm(f => ({ ...f, adminName: e.target.value }))}
-              error={errors.adminName}
-            />
-
             {/* Password row with regenerate */}
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700">Group password</label>

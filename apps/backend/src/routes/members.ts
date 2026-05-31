@@ -3,13 +3,20 @@ import type { MessageParam } from '@anthropic-ai/sdk/resources/messages';
 import { ChatRole } from '@prisma/client';
 import { z } from 'zod';
 import { prisma } from '../lib/prisma';
-import { authenticate } from '../middleware/auth';
-import { chatTurn, extractPreferences, detectCoverage } from '../lib/preferenceAgent';
+import { requireMember } from '../middleware/auth';
+import { chatTurn, extractChatNuance, extractPreferences, detectCoverage } from '../lib/preferenceAgent';
+import {
+  SliderValuesSchema,
+  ConstraintFieldsSchema,
+  derivePriorities,
+  scoresFromSliders,
+  type SliderValues,
+  type ConstraintFields,
+} from '../lib/preferenceSchema';
 
 export const membersRouter = Router();
 
-// All member routes require authentication.
-membersRouter.use(authenticate);
+membersRouter.use(requireMember);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -24,18 +31,18 @@ function dbMessagesToParams(
   }));
 }
 
-// Ownership guard: token holder must be the member themselves.
 async function loadOwnedMember(req: Request, res: Response) {
   const member = await prisma.member.findUnique({
     where: { id: req.params.id },
     include: {
       group: { select: { destination: true, status: true } },
       chatMessages: { orderBy: { createdAt: 'asc' } },
+      preferenceProfile: true,
     },
   });
   if (!member) { res.status(404).json({ error: 'Member not found' }); return null; }
   if (member.id !== req.member!.memberId) {
-    res.status(403).json({ error: 'You can only access your own chat' });
+    res.status(403).json({ error: 'You can only access your own preferences' });
     return null;
   }
   return member;
@@ -52,6 +59,9 @@ membersRouter.get('/:id/chat', async (req: Request, res: Response): Promise<void
   const history = dbMessagesToParams(member.chatMessages);
   const coverage = detectCoverage(history);
 
+  // Pull saved slider/constraint data from profile if it exists
+  const profile = member.preferenceProfile as { sliderValues?: unknown; constraintFields?: unknown } | null;
+
   res.json({
     messages: member.chatMessages.map(m => ({
       id: m.id,
@@ -61,11 +71,79 @@ membersRouter.get('/:id/chat', async (req: Request, res: Response): Promise<void
     })),
     coverage,
     preferenceStatus: member.preferenceStatus,
+    sliderValues: profile?.sliderValues ?? null,
+    constraintFields: profile?.constraintFields ?? null,
   });
 });
 
 // ---------------------------------------------------------------------------
-// POST /members/:id/chat — append user message, get agent reply
+// POST /members/:id/save-sliders
+// Saves slider values + constraint fields directly — no LLM involved.
+// Creates/updates the PreferenceProfile and bumps status to IN_PROGRESS.
+// ---------------------------------------------------------------------------
+
+const SaveSlidersBodySchema = z.object({
+  sliderValues:     SliderValuesSchema,
+  constraintFields: ConstraintFieldsSchema,
+});
+
+membersRouter.post('/:id/save-sliders', async (req: Request, res: Response): Promise<void> => {
+  const parsed = SaveSlidersBodySchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
+
+  const member = await loadOwnedMember(req, res);
+  if (!member) return;
+
+  if (member.preferenceStatus === 'COMPLETE') {
+    res.status(409).json({ error: 'Preferences already finalized.' });
+    return;
+  }
+
+  const { sliderValues, constraintFields } = parsed.data;
+
+  // Derive scores + priorities directly from slider values
+  const scores     = scoresFromSliders(sliderValues, constraintFields);
+  const priorities = derivePriorities(sliderValues);
+
+  await prisma.$transaction(async tx => {
+    await tx.preferenceProfile.upsert({
+      where: { memberId: member.id },
+      create: {
+        memberId: member.id,
+        scores,
+        priorities,
+        sliderValues: sliderValues as object,
+        constraintFields: constraintFields as object,
+      },
+      update: {
+        scores,
+        priorities,
+        sliderValues: sliderValues as object,
+        constraintFields: constraintFields as object,
+      },
+    });
+
+    if (member.preferenceStatus === 'PENDING') {
+      await tx.member.update({
+        where: { id: member.id },
+        data: { preferenceStatus: 'IN_PROGRESS' },
+      });
+    }
+
+    // Store budget privately on member record
+    if (constraintFields.totalBudget) {
+      await tx.member.update({
+        where: { id: member.id },
+        data: { privateBudget: constraintFields.totalBudget },
+      });
+    }
+  });
+
+  res.json({ scores, priorities });
+});
+
+// ---------------------------------------------------------------------------
+// POST /members/:id/chat — clarifying chat turn (post-slider)
 // ---------------------------------------------------------------------------
 
 const ChatBodySchema = z.object({
@@ -80,42 +158,41 @@ membersRouter.post('/:id/chat', async (req: Request, res: Response): Promise<voi
   if (!member) return;
 
   if (member.preferenceStatus === 'COMPLETE') {
-    res.status(409).json({ error: 'Preferences already finalized. No further chat needed.' });
+    res.status(409).json({ error: 'Preferences already finalized.' });
     return;
   }
 
   const { message } = parsed.data;
-
-  // Bump status to IN_PROGRESS on first message
-  if (member.preferenceStatus === 'PENDING') {
-    await prisma.member.update({
-      where: { id: member.id },
-      data: { preferenceStatus: 'IN_PROGRESS' },
-    });
-  }
-
   const history = dbMessagesToParams(member.chatMessages);
 
-  // If this is the very first message, prepend an agent greeting
+  // Pull stored slider context so the AI can reference it
+  const profile = member.preferenceProfile as {
+    sliderValues?: SliderValues;
+    constraintFields?: ConstraintFields;
+  } | null;
+  const sliders     = profile?.sliderValues     ?? undefined;
+  const constraints = profile?.constraintFields ?? undefined;
+
   let agentReply: string;
   let isComplete: boolean;
 
   if (history.length === 0 && message === '__init__') {
-    // Synthetic greeting — client sends "__init__" to open the chat cold.
-    agentReply = `Hi ${member.name}! I'm here to learn about your travel preferences for this trip${member.group.destination ? ` to ${member.group.destination}` : ''}. This will only take a few minutes and helps me build a trip everyone will love.\n\nLet's start with activities — are you more into outdoor adventures like hiking, or do you prefer cultural experiences like museums and local markets?`;
-    isComplete = false;
+    // Generate an opening clarifying message grounded in the slider context
+    if (sliders && constraints) {
+      const result = await chatTurn([], '__start__', member.name, member.group.destination, sliders, constraints);
+      agentReply = result.reply;
+      isComplete = result.complete;
+    } else {
+      // Fallback greeting when sliders haven't been submitted yet
+      agentReply = `Hi ${member.name}! I'm here to help capture any nuance about your travel preferences${member.group.destination ? ` for your trip to ${member.group.destination}` : ''}. Once you've set your sliders, I'll ask a few quick follow-up questions to fill in the details.`;
+      isComplete = false;
+    }
   } else {
-    const result = await chatTurn(
-      history,
-      message,
-      member.name,
-      member.group.destination,
-    );
+    const result = await chatTurn(history, message, member.name, member.group.destination, sliders, constraints);
     agentReply = result.reply;
     isComplete = result.complete;
   }
 
-  // Persist both turns atomically — skip user message for the __init__ synthetic turn
   const messagesToCreate =
     message === '__init__'
       ? [{ memberId: member.id, role: ChatRole.ASSISTANT, content: agentReply }]
@@ -126,7 +203,6 @@ membersRouter.post('/:id/chat', async (req: Request, res: Response): Promise<voi
 
   await prisma.chatMessage.createMany({ data: messagesToCreate });
 
-  // Re-fetch full history for coverage calculation
   const updatedMessages = await prisma.chatMessage.findMany({
     where: { memberId: member.id },
     orderBy: { createdAt: 'asc' },
@@ -134,15 +210,12 @@ membersRouter.post('/:id/chat', async (req: Request, res: Response): Promise<voi
   const updatedHistory = dbMessagesToParams(updatedMessages);
   const coverage = detectCoverage(updatedHistory);
 
-  res.json({
-    reply: agentReply,
-    complete: isComplete,
-    coverage,
-  });
+  res.json({ reply: agentReply, complete: isComplete, coverage });
 });
 
 // ---------------------------------------------------------------------------
-// POST /members/:id/finalize-preferences — extract + save structured profile
+// POST /members/:id/finalize-preferences
+// Merges slider scores + chat nuance into the final locked PreferenceProfile.
 // ---------------------------------------------------------------------------
 
 membersRouter.post('/:id/finalize-preferences', async (req: Request, res: Response): Promise<void> => {
@@ -150,18 +223,81 @@ membersRouter.post('/:id/finalize-preferences', async (req: Request, res: Respon
   if (!member) return;
 
   if (member.preferenceStatus === 'COMPLETE') {
-    // Idempotent — return existing profile
     const profile = await prisma.preferenceProfile.findUnique({ where: { memberId: member.id } });
     res.json({ profile, alreadyComplete: true });
     return;
   }
 
-  if (member.chatMessages.length < 4) {
-    res.status(409).json({ error: 'Not enough conversation to extract preferences. Keep chatting!' });
+  const existingProfile = member.preferenceProfile as {
+    scores?: object;
+    priorities?: object;
+    sliderValues?: SliderValues;
+    constraintFields?: ConstraintFields;
+    chatNuance?: string;
+  } | null;
+
+  const history = dbMessagesToParams(member.chatMessages);
+
+  // If we have slider data, use that as the base and layer chat nuance on top.
+  if (existingProfile?.sliderValues && existingProfile?.constraintFields) {
+    const sliders     = existingProfile.sliderValues;
+    const constraints = existingProfile.constraintFields;
+
+    const baseScores     = scoresFromSliders(sliders, constraints);
+    const basePriorities = derivePriorities(sliders);
+
+    // Extract nuance from chat (may be empty if member skipped chat)
+    const { chatNuance, priorityOverrides } = await extractChatNuance(history);
+
+    // Merge priority overrides into base priorities (overrides win)
+    const mergedPriorities = {
+      mustHave:   [...new Set([...basePriorities.mustHave,   ...priorityOverrides.mustHave])],
+      niceToHave: [...new Set([...basePriorities.niceToHave, ...priorityOverrides.niceToHave])],
+      neutral:    [...new Set([...basePriorities.neutral,    ...priorityOverrides.neutral])],
+      avoid:      [...new Set([...basePriorities.avoid,      ...priorityOverrides.avoid])],
+    };
+
+    await prisma.$transaction(async tx => {
+      await tx.preferenceProfile.upsert({
+        where: { memberId: member.id },
+        create: {
+          memberId: member.id,
+          scores: baseScores,
+          priorities: mergedPriorities,
+          sliderValues: sliders as object,
+          constraintFields: constraints as object,
+          chatNuance,
+        },
+        update: {
+          scores: baseScores,
+          priorities: mergedPriorities,
+          chatNuance,
+        },
+      });
+
+      await tx.member.update({
+        where: { id: member.id },
+        data: { preferenceStatus: 'COMPLETE' },
+      });
+    });
+
+    res.json({
+      profile: {
+        scores: baseScores,
+        priorities: mergedPriorities,
+        sliderValues: sliders,
+        constraintFields: constraints,
+        chatNuance,
+      },
+    });
     return;
   }
 
-  const history = dbMessagesToParams(member.chatMessages);
+  // Fallback: pure-chat path (no sliders — keeps backward compat)
+  if (history.length < 4) {
+    res.status(409).json({ error: 'Not enough conversation to extract preferences.' });
+    return;
+  }
 
   let profile;
   try {
@@ -175,20 +311,11 @@ membersRouter.post('/:id/finalize-preferences', async (req: Request, res: Respon
   const { estimatedBudget, ...profileWithoutBudget } = profile;
 
   await prisma.$transaction(async tx => {
-    // Upsert in case of retry
     await tx.preferenceProfile.upsert({
       where: { memberId: member.id },
-      create: {
-        memberId: member.id,
-        scores: profileWithoutBudget.scores,
-        priorities: profileWithoutBudget.priorities,
-      },
-      update: {
-        scores: profileWithoutBudget.scores,
-        priorities: profileWithoutBudget.priorities,
-      },
+      create: { memberId: member.id, scores: profileWithoutBudget.scores, priorities: profileWithoutBudget.priorities },
+      update: { scores: profileWithoutBudget.scores, priorities: profileWithoutBudget.priorities },
     });
-
     await tx.member.update({
       where: { id: member.id },
       data: {

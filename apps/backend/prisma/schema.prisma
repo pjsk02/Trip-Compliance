@@ -18,10 +18,22 @@ enum GroupStatus {
   COMPLETE
 }
 
+enum VoteChoice {
+  APPROVE
+  REJECT
+}
+
 enum PreferenceStatus {
   PENDING
   IN_PROGRESS
   COMPLETE
+}
+
+enum FeedbackType {
+  ACTIVITY_REWEIGHT   // "more nightlife, less museums"
+  BUDGET_CUT          // "cut $200 per person"
+  TRANSPORT_VETO      // "I can't do the 6am flight"
+  PREFERENCE_CHANGE   // "I'm now vegetarian"
 }
 
 enum ChatRole {
@@ -33,6 +45,19 @@ enum ChatRole {
 // Models
 // ---------------------------------------------------------------------------
 
+model User {
+  id        String   @id @default(cuid())
+  googleId  String   @unique
+  email     String   @unique
+  name      String
+  avatarUrl String?
+  createdAt DateTime @default(now())
+
+  members Member[]
+
+  @@index([googleId])
+}
+
 model Group {
   id            String      @id @default(cuid())
   name          String
@@ -40,12 +65,15 @@ model Group {
   passwordHash  String
   destination   String?
   adminMemberId String?
-  status        GroupStatus @default(COLLECTING)
-  lockedBudget  Decimal?    @db.Decimal(12, 2)
-  createdAt     DateTime    @default(now())
+  status               GroupStatus @default(COLLECTING)
+  lockedBudget         Decimal?    @db.Decimal(12, 2)
+  submissionDeadline   DateTime?
+  createdAt            DateTime    @default(now())
 
-  members     Member[]
-  itineraries Itinerary[]
+  members       Member[]
+  itineraries   Itinerary[]
+  budgetRounds  BudgetRound[]
+  feedback      Feedback[]
 
   @@index([groupCode])
 }
@@ -53,6 +81,7 @@ model Group {
 model Member {
   id               String           @id @default(cuid())
   groupId          String
+  userId           String?
   name             String
   isAdmin          Boolean          @default(false)
   preferenceStatus PreferenceStatus @default(PENDING)
@@ -60,18 +89,27 @@ model Member {
   joinedAt         DateTime         @default(now())
 
   group             Group              @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user              User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
   preferenceProfile PreferenceProfile?
   chatMessages      ChatMessage[]
+  budgetVotes       BudgetVote[]
+  feedback          Feedback[]
 
   @@index([groupId])
+  @@index([userId])
 }
 
 model PreferenceProfile {
   id       String @id @default(cuid())
   memberId String @unique
 
-  scores     Json
-  priorities Json
+  scores           Json
+  priorities       Json
+  // Raw slider + constraint inputs (null until member submits the slider step)
+  sliderValues     Json?
+  constraintFields Json?
+  // Free-text nuance extracted from the clarifying chat
+  chatNuance       String?
 
   member Member @relation(fields: [memberId], references: [id], onDelete: Cascade)
 }
@@ -88,6 +126,41 @@ model ChatMessage {
   @@index([memberId, createdAt])
 }
 
+// Tracks one round of the Budget Bot negotiation loop.
+// A new round is created each time the bot proposes a number.
+model BudgetRound {
+  id        String   @id @default(cuid())
+  groupId   String
+  roundNum  Int      // 1-based, increments on each re-proposal
+  // Bot's proposed group total in USD
+  proposed  Decimal  @db.Decimal(12, 2)
+  // JSON blob: { median, min, max, rationale, strategy, tierSplit? }
+  analysis  Json
+  createdAt DateTime @default(now())
+
+  group Group        @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  votes BudgetVote[]
+
+  @@unique([groupId, roundNum])
+  @@index([groupId])
+}
+
+// One vote per member per round.
+model BudgetVote {
+  id       String     @id @default(cuid())
+  roundId  String
+  memberId String
+  choice   VoteChoice
+  comment  String?    // optional free-text pushback
+  castAt   DateTime   @default(now())
+
+  round  BudgetRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  member Member      @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([roundId, memberId])
+  @@index([roundId])
+}
+
 model Itinerary {
   id      String @id @default(cuid())
   groupId String
@@ -100,8 +173,29 @@ model Itinerary {
 
   createdAt DateTime @default(now())
 
-  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  group    Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  feedback Feedback[]
 
   @@unique([groupId, version])
   @@index([groupId])
+}
+
+// Feedback submitted by a member that triggers a new itinerary version.
+model Feedback {
+  id          String       @id @default(cuid())
+  groupId     String
+  itineraryId String       // which version this feedback is against
+  memberId    String       // who submitted it
+  rawText     String       // verbatim free-text from the user
+  type        FeedbackType // classified by Claude
+  targetAgent String       // which agent handles it: activity|budget|transportation|food
+  adjustment  Json         // structured adjustment payload passed to the agent
+  createdAt   DateTime     @default(now())
+
+  group     Group     @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  itinerary Itinerary @relation(fields: [itineraryId], references: [id], onDelete: Cascade)
+  member    Member    @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@index([groupId])
+  @@index([itineraryId])
 }
