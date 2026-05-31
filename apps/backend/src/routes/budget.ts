@@ -359,7 +359,7 @@ budgetRouter.post(
       },
     });
 
-    res.status(201).json({ round: serializeRound(newRound) });
+    res.status(201).json({ round: serializeRound(newRound, group.members.length) });
   },
 );
 
