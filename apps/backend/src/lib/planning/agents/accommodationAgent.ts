@@ -117,9 +117,10 @@ OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
       `  Group comfort preference (flightComfort proxy): ${comfortScore}/100`,
       `  Group budget-consciousness: ${budgetScore}/100`,
       `  Total budget per person: $${Math.round(perPersonBudget)}`,
-      `  Trip duration: ${ctx.tripDuration} nights`,
-      `  HARD CAP — accommodation share: $${accommodationSharePP}/person total (≈ $${maxPricePerNightPP}/person/night max)`,
+      `  Stay: ${nights} night${nights !== 1 ? 's' : ''} (check-in ${ctx.startDate}, check-out ${ctx.endDate})`,
+      `  HARD CAP — accommodation share: $${accommodationSharePP}/person for the stay (≈ $${maxPricePerNightPP}/person/night max)`,
       `  ALL three options MUST have pricePerNightPerPersonUsd ≤ $${maxPricePerNightPP}. Do NOT exceed this.`,
+      `  totalCostUsd = pricePerNightPerPersonUsd × ${ctx.groupSize} people × ${nights} nights`,
       mobilityMembers.length
         ? `  Accessibility required for: ${mobilityMembers.join(', ')}`
         : '  No mobility constraints.',
