@@ -221,7 +221,7 @@ function TrendChart({ points }: { points: TrendPoint[] }) {
   function toPath(key: string) {
     return points.map((p, i) => {
       const x = (i / (points.length - 1)) * w;
-      const val = (p as Record<string, number>)[key] ?? 0;
+      const val = (p as unknown as Record<string, number>)[key] ?? 0;
       const y = h - padY - (val * (h - padY * 2));
       return `${i === 0 ? 'M' : 'L'} ${x.toFixed(1)} ${y.toFixed(1)}`;
     }).join(' ');
