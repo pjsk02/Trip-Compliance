@@ -134,6 +134,10 @@ export function Dashboard() {
   const [nudgeMsg, setNudgeMsg] = useState('');
   const [deadline, setDeadline] = useState('');
   const [deadlineLoading, setDeadlineLoading] = useState(false);
+  const [datesStart, setDatesStart] = useState('');
+  const [datesEnd, setDatesEnd]     = useState('');
+  const [datesLoading, setDatesLoading] = useState(false);
+  const [datesError, setDatesError]   = useState('');
 
   // Confirmation dialogs
   const [confirmLeave, setConfirmLeave] = useState(false);
