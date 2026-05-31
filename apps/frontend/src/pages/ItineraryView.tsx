@@ -1190,12 +1190,102 @@ function ItineraryViewInner() {
       <PageHeader destination={destination} onBack={() => navigate(`/group/${code}`)} />
       <TabBar active={activeTab} onChange={setActiveTab} />
 
+      {/* Finalization guardrail warn dialog */}
+      {warnDialog && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+          <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl space-y-4">
+            <p className="text-sm font-semibold text-amber-700">⚠ Trip finalized with warnings</p>
+            <div className="space-y-1.5">
+              {warnDialog.warnings.map((w, i) => (
+                <p key={i} className="text-xs text-gray-600">• {w}</p>
+              ))}
+            </div>
+            <p className="text-xs text-gray-500">
+              The trip has been finalized. You can un-finalize and pick a different version if needed.
+            </p>
+            <div className="flex gap-2 pt-1">
+              <button
+                onClick={() => setWarnDialog(null)}
+                className="flex-1 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700 transition-colors"
+              >
+                Keep finalized
+              </button>
+              <button
+                onClick={() => { handleUnfinalize(); setWarnDialog(null); }}
+                className="flex-1 rounded-xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                Undo
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <main className="mx-auto max-w-2xl px-4 py-6 space-y-6">
         <VersionSwitcher
           versions={versions}
           active={activeVersion}
+          finalItineraryId={finalItineraryId}
           onChange={v => { setActiveVersion(v); setActiveTab('plan'); }}
         />
+
+        {/* Admin finalize panel */}
+        {isAdmin && (
+          <div className={`rounded-2xl border px-4 py-3 flex items-center justify-between gap-3 ${
+            currentItineraryIsFinal
+              ? 'border-emerald-200 bg-emerald-50'
+              : 'border-gray-100 bg-white shadow-sm'
+          }`}>
+            <div className="min-w-0">
+              {currentItineraryIsFinal ? (
+                <>
+                  <p className="text-xs font-semibold text-emerald-800">
+                    ✓ This is the final trip (v{activeVersion})
+                  </p>
+                  <p className="text-[10px] text-emerald-600 mt-0.5">
+                    Finalized {finalizedAt ? new Date(finalizedAt).toLocaleDateString(undefined, { dateStyle: 'medium' }) : ''}
+                  </p>
+                </>
+              ) : finalItineraryId ? (
+                <>
+                  <p className="text-xs font-semibold text-gray-700">
+                    Another version is finalized. Finalize v{activeVersion} instead?
+                  </p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">This will replace the current final version.</p>
+                </>
+              ) : (
+                <>
+                  <p className="text-xs font-semibold text-gray-700">Finalize this trip</p>
+                  <p className="text-[10px] text-gray-400 mt-0.5">
+                    Makes v{activeVersion} the official trip all members will see.
+                  </p>
+                </>
+              )}
+              {finalizeError && (
+                <p className="text-[10px] text-red-600 mt-1">{finalizeError}</p>
+              )}
+            </div>
+            <div className="flex gap-2 shrink-0">
+              {currentItineraryIsFinal ? (
+                <button
+                  onClick={handleUnfinalize}
+                  disabled={finalizeLoading}
+                  className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-medium text-gray-600 hover:bg-gray-50 disabled:opacity-50 transition-colors"
+                >
+                  {finalizeLoading ? '…' : 'Un-finalize'}
+                </button>
+              ) : (
+                <button
+                  onClick={() => itinerary && handleFinalize(itinerary.id)}
+                  disabled={finalizeLoading || !itinerary}
+                  className="rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                >
+                  {finalizeLoading ? '…' : finalItineraryId ? '✓ Set as final' : 'Finalize trip'}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
 
         {activeTab === 'plan' && (
           <div className="grid grid-cols-3 gap-3">
