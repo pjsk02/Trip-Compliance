@@ -14,7 +14,7 @@
  */
 
 import type { MemberPreferenceSnapshot } from './schemas';
-import type { ActivityCandidate } from './schemas';
+import type { ActivityCandidate, Meal } from './schemas';
 
 // ---------------------------------------------------------------------------
 // Types
