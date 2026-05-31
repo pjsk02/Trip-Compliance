@@ -14,6 +14,47 @@ export class AccommodationAgent extends BaseAgent<AccommodationProposal> {
     return AccommodationProposalSchema;
   }
 
+  protected safeDefault(ctx: PlanningContext): AccommodationProposal {
+    const perPersonPerNight = Math.round((ctx.lockedBudget / ctx.groupSize / ctx.tripDuration) * 0.35);
+    return {
+      agent: 'accommodation',
+      options: [
+        {
+          name: 'Budget guesthouse',
+          type: 'guesthouse',
+          pricePerNightPerPersonUsd: Math.round(perPersonPerNight * 0.6),
+          totalCostUsd: Math.round(perPersonPerNight * 0.6) * ctx.groupSize * ctx.tripDuration,
+          pros: ['Affordable', 'Central location'],
+          cons: ['Basic amenities'],
+          accessibilityFriendly: false,
+          groupFitScore: 55,
+        },
+        {
+          name: 'Mid-range hotel',
+          type: 'hotel',
+          pricePerNightPerPersonUsd: perPersonPerNight,
+          totalCostUsd: perPersonPerNight * ctx.groupSize * ctx.tripDuration,
+          pros: ['Comfortable', 'Good location', 'Breakfast included'],
+          cons: ['Standard amenities'],
+          accessibilityFriendly: true,
+          groupFitScore: 70,
+        },
+        {
+          name: 'Boutique hotel',
+          type: 'boutique',
+          pricePerNightPerPersonUsd: Math.round(perPersonPerNight * 1.5),
+          totalCostUsd: Math.round(perPersonPerNight * 1.5) * ctx.groupSize * ctx.tripDuration,
+          pros: ['Premium experience', 'Great service'],
+          cons: ['Higher cost'],
+          accessibilityFriendly: true,
+          groupFitScore: 80,
+        },
+      ],
+      recommended: 1,
+      rationale: 'Mid-range hotel offers the best balance of comfort and budget for the group.',
+    };
+  }
+
   protected systemPrompt(): string {
     return `You are the TripSync Accommodation Planner agent. You propose exactly 3 accommodation options with a recommended pick.
 
