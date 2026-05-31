@@ -127,7 +127,7 @@ export abstract class BaseAgent<TProposal> {
     return null;
   }
 
-  async propose(ctx: PlanningContext): Promise<TProposal> {
+  async propose(ctx: PlanningContext, onEvent?: OnEvent): Promise<TProposal> {
     // ── Attempt 1: normal call ─────────────────────────────────────────────
     const response = await getClient().messages.create({
       model: model(),
