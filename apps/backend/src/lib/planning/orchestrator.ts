@@ -121,6 +121,28 @@ async function _runOrchestratorImpl(
 ): Promise<OrchestratorResult> {
   const start = Date.now();
   const emit  = onEvent ?? (() => {});
+  const timeline: AgentTimelineEntry[] = [];
+
+  /** Record a completed agent step onto the timeline. */
+  function recordStep<T>(
+    agent: string,
+    wave: 1 | 2 | 3,
+    startedAt: number,
+    result: T,
+    summaryFn: (r: T) => string,
+  ): T {
+    const completedAt = Date.now();
+    timeline.push({
+      agent,
+      wave,
+      startedAt: startedAt - start,
+      completedAt: completedAt - start,
+      durationMs: completedAt - startedAt,
+      status: 'ok',
+      outputSummary: summaryFn(result),
+    });
+    return result;
+  }
 
   // Apply buffer: agents plan against a slightly reduced budget so the final
   // itinerary stays within the real locked budget even if estimates run high.
@@ -128,47 +150,57 @@ async function _runOrchestratorImpl(
   const agentCtx: PlanningContext = { ...ctx, lockedBudget: bufferedBudget };
 
   // ── Wave 1: independent agents (plan against buffered budget) ────────────
-  // Emit agent_started for all four before launching them in parallel so the
-  // UI shows all agents thinking at once; each emits agent_proposal as it lands.
   (['activity', 'food', 'accommodation', 'transportation'] as const).forEach(a =>
     emit({ type: 'agent_started', agent: a }),
   );
 
+  const w1Start = Date.now();
   const [activityRaw, foodRaw, accommodation, transportation] = await Promise.all([
-    new ActivityAgent().propose(agentCtx, emit).then(r => {
+    (() => { const t = Date.now(); return new ActivityAgent().propose(agentCtx, emit).then(r => {
       emit({ type: 'agent_proposal', agent: 'activity', ...activityStatement(r, ctx) });
-      return r;
-    }),
-    new FoodAgent().propose(agentCtx, emit).then(r => {
+      return recordStep('activity', 1, t, r, p => `${p.candidates.length} candidates, top: "${p.candidates[0]?.name ?? 'n/a'}"`);
+    }); })(),
+    (() => { const t = Date.now(); return new FoodAgent().propose(agentCtx, emit).then(r => {
       emit({ type: 'agent_proposal', agent: 'food', ...foodStatement(r, ctx) });
-      return r;
-    }),
-    new AccommodationAgent().propose(agentCtx, emit).then(r => {
+      return recordStep('food', 1, t, r, p => `${p.mealPlan.length} meals, $${Math.round(p.totalFoodCostPerPersonUsd)}/person`);
+    }); })(),
+    (() => { const t = Date.now(); return new AccommodationAgent().propose(agentCtx, emit).then(r => {
       emit({ type: 'agent_proposal', agent: 'accommodation', ...accommodationStatement(r) });
-      return r;
-    }),
-    new TransportationAgent().propose(agentCtx, emit).then(r => {
+      return recordStep('accommodation', 1, t, r, p => `rec: "${p.options[p.recommended]?.name ?? 'n/a'}" $${p.options[p.recommended]?.pricePerNightPerPersonUsd ?? 0}/night/pp`);
+    }); })(),
+    (() => { const t = Date.now(); return new TransportationAgent().propose(agentCtx, emit).then(r => {
       emit({ type: 'agent_proposal', agent: 'transportation', ...transportationStatement(r) });
-      return r;
-    }),
+      return recordStep('transportation', 1, t, r, p => `${p.legs.length} legs, $${Math.round(p.totalTransportCostPerPersonUsd)}/person`);
+    }); })(),
   ]);
 
   // ── Wave 2: Budget + Logistics ────────────────────────────────────────────
   emit({ type: 'agent_started', agent: 'budget' });
+  const budgetStart = Date.now();
   const [budgetRaw, logistics] = await Promise.all([
     new BudgetAgent()
       .withInput({ ctx: agentCtx, activity: activityRaw, food: foodRaw, accommodation, transportation, realLockedBudget: ctx.lockedBudget })
       .propose(agentCtx, emit)
       .then(r => {
         emit({ type: 'agent_proposal', agent: 'budget', ...budgetStatement(r, ctx) });
-        return r;
+        return recordStep('budget', 2, budgetStart, r, p => `$${p.totalEstimatedUsd} total, ${p.overrunFlag ? 'OVER budget' : `$${Math.round(p.surplus)} surplus`}`);
       }),
     Promise.resolve(logisticsStub()),
   ]);
 
   // ── Wave 3: Negotiate conflicts ───────────────────────────────────────────
+  const negStart = Date.now();
   const tracedNegotiate = wop('pipeline:negotiate', negotiate);
   const negotiation = await tracedNegotiate(agentCtx, activityRaw, foodRaw, budgetRaw, maxNegotiationRounds, emit);
+  timeline.push({
+    agent: 'negotiation',
+    wave: 3,
+    startedAt: negStart - start,
+    completedAt: Date.now() - start,
+    durationMs: Date.now() - negStart,
+    status: 'ok',
+    outputSummary: `${negotiation.rounds.length} round(s), ${negotiation.rounds.reduce((s, r) => s + r.resolutions.length, 0)} resolution(s)`,
+  });
 
   const activity = negotiation.activity;
   const food     = negotiation.food;
@@ -184,12 +216,22 @@ async function _runOrchestratorImpl(
     : budgetRaw;
 
   // ── Consensus — score against the REAL locked budget (not buffered) ───────
+  const consensusStart = Date.now();
   const tracedConsensus = wop('pipeline:consensus', async (input: Parameters<typeof runConsensus>[0]) => runConsensus(input));
   const consensus = await tracedConsensus({
     candidates:      buildCandidates(activity, food, budget, agentCtx),
     members:         ctx.members,
     lockedBudgetUsd: ctx.lockedBudget,
     tripDuration:    ctx.tripDuration,
+  });
+  timeline.push({
+    agent: 'consensus',
+    wave: 3,
+    startedAt: consensusStart - start,
+    completedAt: Date.now() - start,
+    durationMs: Date.now() - consensusStart,
+    status: 'ok',
+    outputSummary: `status=${consensus.status}, winner score=${consensus.winner?.totalScore ?? 'n/a'}`,
   });
 
   // Emit orchestrator decision with dimension scores from the winning scorecard
@@ -207,11 +249,25 @@ async function _runOrchestratorImpl(
     } : { satisfaction: 0, fairness: 0, budget: 0, feasibility: 0, diversity: 0 },
   });
 
+  // ── Build decision audit trail ────────────────────────────────────────────
+  const decisionAudit = buildDecisionAudit(consensus, activityRaw, food, budget, ctx);
+
   // ── Assemble final itinerary ──────────────────────────────────────────────
   const tracedAssemble = wop('pipeline:assemble', assembleItinerary);
   const itinerary = await tracedAssemble(
     ctx, activity, food, accommodation, transportation, budget, consensus, negotiation,
   );
+
+  // Attach observability metadata
+  itinerary.agentTimeline = timeline;
+  itinerary.decisionAudit = decisionAudit;
+  if (isWeaveEnabled()) {
+    const project = process.env.WANDB_PROJECT ?? 'tripsync';
+    const entity  = process.env.WANDB_ENTITY ?? '';
+    itinerary.weaveTraceUrl = entity
+      ? `https://wandb.ai/${entity}/${project}/weave`
+      : `https://wandb.ai/${project}/weave`;
+  }
 
   return {
     context: ctx,
@@ -226,6 +282,74 @@ async function _runOrchestratorImpl(
     itinerary,
     durationMs: Date.now() - start,
   };
+}
+
+// ---------------------------------------------------------------------------
+// Decision audit builder
+// ---------------------------------------------------------------------------
+
+function buildDecisionAudit(
+  consensus: ReturnType<typeof runConsensus>,
+  activity: ActivityProposal,
+  food: ReturnType<typeof logisticsStub> extends never ? never : Parameters<typeof assembleItinerary>[2],
+  budget: BudgetProposal,
+  ctx: PlanningContext,
+): DecisionAuditEntry[] {
+  const audit: DecisionAuditEntry[] = [];
+  const winner = consensus.winner ?? consensus.bestAvailable;
+
+  // Activity selection audit
+  if (winner && activity.candidates.length > 0) {
+    const chosen = winner.candidate.activities;
+    const rejected = activity.candidates.filter(c => !chosen.includes(c));
+    if (rejected.length > 0) {
+      audit.push({
+        decision: 'Activity selection',
+        chosen: chosen.map(a => a.name).join(', '),
+        rejected: rejected.map(a => `${a.name} (score ${a.groupUtilityScore})`),
+        reason: `Top ${chosen.length} candidates by group utility score selected; lower-scored or over-budget activities excluded.`,
+        scores: Object.fromEntries(activity.candidates.map(a => [a.name, a.groupUtilityScore])),
+      });
+    }
+  }
+
+  // Consensus outcome audit
+  if (consensus.allScorecards.length > 0) {
+    const best = consensus.winner ?? consensus.bestAvailable;
+    const others = consensus.allScorecards.filter(s => s !== best);
+    audit.push({
+      decision: 'Consensus selection',
+      chosen: best
+        ? `Score ${best.totalScore}/100 (satisfaction ${best.dimensions.userSatisfaction.raw}%, fairness ${best.dimensions.fairness.raw}, budget ${best.dimensions.budgetCompliance.raw})`
+        : 'No winner — admin override required',
+      rejected: others.map(s => `Candidate score ${s.totalScore}/100`),
+      reason: consensus.status === 'OK'
+        ? 'Highest-scoring Pareto-optimal candidate that passes the fairness floor and budget gate.'
+        : consensus.status === 'ADMIN_OVERRIDE_REQUIRED'
+        ? 'No candidate passed all quality gates (fairness floor + budget). Admin review required.'
+        : 'Best available candidate selected (fairness floor not met).',
+      scores: best ? {
+        userSatisfaction:  best.dimensions.userSatisfaction.raw,
+        fairness:          best.dimensions.fairness.raw,
+        budgetCompliance:  best.dimensions.budgetCompliance.raw,
+        feasibility:       best.dimensions.feasibility.raw,
+        diversity:         best.dimensions.diversity.raw,
+        total:             best.totalScore,
+      } : {},
+    });
+  }
+
+  // Budget audit
+  audit.push({
+    decision: 'Budget compliance',
+    chosen: budget.overrunFlag
+      ? `Over budget by $${Math.abs(budget.surplus)} — substitutions recommended`
+      : `Within budget — $${budget.surplus} surplus`,
+    rejected: budget.substitutions.map(s => `Replace "${s.replace}" with "${s.with}" (saves $${s.savingUsd})`),
+    reason: `Total estimated $${budget.totalEstimatedUsd} vs locked $${budget.lockedBudgetUsd} for ${ctx.groupSize} people.`,
+  });
+
+  return audit;
 }
 
 export { type PlanningContext } from './schemas';
