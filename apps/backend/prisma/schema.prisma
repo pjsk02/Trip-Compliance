@@ -70,6 +70,10 @@ model Group {
   submissionDeadline   DateTime?
   createdAt            DateTime    @default(now())
 
+  // Trip dates — set at creation, editable by admin before planning is locked
+  startDate  DateTime?
+  endDate    DateTime?
+
   // Finalization — admin picks the official version of the trip
   finalItineraryId  String?   @unique
   finalizedAt       DateTime?
