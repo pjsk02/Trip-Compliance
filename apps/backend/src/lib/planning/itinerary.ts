@@ -137,10 +137,18 @@ export interface FinalItinerary {
 // Day planner — slots activities and meals into morning/afternoon/evening
 // ---------------------------------------------------------------------------
 
+/** ISO date string for day N of the trip (1-based), given the startDate. */
+function dayDate(startDate: string, dayIndex: number): string {
+  const d = new Date(startDate);
+  d.setUTCDate(d.getUTCDate() + dayIndex);
+  return d.toISOString().slice(0, 10);
+}
+
 function slotActivitiesAndMeals(
   activities: ActivityCandidate[],
   meals: Meal[],
-  tripDuration: number,
+  tripDays: number,
+  startDate: string,
   members: PlanningContext['members'],
 ): DayPlan[] {
   const days: DayPlan[] = [];
@@ -148,22 +156,27 @@ function slotActivitiesAndMeals(
   // Spread activities across days (round-robin, morning first then afternoon)
   const activityQueue = [...activities];
 
-  for (let day = 1; day <= tripDuration; day++) {
+  for (let day = 1; day <= tripDays; day++) {
     const blocks: ScheduledBlock[] = [];
     const dayMeals = meals.filter(m => m.day === day);
+    const isArrival   = day === 1;
+    const isDeparture = day === tripDays;
 
-    // Morning: first activity of the day (or breakfast if none)
+    // Arrival/departure days get at most 1 activity (lighter schedule)
     const morningActivity = activityQueue.shift();
 
     const breakfast = dayMeals.find(m => m.type === 'breakfast');
     if (breakfast) {
       blocks.push(mealToBlock('morning', breakfast, members));
-    } else if (morningActivity) {
+    } else if (morningActivity && !isArrival) {
+      // On arrival day, skip morning activity — group is traveling
       blocks.push(activityToBlock('morning', morningActivity, members));
+    } else if (morningActivity && isArrival) {
+      activityQueue.unshift(morningActivity); // put back — don't use on arrival morning
     }
 
-    // Afternoon: second activity or lunch
-    const afternoonActivity = activityQueue.shift();
+    // Afternoon: skip activity on departure day (group is packing/traveling)
+    const afternoonActivity = isDeparture ? undefined : activityQueue.shift();
     const lunch = dayMeals.find(m => m.type === 'lunch');
 
     if (lunch) {
@@ -171,22 +184,21 @@ function slotActivitiesAndMeals(
     }
     if (afternoonActivity) {
       blocks.push(activityToBlock('afternoon', afternoonActivity, members));
-    } else if (!lunch) {
-      // Free afternoon if no activity and no lunch slot
+    } else if (!lunch && !isDeparture) {
       blocks.push({
         timeBlock: 'afternoon',
         type: 'free',
-        title: 'Free time / explore',
-        venue: 'Neighbourhood exploration',
+        title: isArrival ? 'Arrive & settle in' : 'Free time / explore',
+        venue: isArrival ? 'Hotel / accommodation' : 'Neighbourhood exploration',
         location: 'Local area',
         estimatedCostPerPersonUsd: 0,
         servesPreferences: {},
       });
     }
 
-    // Evening: dinner
+    // Evening: dinner (skip on departure day)
     const dinner = dayMeals.find(m => m.type === 'dinner');
-    if (dinner) {
+    if (dinner && !isDeparture) {
       blocks.push(mealToBlock('evening', dinner, members));
     }
 
@@ -195,7 +207,8 @@ function slotActivitiesAndMeals(
 
     days.push({
       day,
-      theme: buildDayTheme(blocks),
+      date: dayDate(startDate, day - 1),  // real ISO calendar date
+      theme: buildDayTheme(blocks, isArrival, isDeparture),
       blocks,
       dayTotalCostPerPersonUsd: Math.round(dayTotal * 100) / 100,
     });
