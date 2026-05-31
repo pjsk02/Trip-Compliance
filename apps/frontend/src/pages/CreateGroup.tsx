@@ -131,6 +131,42 @@ export function CreateGroup() {
               value={form.destination}
               onChange={e => setForm(f => ({ ...f, destination: e.target.value }))}
             />
+            {/* Trip dates */}
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-gray-700">
+                Trip dates <span className="font-normal text-gray-400">(optional — you can add later)</span>
+              </label>
+              <div className="flex gap-2 items-start">
+                <div className="flex-1">
+                  <input
+                    type="date"
+                    min={today}
+                    value={form.startDate}
+                    onChange={e => setForm(f => ({ ...f, startDate: e.target.value }))}
+                    className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="Start"
+                  />
+                  {errors.startDate && <p className="mt-0.5 text-xs text-red-500">{errors.startDate}</p>}
+                </div>
+                <span className="mt-2.5 text-sm text-gray-400 shrink-0">→</span>
+                <div className="flex-1">
+                  <input
+                    type="date"
+                    min={form.startDate || today}
+                    value={form.endDate}
+                    onChange={e => setForm(f => ({ ...f, endDate: e.target.value }))}
+                    className="w-full rounded-xl border border-gray-300 px-3 py-2.5 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    placeholder="End"
+                  />
+                  {errors.endDate && <p className="mt-0.5 text-xs text-red-500">{errors.endDate}</p>}
+                </div>
+              </div>
+              {tripDays && tripDays > 0 && (
+                <p className="text-xs text-indigo-600 font-medium">
+                  {tripDays} day{tripDays !== 1 ? 's' : ''} · {tripDays - 1} night{tripDays - 1 !== 1 ? 's' : ''}
+                </p>
+              )}
+            </div>
             {/* Password row with regenerate */}
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-gray-700">Group password</label>
