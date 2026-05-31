@@ -40,26 +40,34 @@ async function loadGroupForMember(req: Request, res: Response) {
 }
 
 /** Safe public round shape — never exposes individual budgets. */
-function serializeRound(round: {
-  id: string;
-  roundNum: number;
-  proposed: { toNumber(): number } | number;
-  analysis: unknown;
-  createdAt: Date;
-  votes: Array<{
+function serializeRound(
+  round: {
     id: string;
-    memberId: string;
-    choice: VoteChoice;
-    comment: string | null;
-    castAt: Date;
-    member: { name: string };
-  }>;
-}) {
+    roundNum: number;
+    proposed: { toNumber(): number } | number;
+    analysis: unknown;
+    createdAt: Date;
+    votes: Array<{
+      id: string;
+      memberId: string;
+      choice: VoteChoice;
+      comment: string | null;
+      castAt: Date;
+      member: { name: string };
+    }>;
+  },
+  liveMemberCount: number,
+) {
   const analysis = round.analysis as unknown as BudgetAnalysis;
+  const proposed = typeof round.proposed === 'number' ? round.proposed : round.proposed.toNumber();
+  // perPerson is authoritative: stored in the analysis blob (computed in code at proposal time).
+  // If somehow missing from an old record, recompute from live member count rather than trust LLM.
+  const perPerson = analysis.perPerson ?? (liveMemberCount > 0 ? proposed / liveMemberCount : 0);
   return {
     id:        round.id,
     roundNum:  round.roundNum,
-    proposed:  typeof round.proposed === 'number' ? round.proposed : round.proposed.toNumber(),
+    proposed,
+    perPerson,
     rationale: analysis.rationale,
     summary:   analysis.summary,
     strategy:  analysis.strategy,
