@@ -70,6 +70,12 @@ export function BudgetNegotiation() {
   const [lockLoading,      setLockLoading]       = useState(false);
   const [actionError,      setActionError]       = useState('');
 
+  // Retroactive budget entry state
+  const [myBudgetInput,   setMyBudgetInput]   = useState('');
+  const [budgetSaving,    setBudgetSaving]     = useState(false);
+  const [budgetSaved,     setBudgetSaved]      = useState(false);
+  const [budgetError,     setBudgetError]      = useState('');
+
   const fetchState = useCallback(async () => {
     if (!code) return;
     try {
@@ -102,6 +108,24 @@ export function BudgetNegotiation() {
     const interval = setInterval(fetchState, 8_000);
     return () => clearInterval(interval);
   }, [session, fetchState, navigate]);
+
+  async function handleSubmitBudget() {
+    if (!session || !myBudgetInput) return;
+    const amount = Number(myBudgetInput);
+    if (!amount || amount <= 0) { setBudgetError('Enter a valid positive amount.'); return; }
+    setBudgetSaving(true);
+    setBudgetError('');
+    try {
+      await api.submitMemberBudget(session.memberId, amount);
+      setBudgetSaved(true);
+      setMyBudgetInput('');
+      await fetchState(); // refresh membersWithoutBudget
+    } catch (err) {
+      setBudgetError(err instanceof ApiError ? err.message : 'Could not save budget.');
+    } finally {
+      setBudgetSaving(false);
+    }
+  }
 
   async function handleAnalyze() {
     if (!code) return;
@@ -203,10 +227,13 @@ export function BudgetNegotiation() {
     );
   }
 
-  const pastRounds    = state.rounds.slice(0, -1); // all except the last
-  const currentRound  = state.currentRound;
-  const isAdmin       = session?.isAdmin ?? false;
-  const myMemberId    = session?.memberId ?? '';
+  const pastRounds             = state.rounds.slice(0, -1); // all except the last
+  const currentRound           = state.currentRound;
+  const isAdmin                = session?.isAdmin ?? false;
+  const myMemberId             = session?.memberId ?? '';
+  const membersWithoutBudget   = state.membersWithoutBudget ?? [];
+  const allBudgetsIn           = membersWithoutBudget.length === 0;
+  const iNeedBudget            = membersWithoutBudget.some(m => m.id === myMemberId) && !budgetSaved;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -237,6 +264,59 @@ export function BudgetNegotiation() {
           <div className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-600">{actionError}</div>
         )}
 
+        {/* Retroactive budget entry — shown to any member who is missing their budget */}
+        {iNeedBudget && (
+          <div className="rounded-2xl border border-amber-200 bg-amber-50 px-5 py-5 space-y-3">
+            <div className="flex items-start gap-3">
+              <span className="text-xl leading-none mt-0.5">💰</span>
+              <div>
+                <p className="text-sm font-semibold text-amber-900">Your trip budget is needed</p>
+                <p className="mt-0.5 text-xs text-amber-700">
+                  Budget negotiation can't start until every member has submitted a private budget.
+                  Enter yours below — it's never shown to other members.
+                </p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <div className="flex-1">
+                <input
+                  type="number"
+                  min={1}
+                  placeholder="Your total trip budget (USD)"
+                  value={myBudgetInput}
+                  onChange={e => { setMyBudgetInput(e.target.value); setBudgetError(''); }}
+                  className="w-full rounded-xl border border-amber-300 bg-white px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={handleSubmitBudget}
+                disabled={budgetSaving || !myBudgetInput}
+                className="shrink-0 rounded-xl bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-500 transition disabled:opacity-50"
+              >
+                {budgetSaving ? '…' : 'Submit'}
+              </button>
+            </div>
+            {budgetError && <p className="text-xs text-red-600">{budgetError}</p>}
+            {budgetSaved && <p className="text-xs text-emerald-700 font-medium">Budget saved!</p>}
+          </div>
+        )}
+
+        {/* Members still missing budgets — names only, shown while any are pending */}
+        {!currentRound && !allBudgetsIn && membersWithoutBudget.some(m => m.id !== myMemberId) && (
+          <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 space-y-1.5">
+            <p className="text-xs font-semibold text-gray-600">Waiting for budgets from:</p>
+            <div className="flex flex-wrap gap-1.5">
+              {membersWithoutBudget.filter(m => m.id !== myMemberId).map(m => (
+                <span key={m.id} className="rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-600">
+                  {m.name}
+                </span>
+              ))}
+            </div>
+            <p className="text-[10px] text-gray-400">Budget amounts are private — only the planner can see them.</p>
+          </div>
+        )}
+
         {/* No proposal yet — admin sees the trigger button */}
         {!currentRound && (
           <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 px-5 py-6 space-y-4 text-center">
@@ -246,29 +326,40 @@ export function BudgetNegotiation() {
             <div>
               <h2 className="text-base font-bold text-indigo-900">Budget Bot is ready</h2>
               <p className="mt-1 text-sm text-indigo-700">
-                All preferences are in. The Budget Bot will analyse the group's budgets and
-                propose a fair group total — without revealing anyone's private number.
+                The Budget Bot will analyse the group's budgets and propose a fair group total —
+                without revealing anyone's private number.
               </p>
             </div>
             {isAdmin ? (
-              <button
-                type="button"
-                onClick={handleAnalyze}
-                disabled={analyzeLoading}
-                className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white hover:bg-indigo-500 transition disabled:opacity-50"
-              >
-                {analyzeLoading ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                    </svg>
-                    Analysing budgets…
-                  </span>
-                ) : 'Run budget analysis →'}
-              </button>
+              <>
+                {!allBudgetsIn && (
+                  <p className="text-xs text-amber-700 font-medium">
+                    Waiting on {membersWithoutBudget.length} member{membersWithoutBudget.length !== 1 ? 's' : ''} to submit their budget before analysis can run.
+                  </p>
+                )}
+                <button
+                  type="button"
+                  onClick={handleAnalyze}
+                  disabled={analyzeLoading || !allBudgetsIn}
+                  className="w-full rounded-xl bg-indigo-600 py-3 text-sm font-semibold text-white hover:bg-indigo-500 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {analyzeLoading ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                      </svg>
+                      Analysing budgets…
+                    </span>
+                  ) : allBudgetsIn ? 'Run budget analysis →' : 'Waiting for all budgets…'}
+                </button>
+              </>
             ) : (
-              <p className="text-sm text-indigo-600">Waiting for the organizer to start the analysis…</p>
+              <p className="text-sm text-indigo-600">
+                {allBudgetsIn
+                  ? 'Waiting for the organizer to start the analysis…'
+                  : 'Waiting for all members to submit their budget…'}
+              </p>
             )}
           </div>
         )}

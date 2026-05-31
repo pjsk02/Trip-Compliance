@@ -243,6 +243,16 @@ membersRouter.post('/:id/finalize-preferences', async (req: Request, res: Respon
     const sliders     = existingProfile.sliderValues;
     const constraints = existingProfile.constraintFields;
 
+    // Require a private budget before allowing COMPLETE — budget negotiation depends on it.
+    const hasBudget = member.privateBudget !== null && Number(member.privateBudget) > 0;
+    if (!hasBudget) {
+      res.status(422).json({
+        error: 'Please enter your total trip budget before finalizing. Go back and fill in the "Total trip budget" field.',
+        code: 'BUDGET_REQUIRED',
+      });
+      return;
+    }
+
     const baseScores     = scoresFromSliders(sliders, constraints);
     const basePriorities = derivePriorities(sliders);
 
@@ -294,6 +304,15 @@ membersRouter.post('/:id/finalize-preferences', async (req: Request, res: Respon
   }
 
   // Fallback: pure-chat path (no sliders — keeps backward compat)
+  const hasBudgetFallback = member.privateBudget !== null && Number(member.privateBudget) > 0;
+  if (!hasBudgetFallback) {
+    res.status(422).json({
+      error: 'Please enter your total trip budget before finalizing. Go back and fill in the "Total trip budget" field.',
+      code: 'BUDGET_REQUIRED',
+    });
+    return;
+  }
+
   if (history.length < 4) {
     res.status(409).json({ error: 'Not enough conversation to extract preferences.' });
     return;
@@ -326,4 +345,33 @@ membersRouter.post('/:id/finalize-preferences', async (req: Request, res: Respon
   });
 
   res.json({ profile: profileWithoutBudget });
+});
+
+// ---------------------------------------------------------------------------
+// PATCH /members/:id/budget
+// Lets a member set (or update) their own private budget — used on the
+// Budget Negotiation screen when privateBudget was not captured during prefs.
+// ---------------------------------------------------------------------------
+
+const BudgetBodySchema = z.object({
+  totalBudget: z.number().positive({ message: 'Budget must be a positive number' }),
+});
+
+membersRouter.patch('/:id/budget', async (req: Request, res: Response): Promise<void> => {
+  const parsed = BudgetBodySchema.safeParse(req.body);
+  if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
+
+  const member = await prisma.member.findUnique({ where: { id: req.params.id } });
+  if (!member) { res.status(404).json({ error: 'Member not found' }); return; }
+  if (member.id !== req.member!.memberId) {
+    res.status(403).json({ error: 'You can only update your own budget' });
+    return;
+  }
+
+  await prisma.member.update({
+    where: { id: member.id },
+    data: { privateBudget: parsed.data.totalBudget },
+  });
+
+  res.json({ ok: true });
 });

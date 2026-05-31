@@ -208,6 +208,8 @@ export function SliderPanel({
     onConstraintChange({ ...constraints, dietaryRestrictions: next });
   }
 
+  const budgetMissing = !constraints.totalBudget || constraints.totalBudget <= 0;
+
   const constraintsFilled =
     constraints.dietaryRestrictions.length > 0 ||
     constraints.hardBudgetCap !== undefined ||
@@ -262,6 +264,34 @@ export function SliderPanel({
           leftLabel="Spend freely"
           rightLabel="Watch every dollar"
         />
+      </div>
+
+      {/* Total trip budget — required, always visible */}
+      <div className={`rounded-2xl border bg-white p-4 space-y-2 ${budgetMissing ? 'border-red-300 ring-1 ring-red-200' : 'border-gray-100'}`}>
+        <div className="flex items-center gap-2">
+          <span className="text-base leading-none">💰</span>
+          <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500">Your Trip Budget</h3>
+          {budgetMissing && (
+            <span className="rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">required</span>
+          )}
+        </div>
+        <label className="block text-sm font-medium text-gray-800">
+          Total trip budget (USD) <span className="text-red-500">*</span>
+        </label>
+        <input
+          type="number"
+          min={1}
+          placeholder="e.g. 3000"
+          value={constraints.totalBudget ?? ''}
+          onChange={e => onConstraintChange({ ...constraints, totalBudget: e.target.value ? Number(e.target.value) : undefined })}
+          className={`w-full rounded-xl border px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
+            budgetMissing ? 'border-red-300 bg-red-50' : 'border-gray-300'
+          }`}
+        />
+        <p className="text-[10px] text-gray-400">Private — only used by the AI planner, never shown to other members</p>
+        {budgetMissing && (
+          <p className="text-xs font-medium text-red-600">Budget is required before you can submit preferences.</p>
+        )}
       </div>
 
       {/* Dietary + alcohol (always visible) */}
@@ -345,30 +375,17 @@ export function SliderPanel({
 
         {showConstraints && (
           <div className="space-y-4 pt-1">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">Hard budget cap (USD)</label>
-                <input
-                  type="number"
-                  min={0}
-                  placeholder="e.g. 3000"
-                  value={constraints.hardBudgetCap ?? ''}
-                  onChange={e => onConstraintChange({ ...constraints, hardBudgetCap: e.target.value ? Number(e.target.value) : undefined })}
-                  className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-              <div>
-                <label className="mb-1 block text-xs font-medium text-gray-700">Total trip budget (private, USD)</label>
-                <input
-                  type="number"
-                  min={0}
-                  placeholder="e.g. 5000"
-                  value={constraints.totalBudget ?? ''}
-                  onChange={e => onConstraintChange({ ...constraints, totalBudget: e.target.value ? Number(e.target.value) : undefined })}
-                  className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <p className="mt-0.5 text-[10px] text-gray-400">Only seen by the AI planner, never shown to others</p>
-              </div>
+            <div>
+              <label className="mb-1 block text-xs font-medium text-gray-700">Hard budget cap (USD)</label>
+              <input
+                type="number"
+                min={0}
+                placeholder="e.g. 3000"
+                value={constraints.hardBudgetCap ?? ''}
+                onChange={e => onConstraintChange({ ...constraints, hardBudgetCap: e.target.value ? Number(e.target.value) : undefined })}
+                className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <p className="mt-0.5 text-[10px] text-gray-400">Absolute maximum — planner will not exceed this</p>
             </div>
 
             {([
@@ -396,10 +413,15 @@ export function SliderPanel({
       <PriorityPreview priorities={priorities} />
 
       {/* Save button */}
+      {budgetMissing && (
+        <p className="text-center text-xs text-red-600 font-medium -mb-2">
+          Enter your trip budget above to continue.
+        </p>
+      )}
       <button
         type="button"
         onClick={onSave}
-        disabled={saving}
+        disabled={saving || budgetMissing}
         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-indigo-600 py-3 text-sm font-semibold text-white transition hover:bg-indigo-500 disabled:opacity-50 disabled:pointer-events-none"
       >
         {saving && (

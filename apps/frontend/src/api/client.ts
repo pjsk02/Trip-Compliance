@@ -128,6 +128,10 @@ export const api = {
     );
   },
 
+  submitMemberBudget(memberId: string, totalBudget: number) {
+    return request<{ ok: boolean }>('PATCH', `/members/${memberId}/budget`, { totalBudget }, 'member');
+  },
+
   // -- Budget Negotiation (Layer 3) -----------------------------------------
 
   getBudgetState(code: string) {

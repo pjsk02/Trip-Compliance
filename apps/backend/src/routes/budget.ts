@@ -102,12 +102,18 @@ budgetRouter.get('/:code/budget', async (req: Request, res: Response): Promise<v
 
   const totalMembers = group.members.length;
 
+  // Names of members whose privateBudget is still missing — never expose amounts.
+  const membersWithoutBudget = group.members
+    .filter(m => !m.privateBudget || Number(m.privateBudget) <= 0)
+    .map(m => ({ id: m.id, name: m.name }));
+
   res.json({
-    groupStatus:   group.status,
-    lockedBudget:  group.lockedBudget ? Number(group.lockedBudget) : null,
+    groupStatus:          group.status,
+    lockedBudget:         group.lockedBudget ? Number(group.lockedBudget) : null,
     totalMembers,
-    rounds:        rounds.map(serializeRound),
-    currentRound:  rounds.length > 0 ? serializeRound(rounds[rounds.length - 1]) : null,
+    membersWithoutBudget,
+    rounds:               rounds.map(serializeRound),
+    currentRound:         rounds.length > 0 ? serializeRound(rounds[rounds.length - 1]) : null,
   });
 });
 

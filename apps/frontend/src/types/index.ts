@@ -243,11 +243,12 @@ export interface BudgetRound {
 }
 
 export interface BudgetStateResponse {
-  groupStatus:  GroupStatus;
-  lockedBudget: number | null;
-  totalMembers: number;
-  rounds:       BudgetRound[];
-  currentRound: BudgetRound | null;
+  groupStatus:          GroupStatus;
+  lockedBudget:         number | null;
+  totalMembers:         number;
+  membersWithoutBudget: Array<{ id: string; name: string }>;
+  rounds:               BudgetRound[];
+  currentRound:         BudgetRound | null;
 }
 
 export interface VoteResponse {
