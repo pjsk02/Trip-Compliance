@@ -23,6 +23,8 @@ import type { ActivityCandidate, Meal } from './schemas';
 export interface ItineraryCandidate {
   /** Activities selected for this itinerary (subset of ActivityProposal.candidates). */
   activities: ActivityCandidate[];
+  /** Meals from the food proposal — used for satisfaction scoring of food preferences. */
+  meals?: Meal[];
   totalCostPerPersonUsd: number;
   /** Rough duration accounting — hours of activities scheduled. */
   totalActivityHours: number;
