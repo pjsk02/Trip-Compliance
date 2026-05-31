@@ -24,6 +24,7 @@ app.use('/groups', groupsRouter);
 app.use('/members', membersRouter);
 app.use('/groups', budgetRouter);
 app.use('/groups', itineraryRouter);
+app.use('/eval', evalRouter);
 
 // Only start listening when run directly, not when imported by tests.
 if (require.main === module) {
