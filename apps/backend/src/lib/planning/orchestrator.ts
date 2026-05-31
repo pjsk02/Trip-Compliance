@@ -98,7 +98,7 @@ export async function runOrchestrator(
   // ── Wave 2: Budget + Logistics ────────────────────────────────────────────
   const [budgetRaw, logistics] = await Promise.all([
     new BudgetAgent()
-      .withInput({ ctx: agentCtx, activity: activityRaw, food: foodRaw, accommodation, transportation })
+      .withInput({ ctx: agentCtx, activity: activityRaw, food: foodRaw, accommodation, transportation, realLockedBudget: ctx.lockedBudget })
       .propose(agentCtx),
     Promise.resolve(logisticsStub()),
   ]);
