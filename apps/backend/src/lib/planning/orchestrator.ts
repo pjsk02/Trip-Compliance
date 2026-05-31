@@ -108,7 +108,12 @@ function buildCandidates(
  */
 const BUDGET_BUFFER_PCT = 0.12;
 
-export async function runOrchestrator(
+export const runOrchestrator = wop(
+  'orchestrator:run',
+  _runOrchestratorImpl,
+);
+
+async function _runOrchestratorImpl(
   ctx: PlanningContext,
   maxNegotiationRounds = 3,
   onEvent?: OnEvent,
