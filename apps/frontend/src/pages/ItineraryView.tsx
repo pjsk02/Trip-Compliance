@@ -1050,6 +1050,13 @@ function ItineraryViewInner() {
   const [error, setError]         = useState('');
   const [activeTab, setActiveTab] = useState<TabId>('plan');
   const [memberAvatars, setMemberAvatars] = useState<Record<string, string | null>>({});
+  // Finalization state
+  const [finalItineraryId, setFinalItineraryId] = useState<string | null>(null);
+  const [finalizedAt, setFinalizedAt]           = useState<string | null>(null);
+  const [finalizeLoading, setFinalizeLoading]   = useState(false);
+  const [finalizeError, setFinalizeError]       = useState('');
+  // Guardrail warn dialog: { warnings, itineraryId } when non-empty warnings exist
+  const [warnDialog, setWarnDialog] = useState<{ warnings: string[]; itineraryId: string } | null>(null);
 
   const fetchData = useCallback(async () => {
     if (!code) return;
@@ -1059,6 +1066,8 @@ function ItineraryViewInner() {
         api.getGroup(code),
       ]);
       setVersions(listRes.itineraries);
+      setFinalItineraryId(listRes.finalItineraryId ?? group.finalItineraryId ?? null);
+      setFinalizedAt(listRes.finalizedAt ?? group.finalizedAt ?? null);
       setDestination(group.destination ?? 'Trip Itinerary');
       if (listRes.itineraries.length > 0) {
         const latest = listRes.itineraries[listRes.itineraries.length - 1];
