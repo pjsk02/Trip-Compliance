@@ -283,12 +283,12 @@ function DayByDaySection({ dayPlans, myMemberId }: { dayPlans: DayPlan[]; myMemb
 // ---------------------------------------------------------------------------
 
 function BudgetSection({ budget }: { budget: Itinerary['budgetBreakdown'] }) {
-  const overBudget = budget.surplus < 0;
+  const overBudget = (budget.surplus ?? 0) < 0;
 
   const STANDARD_CATEGORIES = ['Flights', 'Accommodation', 'Food & Drink', 'Activities', 'Local Transport'];
 
   // Sort: standard categories first in PRD order, then any extras
-  const sorted = [...budget.lines].sort((a, b) => {
+  const sorted = [...(budget.lines ?? [])].sort((a, b) => {
     const ai = STANDARD_CATEGORIES.indexOf(a.category);
     const bi = STANDARD_CATEGORIES.indexOf(b.category);
     if (ai === -1 && bi === -1) return 0;
