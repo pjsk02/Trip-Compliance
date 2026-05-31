@@ -12,7 +12,9 @@
     "test": "jest --runInBand --forceExit",
     "test:itinerary": "tsx --env-file=.env scripts/test-itinerary-pipeline.ts",
     "eval": "tsx --env-file=.env scripts/run-eval.ts",
-    "eval:save": "tsx --env-file=.env scripts/run-eval.ts -- --save"
+    "eval:save": "tsx --env-file=.env scripts/run-eval.ts -- --save",
+    "eval:check": "tsx --env-file=.env scripts/check-prompt-regression.ts",
+    "eval:check:run": "tsx --env-file=.env scripts/check-prompt-regression.ts -- --run"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
