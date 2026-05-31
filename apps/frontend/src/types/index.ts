@@ -47,6 +47,8 @@ export interface Group {
   members: Member[];
   finalItineraryId: string | null;
   finalizedAt: string | null;
+  startDate: string | null;   // ISO date "YYYY-MM-DD"
+  endDate:   string | null;
 }
 
 /** User-level session — persisted across groups. */
