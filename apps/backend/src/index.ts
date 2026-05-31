@@ -6,6 +6,7 @@ import { groupsRouter } from './routes/groups';
 import { membersRouter } from './routes/members';
 import { budgetRouter } from './routes/budget';
 import { itineraryRouter } from './routes/itinerary';
+import { initWeave } from './lib/weave';
 
 const app = express();
 const port = process.env.PORT ?? 3001;
