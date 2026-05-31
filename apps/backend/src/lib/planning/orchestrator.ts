@@ -24,6 +24,7 @@ import { runConsensus }        from './consensus';
 import { assembleItinerary }   from './itinerary';
 import type { ItineraryCandidate } from './scoring';
 import type { OnEvent } from './streamEvents';
+import { wop } from '../weave';
 import {
   activityStatement,
   foodStatement,
