@@ -647,6 +647,166 @@ function TabBar({ active, onChange }: { active: TabId; onChange: (t: TabId) => v
 }
 
 // ---------------------------------------------------------------------------
+// Version switcher
+// ---------------------------------------------------------------------------
+
+function VersionSwitcher({
+  versions, active, onChange,
+}: {
+  versions: Itinerary[];
+  active: number;
+  onChange: (v: number) => void;
+}) {
+  if (versions.length <= 1) return null;
+  return (
+    <div className="flex items-center gap-2 flex-wrap px-1">
+      <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 shrink-0">Version</span>
+      {versions.map(it => (
+        <button
+          key={it.version}
+          onClick={() => onChange(it.version)}
+          className={`rounded-lg px-3 py-1 text-xs font-semibold transition-colors ${
+            it.version === active
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          }`}
+        >
+          v{it.version}
+          {it.feedback && it.feedback.length > 0 && it.version !== active && (
+            <span className="ml-1 font-normal text-gray-400">
+              ({it.feedback[0]?.type.replace(/_/g, ' ').toLowerCase()})
+            </span>
+          )}
+        </button>
+      ))}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Feedback box
+// ---------------------------------------------------------------------------
+
+const FEEDBACK_EXAMPLES = [
+  'More nightlife, less museums',
+  'Cut $200 per person',
+  "I can't do the 6am flight",
+  "I'm now vegetarian",
+];
+
+function FeedbackBox({
+  onSubmit, loading, result,
+}: {
+  onSubmit: (text: string) => void;
+  loading: boolean;
+  result: { summary: string; feedbackType: string; version: number } | null;
+}) {
+  const [text, setText] = useState('');
+  const placeholder = useRef(FEEDBACK_EXAMPLES[Math.floor(Math.random() * FEEDBACK_EXAMPLES.length)]).current;
+
+  return (
+    <section className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-purple-50 px-5 py-4 space-y-3">
+      <div className="flex items-start gap-2.5">
+        <span className="text-xl shrink-0 mt-0.5">💬</span>
+        <div>
+          <h3 className="text-sm font-bold text-indigo-900">Request a change</h3>
+          <p className="text-xs text-indigo-700 mt-0.5">
+            Any member can propose adjustments — Claude will classify and replan.
+          </p>
+        </div>
+      </div>
+
+      {result && result.version > 0 && (
+        <div className="rounded-xl bg-white/80 border border-emerald-100 px-3 py-2.5 flex items-start gap-2">
+          <svg className="h-4 w-4 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+          </svg>
+          <div>
+            <p className="text-xs font-semibold text-emerald-800">
+              New v{result.version} created — {result.feedbackType.replace(/_/g, ' ').toLowerCase()}
+            </p>
+            <p className="text-xs text-emerald-700 mt-0.5">{result.summary}</p>
+          </div>
+        </div>
+      )}
+
+      {result && result.version === 0 && (
+        <div className="rounded-xl bg-red-50 border border-red-100 px-3 py-2 text-xs text-red-700">
+          {result.summary}
+        </div>
+      )}
+
+      <textarea
+        value={text}
+        onChange={e => setText(e.target.value)}
+        placeholder={`e.g. "${placeholder}"`}
+        rows={3}
+        disabled={loading}
+        className="w-full rounded-xl border border-indigo-200 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-indigo-400 focus:outline-none focus:ring-2 focus:ring-indigo-100 resize-none disabled:opacity-50"
+      />
+
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-[10px] text-indigo-600/70">Claude routes your request to the right agent.</p>
+        <button
+          onClick={() => { if (text.trim() && !loading) { onSubmit(text.trim()); setText(''); } }}
+          disabled={!text.trim() || loading}
+          className="flex items-center gap-1.5 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shrink-0"
+        >
+          {loading ? <><Spinner className="h-3.5 w-3.5 text-white" /><span className="ml-1">Replanning…</span></> : 'Send'}
+        </button>
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Feedback history
+// ---------------------------------------------------------------------------
+
+const FEEDBACK_TYPE_LABELS: Record<string, string> = {
+  ACTIVITY_REWEIGHT: 'Activity reweight',
+  BUDGET_CUT:        'Budget cut',
+  TRANSPORT_VETO:    'Transport veto',
+  PREFERENCE_CHANGE: 'Preference change',
+};
+
+function FeedbackHistory({ versions }: { versions: Itinerary[] }) {
+  const allFeedback = versions
+    .flatMap(it => (it.feedback ?? []).map(f => ({ ...f, producedVersion: it.version + 1 })))
+    .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+  if (allFeedback.length === 0) return null;
+
+  return (
+    <section className="space-y-3">
+      <SectionHeader icon="📝" title="Change History" subtitle="Feedback that triggered replanning" />
+      <div className="rounded-2xl border border-gray-100 bg-white shadow-sm divide-y divide-gray-50 overflow-hidden">
+        {allFeedback.map(f => (
+          <div key={f.id} className="px-5 py-3">
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="inline-flex rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-semibold text-indigo-700 ring-1 ring-inset ring-indigo-200">
+                    {FEEDBACK_TYPE_LABELS[f.type] ?? f.type}
+                  </span>
+                  <span className="text-[10px] text-gray-400">
+                    by {f.member?.name ?? 'Unknown'} → v{f.producedVersion}
+                  </span>
+                </div>
+                <p className="mt-1 text-sm text-gray-700 italic">"{f.rawText}"</p>
+              </div>
+              <p className="shrink-0 text-[10px] text-gray-400 pt-0.5">
+                {new Date(f.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Main page
 // ---------------------------------------------------------------------------
 
@@ -655,33 +815,39 @@ export function ItineraryView() {
   const { session, userSession, logout } = useAuth();
   const navigate = useNavigate();
 
-  const [itinerary, setItinerary] = useState<Itinerary | null>(null);
-  const [destination, setDestination] = useState('Trip Itinerary');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [versions, setVersions]           = useState<Itinerary[]>([]);
+  const [activeVersion, setActiveVersion] = useState<number>(1);
+  const [destination, setDestination]     = useState('Trip Itinerary');
+  const [tripDuration, setTripDuration]   = useState(3);
+  const [loading, setLoading]             = useState(true);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackResult, setFeedbackResult] = useState<{
+    summary: string; feedbackType: string; version: number;
+  } | null>(null);
+  const [error, setError]         = useState('');
   const [activeTab, setActiveTab] = useState<TabId>('plan');
-
-  // Build a map of userId → avatarUrl from the group members
   const [memberAvatars, setMemberAvatars] = useState<Record<string, string | null>>({});
 
-  const fetchItinerary = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     if (!code) return;
     try {
       const [listRes, group] = await Promise.all([
         api.listItineraries(code),
         api.getGroup(code),
       ]);
-      const latest = listRes.itineraries.at(-1) ?? null;
-      setItinerary(latest);
+      setVersions(listRes.itineraries);
       setDestination(group.destination ?? 'Trip Itinerary');
-
+      if (listRes.itineraries.length > 0) {
+        const latest = listRes.itineraries[listRes.itineraries.length - 1];
+        setActiveVersion(latest.version);
+        if (latest.dayPlans?.length) setTripDuration(latest.dayPlans.length);
+      }
       const avatarMap: Record<string, string | null> = {};
-      group.members.forEach((m: { id: string }) => { avatarMap[m.id] = null; });
+      group.members.forEach(m => { avatarMap[m.id] = null; });
       setMemberAvatars(avatarMap);
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
-        logout();
-        navigate('/');
+        logout(); navigate('/');
       } else if (err instanceof ApiError && err.status === 404) {
         setError('No itinerary has been generated yet.');
       } else {
@@ -694,13 +860,30 @@ export function ItineraryView() {
 
   useEffect(() => {
     if (!session) { navigate('/'); return; }
-    fetchItinerary();
-  }, [session, fetchItinerary, navigate]);
+    fetchData();
+  }, [session, fetchData, navigate]);
 
-  // The logged-in user's User.id (for matching satisfaction scores)
+  async function handleFeedback(text: string) {
+    if (!code) return;
+    setFeedbackLoading(true);
+    setFeedbackResult(null);
+    try {
+      const res = await api.submitFeedback(code, text, tripDuration, activeVersion);
+      setFeedbackResult({ summary: res.feedbackSummary, feedbackType: res.feedbackType, version: res.version });
+      await fetchData();
+      setActiveVersion(res.version);
+      setActiveTab('plan');
+    } catch (err) {
+      const msg = err instanceof ApiError ? err.message : 'Replan failed. Try again.';
+      setFeedbackResult({ summary: msg, feedbackType: 'ERROR', version: 0 });
+    } finally {
+      setFeedbackLoading(false);
+    }
+  }
+
   const myUserId = userSession?.user.id ?? '';
-  // The member record id (for matching servesPreferences keys which are member record ids)
   const myMemberRecordId = session?.memberId ?? '';
+  const itinerary = versions.find(v => v.version === activeVersion) ?? versions[versions.length - 1] ?? null;
 
   if (loading) {
     return (
@@ -724,66 +907,45 @@ export function ItineraryView() {
     );
   }
 
-  // For satisfaction matching: scores use User.id (memberId field on PerMemberScore)
-  // servesPreferences uses Member.id (memberRecordId). We use memberRecordId for block tags.
   return (
     <div className="min-h-screen bg-gray-50">
-      <PageHeader
-        destination={destination}
-        onBack={() => navigate(`/group/${code}`)}
-      />
-
+      <PageHeader destination={destination} onBack={() => navigate(`/group/${code}`)} />
       <TabBar active={activeTab} onChange={setActiveTab} />
 
-      <main className="mx-auto max-w-2xl px-4 py-6 space-y-8">
-        {/* Hero stat strip */}
+      <main className="mx-auto max-w-2xl px-4 py-6 space-y-6">
+        <VersionSwitcher
+          versions={versions}
+          active={activeVersion}
+          onChange={v => { setActiveVersion(v); setActiveTab('plan'); }}
+        />
+
         {activeTab === 'plan' && (
           <div className="grid grid-cols-3 gap-3">
-            <StatPill
-              label="Days"
-              value={String(itinerary.dayPlans.length)}
-              sub={`${itinerary.dayPlans.reduce((s, d) => s + d.blocks.length, 0)} activities`}
-            />
-            <StatPill
-              label="Per person"
-              value={fmt(itinerary.budgetBreakdown.totalPerPersonUsd)}
-              sub="estimated total"
-            />
-            <StatPill
-              label="Group score"
-              value={pct(itinerary.satisfactionScores.groupSatisfactionPct)}
+            <StatPill label="Days" value={String(itinerary.dayPlans.length)}
+              sub={`${itinerary.dayPlans.reduce((s, d) => s + d.blocks.length, 0)} activities`} />
+            <StatPill label="Per person" value={fmt(itinerary.budgetBreakdown.totalPerPersonUsd)} sub="estimated total" />
+            <StatPill label="Group score" value={pct(itinerary.satisfactionScores.groupSatisfactionPct)}
               sub={itinerary.satisfactionScores.fairnessFloorMet ? 'fairness ✓' : 'fairness ⚠'}
-              highlight={itinerary.satisfactionScores.fairnessFloorMet}
-            />
+              highlight={itinerary.satisfactionScores.fairnessFloorMet} />
           </div>
         )}
 
-        {activeTab === 'plan' && (
-          <DayByDaySection dayPlans={itinerary.dayPlans} myMemberId={myMemberRecordId} />
-        )}
-        {activeTab === 'budget' && (
-          <BudgetSection budget={itinerary.budgetBreakdown} />
-        )}
-        {activeTab === 'scores' && (
-          <SatisfactionSection
-            scores={itinerary.satisfactionScores}
-            myUserId={myUserId}
-            memberAvatars={memberAvatars}
-          />
-        )}
+        {activeTab === 'plan'      && <DayByDaySection dayPlans={itinerary.dayPlans} myMemberId={myMemberRecordId} />}
+        {activeTab === 'budget'    && <BudgetSection budget={itinerary.budgetBreakdown} />}
+        {activeTab === 'scores'    && <SatisfactionSection scores={itinerary.satisfactionScores} myUserId={myUserId} memberAvatars={memberAvatars} />}
         {activeTab === 'tradeoffs' && (
           <TradeoffSection
             report={itinerary.tradeoffReport}
-            adminOverride={itinerary.adminOverrideFlag}
-            negotiationRounds={itinerary.negotiationRounds}
+            adminOverride={itinerary.adminOverrideFlag ?? false}
+            negotiationRounds={itinerary.negotiationRounds ?? 0}
           />
         )}
 
-        {/* Generated-at footer */}
+        <FeedbackBox onSubmit={handleFeedback} loading={feedbackLoading} result={feedbackResult} />
+        <FeedbackHistory versions={versions} />
+
         <p className="text-center text-[11px] text-gray-300 pb-4">
-          Generated {new Date(itinerary.generatedAt).toLocaleString(undefined, {
-            dateStyle: 'medium', timeStyle: 'short',
-          })} · v{itinerary.version}
+          v{itinerary.version} · {new Date(itinerary.createdAt).toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' })}
         </p>
       </main>
     </div>

@@ -118,21 +118,17 @@ function applyAdjustment(
     }
 
     case 'TRANSPORT_VETO': {
-      // Inject the veto as a schedule restriction on the submitting member.
-      // The TransportationAgent reads scheduleRestrictions from constraints.
-      const mutatedMembers = ctx.members.map(m => {
-        if (m.memberId !== adjustment.memberId) return m;
-        return {
-          ...m,
-          constraints: {
-            ...m.constraints,
-            scheduleRestrictions: [
-              m.constraints.scheduleRestrictions,
-              `VETO: ${adjustment.vetoDescription}`,
-            ].filter(Boolean).join('; '),
-          },
-        };
-      });
+      // A transport veto is a group-wide scheduling constraint — apply to all members.
+      const mutatedMembers = ctx.members.map(m => ({
+        ...m,
+        constraints: {
+          ...m.constraints,
+          scheduleRestrictions: [
+            m.constraints.scheduleRestrictions,
+            `VETO: ${adjustment.vetoDescription}`,
+          ].filter(Boolean).join('; '),
+        },
+      }));
       return {
         ctx: { ...ctx, members: mutatedMembers },
         agentOverrideInstruction: adjustment.instruction,
