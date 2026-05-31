@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, useRef, Component } from 'react';
 import type { ErrorInfo, ReactNode } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { api, ApiError } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { Spinner } from '../components/Spinner';
