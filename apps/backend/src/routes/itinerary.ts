@@ -164,6 +164,7 @@ itineraryRouter.post(
           include: { user: true, preferenceProfile: true },
         },
         budgetRounds: { orderBy: { roundNum: 'desc' }, take: 1 },
+        // startDate/endDate are columns on Group — included automatically by findUnique
       },
     });
 
