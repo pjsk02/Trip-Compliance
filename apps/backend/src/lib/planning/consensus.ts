@@ -82,8 +82,10 @@ export function runConsensus(input: ConsensusInput): ConsensusResult {
     };
   }
 
-  // (c) Enforce fairness floor
-  if (topCandidate.fairnessFloorMet) {
+  // (c) Enforce fairness floor AND budget hard constraint.
+  // A candidate with budgetHardFail=true must never be returned as winner —
+  // the PRD mandates admin override for any over-budget plan.
+  if (topCandidate.fairnessFloorMet && !topCandidate.budgetHardFail) {
     return {
       status: 'OK',
       winner: topCandidate,
@@ -95,8 +97,8 @@ export function runConsensus(input: ConsensusInput): ConsensusResult {
     };
   }
 
-  // Top Pareto candidate fails the floor — check if any Pareto candidate passes
-  const floorPassing = ranked.filter(sc => sc.fairnessFloorMet);
+  // Top Pareto candidate fails the floor or budget — check if any Pareto candidate passes both
+  const floorPassing = ranked.filter(sc => sc.fairnessFloorMet && !sc.budgetHardFail);
   if (floorPassing.length > 0) {
     const winner = floorPassing[0]!;
     return {
