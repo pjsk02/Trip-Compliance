@@ -1147,3 +1147,49 @@ groupsRouter.get(
     });
   }
 );
+
+// ---------------------------------------------------------------------------
+// PATCH /groups/:code/set-dates  [admin only]
+// Set or update the trip start and end dates. Allowed before planning is locked.
+// ---------------------------------------------------------------------------
+
+const SetDatesSchema = z.object({
+  startDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'startDate must be YYYY-MM-DD'),
+  endDate:   z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'endDate must be YYYY-MM-DD'),
+});
+
+groupsRouter.patch(
+  '/:code/set-dates',
+  authenticate,
+  requireAdmin,
+  async (req: Request, res: Response): Promise<void> => {
+    const parsed = SetDatesSchema.safeParse(req.body);
+    if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
+
+    const { startDate, endDate } = parsed.data;
+    const start = new Date(startDate);
+    const end   = new Date(endDate);
+
+    if (end < start) {
+      res.status(400).json({ error: 'endDate must be on or after startDate' }); return;
+    }
+    const days = Math.round((end.getTime() - start.getTime()) / 86400000) + 1;
+    if (days > 30) {
+      res.status(400).json({ error: 'Trip duration cannot exceed 30 days' }); return;
+    }
+
+    const group = await prisma.group.findUnique({
+      where: { groupCode: req.params.code.toUpperCase() },
+    });
+    if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
+    if (req.member!.groupId !== group.id) { res.status(403).json({ error: 'Forbidden' }); return; }
+
+    await prisma.group.update({
+      where: { id: group.id },
+      data: { startDate: start, endDate: end },
+    });
+
+    const { tripDays, tripDuration } = computeTripDuration(startDate, endDate);
+    res.json({ startDate, endDate, tripDays, tripDuration });
+  }
+);
