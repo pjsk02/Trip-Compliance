@@ -40,7 +40,8 @@
       "PowerShell(Invoke-RestMethod -Uri \"http://localhost:3001/groups\" -Method Post -ContentType \"application/json\" -Body '{\"name\":\"Paris Trip\",\"destination\":\"Paris\",\"adminName\":\"Je\",\"password\":\"breeze611\"}' 2>&1)",
       "PowerShell(netstat -ano)",
       "Bash(python graphify-out/.graphify_chunk_02_build.py)",
-      "Bash(python -c \"import json; d=json.loads\\(open\\('D:/vsc/NEU/Trip/graphify-out/.graphify_chunk_02.json',encoding='utf-8'\\).read\\(\\)\\); print\\(len\\(d['nodes']\\), 'nodes,', len\\(d['edges']\\), 'edges,', len\\(d['hyperedges']\\), 'hyperedges'\\)\")"
+      "Bash(python -c \"import json; d=json.loads\\(open\\('D:/vsc/NEU/Trip/graphify-out/.graphify_chunk_02.json',encoding='utf-8'\\).read\\(\\)\\); print\\(len\\(d['nodes']\\), 'nodes,', len\\(d['edges']\\), 'edges,', len\\(d['hyperedges']\\), 'hyperedges'\\)\")",
+      "PowerShell(Start-Process \"d:\\\\vsc\\\\NEU\\\\Trip\\\\graphify-out\\\\graph.html\")"
     ]
   }
 }
