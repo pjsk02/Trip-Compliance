@@ -24,7 +24,8 @@ import { runConsensus }        from './consensus';
 import { assembleItinerary }   from './itinerary';
 import type { ItineraryCandidate } from './scoring';
 import type { OnEvent } from './streamEvents';
-import { wop } from '../weave';
+import { wop, isWeaveEnabled } from '../weave';
+import type { AgentTimelineEntry, DecisionAuditEntry } from './itinerary';
 import {
   activityStatement,
   foodStatement,
