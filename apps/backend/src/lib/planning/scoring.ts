@@ -92,9 +92,28 @@ const CATEGORY_TO_LABELS: Record<string, string[]> = {
   mixed:     ['Hiking / Outdoors', 'Museums / Culture'],  // conservative: credit both
 };
 
+// Labels that derivePriorities() can produce but are NOT scoreable from
+// itinerary content (they describe planning style, not item categories).
+// Exclude them from the denominator so they don't inflate it.
+const NON_SCOREABLE_LABELS = new Set([
+  'Relaxed Pace', 'Packed Itinerary', 'Flight Comfort', 'Budget-Conscious',
+]);
+
 /** Return all preference labels that a given activity category satisfies. */
 function labelsForCategory(category: string): string[] {
   return CATEGORY_TO_LABELS[category] ?? [];
+}
+
+/** Return all preference labels that a meal satisfies. */
+function labelsForMeal(meal: Meal): string[] {
+  const labels: string[] = [];
+  const cuisine = meal.cuisineType.toLowerCase();
+  const venue   = meal.venue.toLowerCase();
+  if (cuisine.includes('street') || venue.includes('street')) labels.push('Street Food');
+  if (venue.includes('fine') || cuisine.includes('fine'))     labels.push('Fine Dining');
+  // Local cuisine is satisfied by any restaurant that is not a chain/tourist spot
+  labels.push('Local Cuisine');
+  return labels;
 }
 
 // ---------------------------------------------------------------------------
@@ -104,12 +123,17 @@ function labelsForCategory(category: string): string[] {
 export function scoreMemberSatisfaction(
   member: MemberPreferenceSnapshot,
   activities: ActivityCandidate[],
+  meals: Meal[] = [],
 ): MemberSatisfaction {
   const { mustHave, niceToHave } = member.priorities;
-  const total = mustHave.length + niceToHave.length;
+
+  // Only score labels that can actually be evaluated from the itinerary content.
+  const scoreableMustHave   = mustHave.filter(p => !NON_SCOREABLE_LABELS.has(p));
+  const scoreableNiceToHave = niceToHave.filter(p => !NON_SCOREABLE_LABELS.has(p));
+  const total = scoreableMustHave.length + scoreableNiceToHave.length;
 
   if (total === 0) {
-    // No Must Have / Nice to Have preferences — trivially satisfied
+    // No scoreable Must Have / Nice to Have preferences — trivially satisfied
     return {
       memberId:  member.memberId,
       memberName: member.name,
@@ -120,17 +144,22 @@ export function scoreMemberSatisfaction(
     };
   }
 
-  // Collect all preference labels that the selected activities cover
+  // Collect all preference labels that the selected activities and meals cover
   const fulfilledLabels = new Set<string>();
   for (const act of activities) {
     for (const label of labelsForCategory(act.category)) {
       fulfilledLabels.add(label);
     }
   }
+  for (const meal of meals) {
+    for (const label of labelsForMeal(meal)) {
+      fulfilledLabels.add(label);
+    }
+  }
 
-  const mustHaveFulfilled  = mustHave.filter(p => fulfilledLabels.has(p));
-  const niceToHaveFulfilled = niceToHave.filter(p => fulfilledLabels.has(p));
-  const unmetMustHave      = mustHave.filter(p => !fulfilledLabels.has(p));
+  const mustHaveFulfilled   = scoreableMustHave.filter(p => fulfilledLabels.has(p));
+  const niceToHaveFulfilled = scoreableNiceToHave.filter(p => fulfilledLabels.has(p));
+  const unmetMustHave       = scoreableMustHave.filter(p => !fulfilledLabels.has(p));
 
   const fulfilled = mustHaveFulfilled.length + niceToHaveFulfilled.length;
   const satisfactionPct = Math.round((fulfilled / total) * 100);
