@@ -49,6 +49,13 @@ RULES:
 5. Local transport summary: describe how the group gets around day-to-day (metro, tuk-tuk, rented scooters, walking, etc.) based on the destination.
 6. totalTransportCostPerPersonUsd = sum of all leg costs per person.
 
+CRITICAL — "mode" field rules:
+- Each leg's "mode" must be EXACTLY ONE value from this closed list (no phrases, no slash-combos, no free text):
+    flight | train | bus | ferry | taxi | rental_car | metro | walk | rideshare
+- If you are unsure between two modes, pick the MOST LIKELY one and mention the alternative in "notes".
+- WRONG: "ride-share or rental car"  "flight/train"  "bus or metro"  "taxi/rideshare"
+- RIGHT: "rideshare"  "rental_car"  "flight"
+
 Assume origin is a major international airport in the travellers' country unless destination implies otherwise.
 
 OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
@@ -56,16 +63,16 @@ OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
   "agent": "transportation",
   "legs": [
     {
-      "from": "string",
-      "to": "string",
-      "mode": "flight|train|bus|ferry|taxi|rental_car|metro|walk",
-      "estimatedCostPerPersonUsd": number,
-      "estimatedDurationHours": number,
-      "notes": "string or omit"
+      "from": "Boston Logan Airport",
+      "to": "Rome Fiumicino Airport",
+      "mode": "flight",
+      "estimatedCostPerPersonUsd": 650,
+      "estimatedDurationHours": 9.5,
+      "notes": "Direct transatlantic flight; business class optional for high flightComfort"
     }
   ],
   "localTransportSummary": "2-3 sentence description of daily transport",
-  "totalTransportCostPerPersonUsd": number
+  "totalTransportCostPerPersonUsd": 800
 }`;
   }
 
