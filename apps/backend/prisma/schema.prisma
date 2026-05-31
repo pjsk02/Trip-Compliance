@@ -178,8 +178,10 @@ model Itinerary {
 
   createdAt DateTime @default(now())
 
-  group    Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  feedback Feedback[]
+  group           Group      @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  feedback        Feedback[]
+  // Back-relation: which group has this as its final itinerary (at most one)
+  finalForGroup   Group?     @relation("FinalItinerary")
 
   @@unique([groupId, version])
   @@index([groupId])
