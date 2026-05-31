@@ -26,8 +26,10 @@ app.use('/groups', itineraryRouter);
 
 // Only start listening when run directly, not when imported by tests.
 if (require.main === module) {
-  app.listen(port, () => {
-    console.log(`Backend running at http://localhost:${port}`);
+  initWeave().then(() => {
+    app.listen(port, () => {
+      console.log(`Backend running at http://localhost:${port}`);
+    });
   });
 }
 
