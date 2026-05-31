@@ -137,11 +137,12 @@ export function diffAgainstBaseline(
 }
 
 // ---------------------------------------------------------------------------
-// Model function — runs the full pipeline for one dataset row
+// Model function — Weave passes { datasetRow } as the model input
 // ---------------------------------------------------------------------------
 
-async function planningModel(input: EvalInput): Promise<EvalOutput> {
-  const result = await runOrchestrator(input.dataset.context, 3) as OrchestratorResult;
+async function planningModel(input: { datasetRow: WeaveDatasetRow }): Promise<EvalOutput> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const result = await runOrchestrator(input.datasetRow.dataset.context, 3) as any;
   return { result };
 }
 
