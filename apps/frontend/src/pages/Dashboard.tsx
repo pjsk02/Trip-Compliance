@@ -582,6 +582,52 @@ export function Dashboard() {
               </div>
             )}
 
+            {/* Trip dates — editable any time before PLANNING */}
+            {(group.status === 'COLLECTING' || group.status === 'BUDGET_NEGOTIATION') && (
+              <div className="border-t border-gray-100 pt-3 space-y-2">
+                <p className="text-xs font-semibold text-gray-500">Trip dates</p>
+                {group.startDate && group.endDate && (
+                  <p className="text-xs text-indigo-700">
+                    {new Date(group.startDate).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                    {' → '}
+                    {new Date(group.endDate).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                    {' · '}
+                    {Math.round((new Date(group.endDate).getTime() - new Date(group.startDate).getTime()) / 86400000) + 1} days
+                  </p>
+                )}
+                {datesError && <p className="text-xs text-red-500">{datesError}</p>}
+                <div className="flex gap-2 items-center">
+                  <input
+                    type="date"
+                    value={datesStart}
+                    onChange={e => setDatesStart(e.target.value)}
+                    className="flex-1 rounded-xl border border-gray-300 px-2 py-2 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <span className="text-xs text-gray-400 shrink-0">→</span>
+                  <input
+                    type="date"
+                    min={datesStart}
+                    value={datesEnd}
+                    onChange={e => setDatesEnd(e.target.value)}
+                    className="flex-1 rounded-xl border border-gray-300 px-2 py-2 text-xs text-gray-800 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  />
+                  <button
+                    disabled={!datesStart || !datesEnd || datesLoading}
+                    onClick={handleSetDates}
+                    className="shrink-0 rounded-xl bg-indigo-100 px-3 py-2 text-xs font-medium text-indigo-700 hover:bg-indigo-200 disabled:opacity-40 transition"
+                  >
+                    {datesLoading ? '…' : 'Save'}
+                  </button>
+                </div>
+                {datesStart && datesEnd && new Date(datesEnd) >= new Date(datesStart) && (
+                  <p className="text-[11px] text-indigo-600">
+                    {Math.round((new Date(datesEnd).getTime() - new Date(datesStart).getTime()) / 86400000) + 1} days ·{' '}
+                    {Math.round((new Date(datesEnd).getTime() - new Date(datesStart).getTime()) / 86400000)} nights
+                  </p>
+                )}
+              </div>
+            )}
+
             {/* Submission deadline */}
             {group.status === 'COLLECTING' && (
               <div className="border-t border-gray-100 pt-3 space-y-2">
