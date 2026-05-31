@@ -597,6 +597,185 @@ function TradeoffSection({ report, adminOverride, negotiationRounds }: {
 }
 
 // ---------------------------------------------------------------------------
+// Section 7.5 — Agent Observe (timeline + decision audit + W&B link)
+// ---------------------------------------------------------------------------
+
+const WAVE_LABELS: Record<number, string> = { 1: 'Wave 1 · Proposals', 2: 'Wave 2 · Budget', 3: 'Wave 3 · Consensus' };
+const AGENT_COLORS: Record<string, string> = {
+  activity:      'bg-emerald-100 text-emerald-800',
+  food:          'bg-amber-100 text-amber-800',
+  accommodation: 'bg-violet-100 text-violet-800',
+  transportation:'bg-blue-100 text-blue-800',
+  budget:        'bg-rose-100 text-rose-800',
+  negotiation:   'bg-orange-100 text-orange-800',
+  consensus:     'bg-indigo-100 text-indigo-800',
+};
+const STATUS_COLORS: Record<string, string> = {
+  ok:       'text-emerald-600',
+  repaired: 'text-amber-600',
+  fallback: 'text-red-500',
+};
+
+function TimelineBar({ entries }: { entries: AgentTimelineEntry[] }) {
+  if (entries.length === 0) return null;
+  const maxMs = Math.max(...entries.map(e => e.completedAt));
+  const byWave = entries.reduce<Record<number, AgentTimelineEntry[]>>((acc, e) => {
+    (acc[e.wave] ??= []).push(e);
+    return acc;
+  }, {});
+
+  return (
+    <div className="space-y-4">
+      {([1, 2, 3] as const).map(wave => {
+        const waveEntries = byWave[wave];
+        if (!waveEntries?.length) return null;
+        return (
+          <div key={wave}>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 mb-2">{WAVE_LABELS[wave]}</p>
+            <div className="space-y-2">
+              {waveEntries.map(e => {
+                const left  = (e.startedAt  / maxMs) * 100;
+                const width = Math.max(((e.durationMs) / maxMs) * 100, 2);
+                const color = AGENT_COLORS[e.agent] ?? 'bg-gray-100 text-gray-700';
+                return (
+                  <div key={e.agent} className="flex items-center gap-2">
+                    <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold w-24 text-center truncate ${color}`}>
+                      {e.agent}
+                    </span>
+                    <div className="relative flex-1 h-5 bg-gray-100 rounded-full overflow-hidden">
+                      <div
+                        className={`absolute top-0 bottom-0 rounded-full ${color.split(' ')[0]}`}
+                        style={{ left: `${left}%`, width: `${width}%` }}
+                      />
+                    </div>
+                    <span className={`shrink-0 text-[10px] font-mono ${STATUS_COLORS[e.status] ?? 'text-gray-500'}`}>
+                      {(e.durationMs / 1000).toFixed(1)}s
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function AuditEntry({ entry }: { entry: DecisionAuditEntry }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="py-3 border-b border-gray-50 last:border-0">
+      <button
+        onClick={() => setOpen(o => !o)}
+        className="flex w-full items-start justify-between gap-2 text-left"
+      >
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-gray-700">{entry.decision}</p>
+          <p className="mt-0.5 text-[11px] text-emerald-700 truncate">✓ {entry.chosen}</p>
+        </div>
+        <svg className={`h-4 w-4 shrink-0 text-gray-400 mt-0.5 transition-transform ${open ? 'rotate-180' : ''}`}
+          fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+      {open && (
+        <div className="mt-2 space-y-2 pl-1">
+          <p className="text-[11px] text-gray-500">{entry.reason}</p>
+          {entry.rejected.length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-red-500 mb-1">Not selected</p>
+              <div className="space-y-0.5">
+                {entry.rejected.map((r, i) => (
+                  <p key={i} className="text-[11px] text-gray-400">✗ {r}</p>
+                ))}
+              </div>
+            </div>
+          )}
+          {entry.scores && Object.keys(entry.scores).length > 0 && (
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400 mb-1">Scores</p>
+              <div className="flex flex-wrap gap-1.5">
+                {Object.entries(entry.scores).map(([k, v]) => (
+                  <span key={k} className="rounded-full bg-indigo-50 px-2 py-0.5 text-[10px] font-medium text-indigo-700">
+                    {k}: {v}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ObserveSection({
+  timeline,
+  audit,
+  weaveUrl,
+}: {
+  timeline: AgentTimelineEntry[];
+  audit: DecisionAuditEntry[];
+  weaveUrl?: string;
+}) {
+  const totalMs = timeline.reduce((s, e) => Math.max(s, e.completedAt), 0);
+
+  return (
+    <section className="space-y-4">
+      <SectionHeader icon="🔬" title="Agent Observatory" subtitle="Execution timeline, decision audit, and W&B Weave traces" />
+
+      {weaveUrl && (
+        <a
+          href={weaveUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2.5 rounded-2xl border border-yellow-200 bg-yellow-50 px-4 py-3 hover:bg-yellow-100 transition-colors group"
+        >
+          <span className="text-xl shrink-0">🏗️</span>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-yellow-900">View full trace in W&B Weave</p>
+            <p className="text-xs text-yellow-700 truncate">{weaveUrl}</p>
+          </div>
+          <svg className="h-4 w-4 text-yellow-600 shrink-0 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      )}
+
+      {timeline.length > 0 ? (
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-sm px-5 py-4 space-y-3">
+          <div className="flex items-center justify-between">
+            <p className="text-xs font-semibold text-gray-700">Execution Timeline</p>
+            <span className="text-[11px] text-gray-400 font-mono">{(totalMs / 1000).toFixed(1)}s total</span>
+          </div>
+          <TimelineBar entries={timeline} />
+        </div>
+      ) : (
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-sm px-5 py-4">
+          <p className="text-xs text-gray-400 italic">Timeline data not available — regenerate to capture.</p>
+        </div>
+      )}
+
+      {audit.length > 0 && (
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-sm px-5 py-2">
+          <p className="text-xs font-semibold text-gray-700 pt-3 pb-2">Decision Audit Trail</p>
+          {audit.map((entry, i) => (
+            <AuditEntry key={i} entry={entry} />
+          ))}
+        </div>
+      )}
+
+      {timeline.length === 0 && audit.length === 0 && !weaveUrl && (
+        <p className="text-xs text-gray-400 px-1">
+          Observability data is captured on generation. Older itinerary versions may not have this data.
+        </p>
+      )}
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
 // Shared section header
 // ---------------------------------------------------------------------------
 
