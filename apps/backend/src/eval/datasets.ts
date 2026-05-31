@@ -127,6 +127,9 @@ export const BUDGET_TRAVELERS: PlanningContext = {
 export const LUXURY_TRAVELERS: PlanningContext = {
   destination:  'Amalfi Coast, Italy',
   tripDuration: 5,
+  tripDays:     6,
+  startDate:    '2025-09-15',
+  endDate:      '2025-09-20',
   groupSize:    2,
   lockedBudget: 12000, // $6,000/person
   members: [
