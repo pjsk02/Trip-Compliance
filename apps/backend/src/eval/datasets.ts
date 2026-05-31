@@ -153,6 +153,9 @@ export const LUXURY_TRAVELERS: PlanningContext = {
 export const FOOD_FOCUSED: PlanningContext = {
   destination:  'Tokyo, Japan',
   tripDuration: 4,
+  tripDays:     5,
+  startDate:    '2025-10-01',
+  endDate:      '2025-10-05',
   groupSize:    4,
   lockedBudget: 6000, // $1,500/person
   members: [
