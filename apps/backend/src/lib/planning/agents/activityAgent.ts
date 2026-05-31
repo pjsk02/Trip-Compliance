@@ -63,7 +63,12 @@ RANKING RULES (strictly enforced):
 3. HARD BLOCK: if any member has listed an activity in mustAvoidActivities, exclude it and list it in the "excluded" array with the reason.
 4. Account for mobility limitations — flag activities as inaccessible if any member has mobility constraints that would prevent participation.
 5. Apply chat nuance ONLY to break ties or add specificity; it cannot override a slider score.
-6. Propose 5-8 candidates covering different categories. Include at least one lower-cost option.
+
+QUANTITY: Propose enough distinct candidates to fill the trip — roughly 2 activities per active day.
+  - Day 1 (arrival) and last day (departure) are lighter — plan 1 activity max each.
+  - Middle days: 1-2 activities based on pace (see prompt).
+  - Do NOT propose the same venue or very similar activity twice.
+  - Vary categories across the slate (no more than 3 of the same category).
 
 COST GUIDANCE: use realistic estimates for the destination. Flag if actual pricing may vary.
 
@@ -106,9 +111,16 @@ OUTPUT: Return ONLY a valid JSON object matching this exact schema. No prose, no
       .join('; ');
 
     // Activities should be ~20% of the per-person budget
-    const perPersonBudget    = ctx.lockedBudget / ctx.groupSize;
-    const activitySharePP    = Math.round(perPersonBudget * 0.20);
-    const maxPerActivityPP   = Math.round(activitySharePP / Math.max(ctx.tripDuration, 1));
+    const perPersonBudget  = ctx.lockedBudget / ctx.groupSize;
+    const activitySharePP  = Math.round(perPersonBudget * 0.20);
+    const maxPerActivityPP = Math.round(activitySharePP / Math.max(ctx.tripDays, 1));
+
+    // Pace score → items per day guidance
+    const paceScore = Math.round(ctx.members.reduce((s, m) => s + m.scores.logistics.pace, 0) / Math.max(ctx.members.length, 1));
+    const activitiesPerDay = paceScore >= 70 ? 2 : paceScore >= 40 ? 1 : 1;
+    // Active days = tripDays minus the 2 lighter arrival/departure days
+    const activeDays = Math.max(ctx.tripDays - 2, 0);
+    const targetCount = Math.min(10, 2 + activeDays * activitiesPerDay);  // arrival + departure + middle days
 
     return [
       contextSummary(ctx),
@@ -120,13 +132,18 @@ OUTPUT: Return ONLY a valid JSON object matching this exact schema. No prose, no
       `  Beaches/water:   ${groupScores.beaches}`,
       `  Adventure:       ${groupScores.adventure}`,
       '',
+      `QUANTITY TARGET: propose ~${targetCount} distinct activities (pace score ${paceScore}/100).`,
+      `  Arrival day (Day 1) and departure day (Day ${ctx.tripDays}) should get lighter activities.`,
+      `  Middle days (Days 2-${ctx.tripDays - 1}): ~${activitiesPerDay} activit${activitiesPerDay === 1 ? 'y' : 'ies'} each.`,
+      `  No duplicate venues. Vary categories — no more than 3 of the same type.`,
+      '',
       `BUDGET CAP: total activity share ≈ $${activitySharePP}/person for the whole trip.`,
       `  Aim for estimatedCostPerPersonUsd ≤ $${maxPerActivityPP} per activity on average.`,
       `  Include free or low-cost options to keep the slate affordable.`,
       mustAvoid ? `MUST-AVOID ACTIVITIES (hard block — exclude these): ${mustAvoid}` : '',
       mobilityNotes ? `MOBILITY CONSTRAINTS: ${mobilityNotes}` : '',
       '',
-      'Propose a ranked activity shortlist for this group.',
+      `Propose a ranked activity shortlist for ${ctx.tripDays} days in ${ctx.destination} (${ctx.startDate} to ${ctx.endDate}).`,
     ].filter(l => l !== undefined).join('\n');
   }
 }
