@@ -461,11 +461,12 @@ export async function assembleItinerary(
     ? winner.candidate.activities
     : activity.candidates.slice(0, Math.min(activity.candidates.length, ctx.tripDuration * 2));
 
-  // Slot everything into day blocks
+  // Slot everything into day blocks — use tripDays (inclusive days) not tripDuration (nights)
   const dayPlans = slotActivitiesAndMeals(
     selectedActivities,
     food.mealPlan,
-    ctx.tripDuration,
+    ctx.tripDays,
+    ctx.startDate,
     ctx.members,
   );
 
