@@ -14,12 +14,14 @@ export interface Membership {
   preferenceStatus: PreferenceStatus;
   joinedAt:         string;
   group: {
-    id:            string;
-    name:          string;
-    groupCode:     string;
-    destination:   string | null;
-    status:        GroupStatus;
-    adminMemberId: string | null;
+    id:               string;
+    name:             string;
+    groupCode:        string;
+    destination:      string | null;
+    status:           GroupStatus;
+    adminMemberId:    string | null;
+    finalItineraryId: string | null;
+    finalizedAt:      string | null;
   };
 }
 
