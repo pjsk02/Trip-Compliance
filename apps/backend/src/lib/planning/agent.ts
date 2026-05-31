@@ -217,9 +217,33 @@ export abstract class BaseAgent<TProposal> {
   }
 }
 
+/**
+ * Build a labelled list of calendar days for the trip, so agents can reason
+ * about real dates (day-of-week, partial arrival/departure days, etc.).
+ */
+export function buildDayLabels(ctx: PlanningContext): string[] {
+  const start = new Date(ctx.startDate);
+  const labels: string[] = [];
+  const DOW = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  for (let i = 0; i < ctx.tripDays; i++) {
+    const d = new Date(start);
+    d.setUTCDate(start.getUTCDate() + i);
+    const dow   = DOW[d.getUTCDay()];
+    const label = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+    const note  = i === 0 ? ' (arrival day — plan lighter)' : i === ctx.tripDays - 1 ? ' (departure day — plan lighter)' : '';
+    labels.push(`  Day ${i + 1}: ${dow} ${label}${note}`);
+  }
+  return labels;
+}
+
 /** Serialise the PlanningContext into a compact summary string for prompts. */
 export function contextSummary(ctx: PlanningContext): string {
   const perPersonBudget = Math.round(ctx.lockedBudget / ctx.groupSize);
+  const paceScore = Math.round(
+    ctx.members.reduce((s, m) => s + m.scores.logistics.pace, 0) / Math.max(ctx.members.length, 1),
+  );
+  const paceDesc = paceScore >= 70 ? 'Packed (many items/day)' : paceScore >= 40 ? 'Moderate' : 'Relaxed (fewer items/day)';
+
   const memberLines = ctx.members.map(m => {
     const a = m.scores.activities;
     const f = m.scores.food;
@@ -240,12 +264,17 @@ export function contextSummary(ctx: PlanningContext): string {
     ].filter(Boolean).join('\n');
   });
 
+  const dayLabels = buildDayLabels(ctx);
+
   return [
     `Destination: ${ctx.destination}`,
-    `Duration: ${ctx.tripDuration} nights`,
+    `Trip dates: ${ctx.startDate} → ${ctx.endDate}  (${ctx.tripDays} days, ${ctx.tripDuration} nights)`,
     `Group size: ${ctx.groupSize} people`,
     `Locked budget: $${ctx.lockedBudget} total ($${perPersonBudget}/person)`,
+    `Group pace: ${paceDesc} (score ${paceScore}/100)`,
     `NOTE: Use ESTIMATES only — no live pricing APIs. Build in realistic variance.`,
+    `Calendar days:`,
+    ...dayLabels,
     `Member preferences (scores 0-100):`,
     ...memberLines,
   ].join('\n');
