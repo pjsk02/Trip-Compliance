@@ -179,8 +179,8 @@ export function Dashboard() {
       if (action === 'lock') {
         await api.lockPreferences(code);
       } else if (action === 'generate') {
-        await api.generateItinerary(code, 3);
-        navigate(`/group/${code}/itinerary`);
+        // Navigate to the live negotiation view — generation runs there via SSE.
+        navigate(`/group/${code}/negotiate?tripDuration=3`);
         return;
       }
       await fetchGroup();
