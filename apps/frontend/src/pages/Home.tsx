@@ -119,7 +119,19 @@ export function Home() {
         )}
 
         {error && (
-          <p className="text-center text-sm text-red-600 py-10">{error}</p>
+          <div className="rounded-2xl border border-red-100 bg-white p-8 text-center shadow-sm space-y-3">
+            <p className="text-2xl">⚡</p>
+            <p className="text-sm font-semibold text-gray-800">Couldn't reach the server</p>
+            <p className="text-xs text-gray-500">
+              Make sure the backend is running on port 3001, then try again.
+            </p>
+            <button
+              onClick={load}
+              className="mt-1 rounded-xl bg-indigo-600 px-5 py-2 text-sm font-semibold text-white hover:bg-indigo-700 transition-colors"
+            >
+              Retry
+            </button>
+          </div>
         )}
 
         {!loading && !error && memberships.length === 0 && (
