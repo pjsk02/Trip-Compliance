@@ -58,6 +58,10 @@ function AppRoutes() {
         element={<RequireGroupAuth><BudgetNegotiation /></RequireGroupAuth>}
       />
       <Route
+        path="/group/:code/negotiate"
+        element={<RequireGroupAuth><NegotiationView /></RequireGroupAuth>}
+      />
+      <Route
         path="/group/:code/itinerary"
         element={<RequireGroupAuth><ItineraryView /></RequireGroupAuth>}
       />
