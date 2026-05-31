@@ -642,9 +642,33 @@ groupsRouter.post(
       return;
     }
 
+    // Resolve trip dates: use stored dates if available, else fall back to body param
+    let postTripDuration: number;
+    let postTripDays: number;
+    let postStartDate: string;
+    let postEndDate: string;
+
+    if (group.startDate && group.endDate) {
+      postStartDate = group.startDate.toISOString().slice(0, 10);
+      postEndDate   = group.endDate.toISOString().slice(0, 10);
+      const derived = computeTripDuration(postStartDate, postEndDate);
+      postTripDays     = derived.tripDays;
+      postTripDuration = derived.tripDuration;
+    } else {
+      postTripDuration = parsed.data.tripDuration;
+      postTripDays     = postTripDuration + 1;
+      const today      = new Date();
+      postStartDate    = today.toISOString().slice(0, 10);
+      const endDt      = new Date(today); endDt.setUTCDate(today.getUTCDate() + postTripDuration);
+      postEndDate      = endDt.toISOString().slice(0, 10);
+    }
+
     const ctx = {
       destination:  group.destination,
-      tripDuration: parsed.data.tripDuration,
+      tripDuration: postTripDuration,
+      tripDays:     postTripDays,
+      startDate:    postStartDate,
+      endDate:      postEndDate,
       groupSize:    members.length,
       lockedBudget,
       members,
