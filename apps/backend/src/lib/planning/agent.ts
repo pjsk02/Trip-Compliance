@@ -17,6 +17,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import { z } from 'zod';
 import type { PlanningContext } from './schemas';
 import type { OnEvent, AgentName } from './streamEvents';
+import { wop } from '../weave';
 
 // Lazy-init so the key is read after dotenv has loaded (important for tests).
 let _anthropic: Anthropic | null = null;
