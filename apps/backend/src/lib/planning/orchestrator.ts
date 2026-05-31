@@ -207,7 +207,8 @@ async function _runOrchestratorImpl(
   });
 
   // ── Assemble final itinerary ──────────────────────────────────────────────
-  const itinerary = await assembleItinerary(
+  const tracedAssemble = wop('pipeline:assemble', assembleItinerary);
+  const itinerary = await tracedAssemble(
     ctx, activity, food, accommodation, transportation, budget, consensus, negotiation,
   );
 
