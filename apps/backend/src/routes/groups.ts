@@ -250,6 +250,70 @@ groupsRouter.post(
 );
 
 // ---------------------------------------------------------------------------
+// POST /groups/:code/unlock-preferences  [admin only, member token]
+// Reverts BUDGET_NEGOTIATION back to COLLECTING; clears downstream data if
+// budget has been proposed/locked or planning has started.
+// ---------------------------------------------------------------------------
+
+groupsRouter.post(
+  '/:code/unlock-preferences',
+  authenticate,
+  requireAdmin,
+  async (req: Request, res: Response): Promise<void> => {
+    const group = await prisma.group.findUnique({
+      where: { groupCode: req.params.code.toUpperCase() },
+      include: {
+        budgetRounds: { select: { id: true }, take: 1 },
+        itineraries:  { select: { id: true }, take: 1 },
+      },
+    });
+    if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
+    if (req.member!.groupId !== group.id) { res.status(403).json({ error: 'Forbidden' }); return; }
+
+    if (group.status !== GroupStatus.BUDGET_NEGOTIATION) {
+      res.status(409).json({ error: `Cannot unlock preferences from status "${group.status}"` });
+      return;
+    }
+
+    const hasDownstream =
+      group.lockedBudget !== null ||
+      group.budgetRounds.length > 0 ||
+      group.itineraries.length > 0;
+
+    // Caller can pass { confirm: true } to acknowledge discarding downstream data.
+    // If downstream data exists and confirm is missing, return a warning payload.
+    const { confirm } = req.body as { confirm?: boolean };
+    if (hasDownstream && !confirm) {
+      res.status(200).json({
+        requiresConfirmation: true,
+        warning:
+          'Unlocking preferences will discard all budget proposals and any generated itinerary. Pass { "confirm": true } to proceed.',
+      });
+      return;
+    }
+
+    await prisma.$transaction(async tx => {
+      // Clear downstream: budget rounds (cascade deletes votes), itineraries (cascade deletes feedback)
+      await tx.budgetRound.deleteMany({ where: { groupId: group.id } });
+      await tx.itinerary.deleteMany({ where: { groupId: group.id } });
+
+      // Reset preference profiles so members can re-edit; reset status to PENDING
+      await tx.member.updateMany({
+        where: { groupId: group.id },
+        data: { preferenceStatus: 'PENDING' },
+      });
+
+      await tx.group.update({
+        where: { id: group.id },
+        data: { status: GroupStatus.COLLECTING, lockedBudget: null },
+      });
+    });
+
+    res.json({ status: GroupStatus.COLLECTING, downstreamCleared: hasDownstream });
+  }
+);
+
+// ---------------------------------------------------------------------------
 // POST /groups/:code/trigger-planning  [admin only, member token]
 // ---------------------------------------------------------------------------
 
