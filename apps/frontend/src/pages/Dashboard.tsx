@@ -287,10 +287,34 @@ export function Dashboard() {
   }
 
   if (error || !group) {
+    const isNetworkErr = error.toLowerCase().includes('load') || error.toLowerCase().includes('fetch') || error.toLowerCase().includes('network') || error === 'Could not load group. Try refreshing.';
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4 bg-gray-50 px-4">
-        <p className="text-sm text-red-600">{error || 'Group not found.'}</p>
-        <Button variant="secondary" onClick={() => navigate('/')}>Go home</Button>
+        <div className="rounded-2xl border border-gray-100 bg-white shadow-sm px-6 py-8 max-w-sm w-full text-center space-y-3">
+          <p className="text-2xl">{isNetworkErr ? '⚡' : '🔍'}</p>
+          <p className="text-sm font-semibold text-gray-800">
+            {isNetworkErr ? "Couldn't reach the server" : (error || 'Group not found.')}
+          </p>
+          {isNetworkErr && (
+            <p className="text-xs text-gray-500">Make sure the backend is running, then retry.</p>
+          )}
+          <div className="flex gap-2 pt-1">
+            {isNetworkErr && (
+              <button
+                onClick={fetchGroup}
+                className="flex-1 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-semibold text-white hover:bg-indigo-700 transition-colors"
+              >
+                Retry
+              </button>
+            )}
+            <button
+              onClick={() => navigate('/home')}
+              className="flex-1 rounded-xl border border-gray-200 px-4 py-2 text-xs font-medium text-gray-600 hover:bg-gray-50 transition-colors"
+            >
+              My trips
+            </button>
+          </div>
+        </div>
       </div>
     );
   }
