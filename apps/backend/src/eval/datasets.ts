@@ -227,6 +227,9 @@ export const ADVENTURE_TRAVELERS: PlanningContext = {
 export const MIXED_CONFLICT: PlanningContext = {
   destination:  'Barcelona, Spain',
   tripDuration: 3,
+  tripDays:     4,
+  startDate:    '2025-10-20',
+  endDate:      '2025-10-23',
   groupSize:    5,
   lockedBudget: 5000, // $1,000/person
   members: [
