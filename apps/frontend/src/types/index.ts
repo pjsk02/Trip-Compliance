@@ -226,8 +226,10 @@ export interface BudgetTierSplit {
 export interface BudgetRound {
   id:        string;
   roundNum:  number;
-  /** Proposed group total in USD. */
+  /** Proposed group total in USD — authoritative, computed in code. */
   proposed:  number;
+  /** Per-person share — authoritative, computed in code as proposed / groupSize. */
+  perPerson: number;
   rationale: string;
   /** Short chat-bubble summary from the Budget Bot. */
   summary:   string;
