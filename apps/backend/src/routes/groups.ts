@@ -902,3 +902,162 @@ groupsRouter.post(
     }
   }
 );
+
+// ---------------------------------------------------------------------------
+// POST /groups/:code/finalize  [admin only, member token]
+// Officially finalizes a specific itinerary version as the group's trip plan.
+// Body: { itineraryId: string }
+// Sets Group.finalItineraryId, Group.finalizedAt, Group.status = COMPLETE.
+// Can be re-called to change the finalized version (re-finalize).
+// ---------------------------------------------------------------------------
+
+const FinalizeBodySchema = z.object({
+  itineraryId: z.string().min(1),
+});
+
+groupsRouter.post(
+  '/:code/finalize',
+  authenticate,
+  requireAdmin,
+  async (req: Request, res: Response): Promise<void> => {
+    const parsed = FinalizeBodySchema.safeParse(req.body);
+    if (!parsed.success) { res.status(400).json({ error: parsed.error.flatten() }); return; }
+
+    const group = await prisma.group.findUnique({
+      where: { groupCode: req.params.code.toUpperCase() },
+    });
+    if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
+    if (req.member!.groupId !== group.id) { res.status(403).json({ error: 'Forbidden' }); return; }
+
+    // Verify the itinerary belongs to this group
+    const itinerary = await prisma.itinerary.findFirst({
+      where: { id: parsed.data.itineraryId, groupId: group.id },
+    });
+    if (!itinerary) {
+      res.status(404).json({ error: 'Itinerary not found in this group' });
+      return;
+    }
+
+    // Read quality signals from the stored JSON so we can surface guardrail info
+    const budget  = itinerary.budgetBreakdown as Record<string, unknown>;
+    const scores  = itinerary.satisfactionScores as Record<string, unknown>;
+    const surplus = typeof budget.surplus === 'number' ? budget.surplus : null;
+    const fairnessFloorMet = typeof scores.fairnessFloorMet === 'boolean' ? scores.fairnessFloorMet : true;
+
+    const warnings: string[] = [];
+    if (surplus !== null && surplus < 0) {
+      warnings.push(`This plan is over budget by $${Math.abs(surplus).toFixed(0)}.`);
+    }
+    if (!fairnessFloorMet) {
+      warnings.push('One or more members are below the 70% satisfaction floor.');
+    }
+
+    // Persist the finalization
+    await prisma.group.update({
+      where: { id: group.id },
+      data: {
+        finalItineraryId: itinerary.id,
+        finalizedAt:      new Date(),
+        status:           GroupStatus.COMPLETE,
+      },
+    });
+
+    res.json({
+      finalized:   true,
+      itineraryId: itinerary.id,
+      version:     itinerary.version,
+      finalizedAt: new Date().toISOString(),
+      warnings,
+    });
+  }
+);
+
+// ---------------------------------------------------------------------------
+// POST /groups/:code/unfinalize  [admin only, member token]
+// Removes the finalization — group reverts to PLANNING status so the admin
+// can pick a different version or regenerate.
+// ---------------------------------------------------------------------------
+
+groupsRouter.post(
+  '/:code/unfinalize',
+  authenticate,
+  requireAdmin,
+  async (req: Request, res: Response): Promise<void> => {
+    const group = await prisma.group.findUnique({
+      where: { groupCode: req.params.code.toUpperCase() },
+    });
+    if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
+    if (req.member!.groupId !== group.id) { res.status(403).json({ error: 'Forbidden' }); return; }
+
+    if (!group.finalItineraryId) {
+      res.status(409).json({ error: 'Group is not finalized' });
+      return;
+    }
+
+    await prisma.group.update({
+      where: { id: group.id },
+      data: {
+        finalItineraryId: null,
+        finalizedAt:      null,
+        status:           GroupStatus.PLANNING,
+      },
+    });
+
+    res.json({ unfinalized: true });
+  }
+);
+
+// ---------------------------------------------------------------------------
+// GET /groups/:code/final  [any authenticated member, member token]
+// Returns the finalized itinerary for display to all group members.
+// Returns { finalized: false } when no version is finalized yet.
+// ---------------------------------------------------------------------------
+
+groupsRouter.get(
+  '/:code/final',
+  authenticate,
+  async (req: Request, res: Response): Promise<void> => {
+    const group = await prisma.group.findUnique({
+      where: { groupCode: req.params.code.toUpperCase() },
+      include: { finalItinerary: true },
+    });
+    if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
+
+    // Verify membership (member token)
+    if (req.member) {
+      if (req.member.groupId !== group.id) {
+        res.status(403).json({ error: 'You are not a member of this group' }); return;
+      }
+    } else if (req.user) {
+      const isMember = await prisma.member.findFirst({
+        where: { groupId: group.id, userId: req.user.userId },
+      });
+      if (!isMember) { res.status(403).json({ error: 'You are not a member of this group' }); return; }
+    } else {
+      res.status(401).json({ error: 'Authentication required' }); return;
+    }
+
+    if (!group.finalItineraryId || !group.finalItinerary) {
+      res.json({ finalized: false });
+      return;
+    }
+
+    const it = group.finalItinerary;
+    res.json({
+      finalized:          true,
+      finalizedAt:        group.finalizedAt?.toISOString() ?? null,
+      itinerary: {
+        id:                 it.id,
+        version:            it.version,
+        dayPlans:           it.dayPlans,
+        budgetBreakdown:    it.budgetBreakdown,
+        satisfactionScores: it.satisfactionScores,
+        tradeoffReport:     it.tradeoffReport,
+        adminOverrideFlag:  false,
+        negotiationRounds:  0,
+        generatedAt:        it.createdAt.toISOString(),
+        createdAt:          it.createdAt.toISOString(),
+      },
+    });
+  }
+);
