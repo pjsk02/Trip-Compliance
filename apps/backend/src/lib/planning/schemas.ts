@@ -144,7 +144,7 @@ export type AccommodationProposal = z.infer<typeof AccommodationProposalSchema>;
 export const TransportLegSchema = z.object({
   from:        z.string(),
   to:          z.string(),
-  mode:        z.enum(['flight', 'train', 'bus', 'ferry', 'taxi', 'rental_car', 'metro', 'walk']),
+  mode:        z.enum(['flight', 'train', 'bus', 'ferry', 'taxi', 'rental_car', 'metro', 'walk', 'rideshare']),
   estimatedCostPerPersonUsd: z.number().nonnegative(),
   estimatedDurationHours:    z.number().nonnegative(),
   notes:       z.string().optional(),
