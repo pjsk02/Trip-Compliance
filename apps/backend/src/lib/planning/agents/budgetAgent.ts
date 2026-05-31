@@ -99,21 +99,27 @@ export class BudgetAgent extends BaseAgent<BudgetProposal> {
 
   private computeFromAgents(ctx: PlanningContext): Omit<BudgetProposal, 'substitutions'> {
     const { activity, food, accommodation, transportation, realLockedBudget } = this.input;
-    const { groupSize, lockedBudget, tripDuration } = ctx;
+    const { groupSize, lockedBudget, tripDuration, tripDays } = ctx;
 
     const rec =
       accommodation.options[accommodation.recommended] ?? accommodation.options[0]!;
 
-    // Per-person cost from each agent
+    // ONE-TIME COSTS (costed across the whole stay, not per day)
+    // Accommodation: tripDuration nights (tripDays - 1)
     const accommodationPP = Math.round(rec.pricePerNightPerPersonUsd * tripDuration);
-    const foodPP          = Math.round(food.totalFoodCostPerPersonUsd);
-    const transportPP     = Math.round(transportation.totalTransportCostPerPersonUsd);
+
+    // Round-trip transport is a one-time cost
+    const transportPP = Math.round(transportation.totalTransportCostPerPersonUsd);
+
+    // PER-DAY / RECURRING COSTS
+    // Food: agent already summed across all days respecting arrival/departure pattern
+    const foodPP = Math.round(food.totalFoodCostPerPersonUsd);
 
     // Activities: take the candidates that will realistically be scheduled
-    // (same window the orchestrator uses for candidate building)
+    // (same window the orchestrator uses for candidate building, keyed to tripDays)
     const activityWindow = Math.min(
       activity.candidates.length,
-      Math.max(4, tripDuration * 2),
+      Math.max(4, tripDays * 2),
     );
     const activitiesPP = Math.round(
       activity.candidates
