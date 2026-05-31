@@ -43,6 +43,8 @@ export interface Group {
   submissionDeadline: string | null;
   createdAt: string;
   members: Member[];
+  finalItineraryId: string | null;
+  finalizedAt: string | null;
 }
 
 /** User-level session — persisted across groups. */
