@@ -120,8 +120,8 @@ budgetRouter.get('/:code/budget', async (req: Request, res: Response): Promise<v
     lockedBudget:         group.lockedBudget ? Number(group.lockedBudget) : null,
     totalMembers,
     membersWithoutBudget,
-    rounds:               rounds.map(serializeRound),
-    currentRound:         rounds.length > 0 ? serializeRound(rounds[rounds.length - 1]) : null,
+    rounds:               rounds.map(r => serializeRound(r, totalMembers)),
+    currentRound:         rounds.length > 0 ? serializeRound(rounds[rounds.length - 1], totalMembers) : null,
   });
 });
 
