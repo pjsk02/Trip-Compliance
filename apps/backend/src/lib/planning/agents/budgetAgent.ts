@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { BaseAgent, contextSummary } from '../agent';
+import { BaseAgent, contextSummary, extractJsonObject, getClient } from '../agent';
 import {
   BudgetProposalSchema,
   type BudgetProposal,
@@ -12,14 +12,39 @@ import {
 } from '../schemas';
 
 export interface BudgetAgentInput {
-  ctx:           PlanningContext;
-  activity:      ActivityProposal;
-  food:          FoodProposal;
-  accommodation: AccommodationProposal;
+  ctx:            PlanningContext;
+  activity:       ActivityProposal;
+  food:           FoodProposal;
+  accommodation:  AccommodationProposal;
   transportation: TransportationProposal;
 }
 
-/** Budget Agent receives the other agents' cost estimates and reconciles them. */
+// ---------------------------------------------------------------------------
+// Schema for the LLM's ONLY job: substitution suggestions.
+// All numeric budget fields are computed in code — the model never produces them.
+// ---------------------------------------------------------------------------
+
+const SubstitutionsSchema = z.object({
+  substitutions: z
+    .array(
+      z.object({
+        replace:   z.string(),
+        with:      z.string(),
+        savingUsd: z.number().nonnegative(),
+      }),
+    )
+    .default([]),
+});
+
+/**
+ * Budget Agent — Wave 2 of the planning pipeline.
+ *
+ * Design: ALL numeric fields (lines, totalEstimatedUsd, lockedBudgetUsd,
+ * surplus, overrunFlag) are computed in code from the other agents' proposals.
+ * The LLM is invoked ONLY when over budget, and then only to suggest
+ * substitutions (text + saving estimate). This eliminates the number
+ * hallucination and schema mismatch bugs that caused white-screen failures.
+ */
 export class BudgetAgent extends BaseAgent<BudgetProposal> {
   readonly name = 'budget';
 
@@ -30,76 +55,165 @@ export class BudgetAgent extends BaseAgent<BudgetProposal> {
     return this;
   }
 
-  protected schema(): z.ZodType<BudgetProposal> {
-    return BudgetProposalSchema;
+  // These three are required by BaseAgent but not used — propose() is overridden.
+  protected schema(): z.ZodType<BudgetProposal> { return BudgetProposalSchema; }
+  protected systemPrompt(): string { return SCHEMA_REFERENCE; }
+  protected buildUserPrompt(_ctx: PlanningContext): string { return ''; }
+
+  protected safeDefault(ctx: PlanningContext): BudgetProposal {
+    // Always available — computeFromAgents() is pure and cannot throw.
+    return { ...this.computeFromAgents(ctx), substitutions: [] };
   }
 
-  protected systemPrompt(): string {
-    return `You are the TripSync Budget Reconciliation agent. You receive cost estimates from the Activity, Food, Accommodation, and Transportation agents and produce a unified budget summary.
+  /**
+   * Main entry point — overrides BaseAgent.propose() entirely.
+   * No LLM calls for numbers. LLM called at most once, only for substitutions.
+   */
+  async propose(ctx: PlanningContext): Promise<BudgetProposal> {
+    const computed = this.computeFromAgents(ctx);
 
-RULES:
-1. Sum up all cost lines and compare to the lockedBudgetUsd.
-2. surplus = lockedBudgetUsd - totalEstimatedUsd (negative if over budget).
-3. Set overrunFlag: true if surplus < 0.
-4. If over budget: propose concrete substitutions — which activity/meal/accommodation to swap to save money. Be specific (e.g. "Replace mid-range hotel with budget guesthouse, saving ~$X per person").
-5. If under budget: note the buffer — do NOT fabricate extra spending.
-6. Budget-consciousness score: if high (≥70) → be conservative in estimates; if low (≤30) → premium options are acceptable.
-7. Lines: one per category (accommodation, food, activities, transport, miscellaneous). estimatedCostPerPersonUsd × groupSize = totalUsd.
+    if (!computed.overrunFlag) {
+      // Within budget — no substitutions needed, no LLM call.
+      return { ...computed, substitutions: [] };
+    }
 
-OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
+    // Over budget — ask the LLM for substitution suggestions only.
+    const substitutions = await this.fetchSubstitutions(ctx, computed).catch(err => {
+      console.error(`[budget] Substitutions call failed (${err.message}) — using empty list`);
+      return [] as BudgetProposal['substitutions'];
+    });
+
+    return { ...computed, substitutions };
+  }
+
+  // ---------------------------------------------------------------------------
+  // Pure math — computes budget from the other agents' proposals.
+  // ---------------------------------------------------------------------------
+
+  private computeFromAgents(ctx: PlanningContext): Omit<BudgetProposal, 'substitutions'> {
+    const { activity, food, accommodation, transportation } = this.input;
+    const { groupSize, lockedBudget, tripDuration } = ctx;
+
+    const rec =
+      accommodation.options[accommodation.recommended] ?? accommodation.options[0]!;
+
+    // Per-person cost from each agent
+    const accommodationPP = Math.round(rec.pricePerNightPerPersonUsd * tripDuration);
+    const foodPP          = Math.round(food.totalFoodCostPerPersonUsd);
+    const transportPP     = Math.round(transportation.totalTransportCostPerPersonUsd);
+
+    // Activities: take the candidates that will realistically be scheduled
+    // (same window the orchestrator uses for candidate building)
+    const activityWindow = Math.min(
+      activity.candidates.length,
+      Math.max(4, tripDuration * 2),
+    );
+    const activitiesPP = Math.round(
+      activity.candidates
+        .slice(0, activityWindow)
+        .reduce((s, a) => s + a.estimatedCostPerPersonUsd, 0),
+    );
+
+    // Miscellaneous: 5% of per-person budget, minimum $20
+    const miscPP = Math.max(20, Math.round((lockedBudget / groupSize) * 0.05));
+
+    const lines = [
+      { category: 'Accommodation', estimatedCostPerPersonUsd: accommodationPP, totalUsd: accommodationPP * groupSize },
+      { category: 'Food & Dining', estimatedCostPerPersonUsd: foodPP,          totalUsd: foodPP * groupSize },
+      { category: 'Activities',    estimatedCostPerPersonUsd: activitiesPP,    totalUsd: activitiesPP * groupSize },
+      { category: 'Transportation',estimatedCostPerPersonUsd: transportPP,     totalUsd: transportPP * groupSize },
+      { category: 'Miscellaneous', estimatedCostPerPersonUsd: miscPP,          totalUsd: miscPP * groupSize },
+    ];
+
+    const totalEstimatedUsd = lines.reduce((s, l) => s + l.totalUsd, 0);
+    const surplus           = lockedBudget - totalEstimatedUsd;
+
+    return {
+      agent: 'budget',
+      lines,
+      totalEstimatedUsd,
+      lockedBudgetUsd: lockedBudget,
+      surplus,
+      overrunFlag: surplus < 0,
+    };
+  }
+
+  // ---------------------------------------------------------------------------
+  // LLM call — only for substitution suggestions, never for numbers.
+  // ---------------------------------------------------------------------------
+
+  private async fetchSubstitutions(
+    ctx: PlanningContext,
+    computed: Omit<BudgetProposal, 'substitutions'>,
+  ): Promise<BudgetProposal['substitutions']> {
+    const { accommodation } = this.input;
+    const rec =
+      accommodation.options[accommodation.recommended] ?? accommodation.options[0]!;
+    const overrunUsd    = Math.abs(computed.surplus);
+    const perPersonBudget = Math.round(ctx.lockedBudget / ctx.groupSize);
+    const budgetScore   = groupMean(ctx.members.map(m => m.scores.logistics.budgetConsciousness));
+
+    const linesSummary = computed.lines
+      .map(l => `  ${l.category}: $${l.estimatedCostPerPersonUsd}/person ($${l.totalUsd} total)`)
+      .join('\n');
+
+    const prompt = [
+      contextSummary(ctx),
+      '',
+      'COMPUTED BUDGET BREAKDOWN (from agent proposals):',
+      linesSummary,
+      `  TOTAL ESTIMATED: $${computed.totalEstimatedUsd} — OVERRUN by $${overrunUsd}`,
+      `  Locked budget:   $${ctx.lockedBudget} ($${perPersonBudget}/person)`,
+      '',
+      `Current accommodation recommendation: ${rec.name} ($${rec.pricePerNightPerPersonUsd}/night/person)`,
+      `Group budget-consciousness score: ${budgetScore}/100 (higher = more cost-sensitive)`,
+      '',
+      'Suggest 1-3 specific, actionable substitutions to bring the total within budget.',
+      'Be concrete: name what to replace and with what, and estimate the saving in USD.',
+      '',
+      'Return ONLY this JSON — no prose, no fences, nothing outside the braces:',
+      '{"substitutions":[{"replace":"string","with":"string","savingUsd":number}]}',
+      'If no viable substitutions exist, return: {"substitutions":[]}',
+    ].join('\n');
+
+    const response = await getClient().messages.create({
+      model: process.env.CLAUDE_MODEL ?? 'claude-haiku-4-5-20251001',
+      max_tokens: 600,
+      system:
+        'You are a travel budget optimiser. Return ONLY valid JSON — no prose, no markdown fences. ' +
+        'Do not include any numbers except the savingUsd values; describe substitutions in plain text.',
+      messages: [{ role: 'user', content: prompt }],
+    });
+
+    const raw = response.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('');
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(extractJsonObject(raw));
+    } catch {
+      return [];
+    }
+
+    const result = SubstitutionsSchema.safeParse(parsed);
+    return result.success ? result.data.substitutions : [];
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Schema reference — only used in repair prompts (the base class repair path)
+// ---------------------------------------------------------------------------
+
+const SCHEMA_REFERENCE = `Budget agent output schema (for reference only):
 {
   "agent": "budget",
-  "lines": [
-    {
-      "category": "string",
-      "estimatedCostPerPersonUsd": number,
-      "totalUsd": number
-    }
-  ],
+  "lines": [{"category":"string","estimatedCostPerPersonUsd":number,"totalUsd":number}],
   "totalEstimatedUsd": number,
   "lockedBudgetUsd": number,
   "surplus": number,
   "overrunFlag": true|false,
-  "substitutions": [
-    { "replace": "string", "with": "string", "savingUsd": number }
-  ]
-}`;
-  }
-
-  protected buildUserPrompt(ctx: PlanningContext): string {
-    const { activity, food, accommodation, transportation } = this.input;
-    const perPersonBudget = ctx.lockedBudget / ctx.groupSize;
-    const budgetScore = groupMean(ctx.members.map(m => m.scores.logistics.budgetConsciousness));
-    const rec = accommodation.options[accommodation.recommended];
-
-    // Summarise costs from sibling agents
-    const topActivitiesCost = activity.candidates
-      .slice(0, 4)
-      .reduce((sum, a) => sum + a.estimatedCostPerPersonUsd, 0);
-
-    const miscPerPerson = Math.round(perPersonBudget * 0.05); // 5% buffer estimate
-
-    return [
-      contextSummary(ctx),
-      '',
-      'COST ESTIMATES FROM SIBLING AGENTS:',
-      `  Accommodation (recommended: ${rec.name}):`,
-      `    $${rec.pricePerNightPerPersonUsd}/night × ${ctx.tripDuration} nights = $${Math.round(rec.pricePerNightPerPersonUsd * ctx.tripDuration)}/person`,
-      `    Total accommodation: $${rec.totalCostUsd}`,
-      `  Food:`,
-      `    $${food.totalFoodCostPerPersonUsd}/person total`,
-      `    Food total: $${Math.round(food.totalFoodCostPerPersonUsd * ctx.groupSize)}`,
-      `  Top 4 activities (combined per-person estimate): $${topActivitiesCost}`,
-      `    Activities total: $${Math.round(topActivitiesCost * ctx.groupSize)}`,
-      `  Transport: $${transportation.totalTransportCostPerPersonUsd}/person`,
-      `    Transport total: $${Math.round(transportation.totalTransportCostPerPersonUsd * ctx.groupSize)}`,
-      `  Misc (estimated): $${miscPerPerson}/person`,
-      '',
-      `GROUP BUDGET SIGNAL:`,
-      `  Locked budget: $${ctx.lockedBudget} total ($${Math.round(perPersonBudget)}/person)`,
-      `  Budget-consciousness score: ${budgetScore}/100`,
-      '',
-      'Produce the full budget reconciliation. If over budget, propose specific substitutions.',
-    ].join('\n');
-  }
+  "substitutions": [{"replace":"string","with":"string","savingUsd":number}]
 }
+substitutions must be an array (can be empty []).`;
