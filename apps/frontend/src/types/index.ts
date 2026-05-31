@@ -403,5 +403,33 @@ export interface SubmitFeedbackResponse {
 }
 
 export interface ItineraryListResponse {
-  itineraries: Itinerary[];
+  itineraries:      Itinerary[];
+  finalItineraryId: string | null;
+  finalizedAt:      string | null;
 }
+
+// ---------------------------------------------------------------------------
+// Finalization
+// ---------------------------------------------------------------------------
+
+export interface FinalizeResponse {
+  finalized:   boolean;
+  itineraryId: string;
+  version:     number;
+  finalizedAt: string;
+  /** Non-blocking warnings (over budget, below fairness floor). */
+  warnings:    string[];
+}
+
+export interface FinalItineraryResponse {
+  finalized:   false;
+} | {
+  finalized:   true;
+  finalizedAt: string | null;
+  itinerary:   Itinerary;
+}
+
+// Use a discriminated union via type alias — TS doesn't allow | in interface body
+export type FinalResponse =
+  | { finalized: false }
+  | { finalized: true; finalizedAt: string | null; itinerary: Itinerary };
