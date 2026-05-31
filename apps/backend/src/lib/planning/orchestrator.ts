@@ -177,7 +177,7 @@ export async function runOrchestrator(
 
   // ── Consensus — score against the REAL locked budget (not buffered) ───────
   const consensus = runConsensus({
-    candidates:      buildCandidates(activity, budget, agentCtx),
+    candidates:      buildCandidates(activity, food, budget, agentCtx),
     members:         ctx.members,
     lockedBudgetUsd: ctx.lockedBudget,
     tripDuration:    ctx.tripDuration,
