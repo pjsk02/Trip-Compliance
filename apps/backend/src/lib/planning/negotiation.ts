@@ -268,7 +268,9 @@ export async function negotiate(
   initialFood: FoodProposal,
   initialBudget: BudgetProposal,
   maxRounds: number = DEFAULT_MAX_ROUNDS,
+  onEvent?: OnEvent,
 ): Promise<NegotiationResult> {
+  const emit = onEvent ?? (() => {});
   let activity = initialActivity;
   let food     = initialFood;
   const rounds: NegotiationRound[] = [];
@@ -284,6 +286,17 @@ export async function negotiate(
         converged: true,
         finalConflicts: [],
       };
+    }
+
+    // Emit a pushback event for each conflict
+    for (const conflict of conflicts) {
+      const fromAgent: AgentName =
+        conflict.type === 'BUDGET_OVERRUN'      ? 'budget' :
+        conflict.type === 'DIETARY_VIOLATION'   ? 'food'   : 'activity';
+      const againstAgent: AgentName =
+        conflict.type === 'BUDGET_OVERRUN'      ? 'activity' :
+        conflict.type === 'DIETARY_VIOLATION'   ? 'food'     : 'activity';
+      emit({ type: 'pushback', fromAgent, againstAgent, statement: conflict.description });
     }
 
     const resolutions: string[] = [];
@@ -307,7 +320,23 @@ export async function negotiate(
     if (actResult.resolution) resolutions.push(actResult.resolution);
     if (foodResult.resolution) resolutions.push(foodResult.resolution);
 
+    // Emit a resolution event for each meaningful change
+    for (const res of resolutions) {
+      if (res && !res.startsWith('No ')) {
+        emit({ type: 'resolution_proposed', statement: res });
+      }
+    }
+
     rounds.push({ roundNum: round, conflicts, resolutions });
+
+    // Emit round summary
+    const remaining = detectConflicts(ctx, activity, food, initialBudget);
+    emit({
+      type: 'round_completed',
+      roundNumber: round,
+      conflictsResolved: conflicts.length - remaining.length,
+      remaining: remaining.length,
+    });
   }
 
   // Max rounds hit — report remaining conflicts
