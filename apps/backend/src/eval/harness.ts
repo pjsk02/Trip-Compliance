@@ -272,11 +272,11 @@ export async function runEvaluation(options: {
 
       // Also run directly to get reasons and typed metadata
       const output = await planningModel({ datasetRow: { dataset } });
-      const satResult   = scoreSatisfaction({ dataset }, output);
-      const fairResult  = scoreFairness({ dataset }, output);
-      const budResult   = scoreBudgetCompliance({ dataset }, output);
-      const divResult   = scoreDiversity({ dataset }, output);
-      const conResult   = scoreConstraintSatisfaction({ dataset }, output);
+      const satResult  = scoreSatisfaction({ dataset }, output);
+      const fairResult = scoreFairness({ dataset }, output);
+      const budResult  = scoreBudgetCompliance({ dataset }, output);
+      const divResult  = scoreDiversity({ dataset }, output);
+      const conResult  = scoreConstraintSatisfaction({ dataset }, output);
 
       const scores = {
         satisfaction:          satisfactionScore || satResult.score,
