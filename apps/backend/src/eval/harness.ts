@@ -14,9 +14,8 @@ import crypto from 'crypto';
 import fs from 'fs';
 import path from 'path';
 import { runOrchestrator } from '../lib/planning/orchestrator';
-import type { OrchestratorResult } from '../lib/planning/schemas';
 import { EVAL_DATASETS } from './datasets';
-import type { EvalDataset, EvalInput, EvalOutput } from './datasets';
+import type { EvalDataset } from './datasets';
 import {
   scoreSatisfaction,
   scoreFairness,
@@ -24,14 +23,10 @@ import {
   scoreDiversity,
   scoreConstraintSatisfaction,
   computeOverall,
-  SCORE_WEIGHTS,
 } from './scorers';
-import type { EvalRunResult } from './scorers';
+import type { EvalInput, EvalOutput, EvalRunResult } from './scorers';
 
-export type { EvalInput, EvalOutput };
-
-// Re-export for dataset types used in scorers
-export type { EvalDataset };
+export type { EvalInput, EvalOutput, EvalDataset };
 
 // ---------------------------------------------------------------------------
 // Prompt hash — detects when system prompts change so we can flag regressions
