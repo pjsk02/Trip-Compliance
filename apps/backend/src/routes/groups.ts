@@ -477,7 +477,16 @@ groupsRouter.get(
       res.status(409).json({ error: 'No members with complete preference profiles.' }); return;
     }
 
-    const ctx = { destination: group.destination, tripDuration, groupSize: members.length, lockedBudget, members };
+    const ctx = {
+      destination:  group.destination,
+      tripDuration,
+      tripDays,
+      startDate,
+      endDate,
+      groupSize:    members.length,
+      lockedBudget,
+      members,
+    };
 
     // ── Open SSE stream ────────────────────────────────────────────────────
     res.setHeader('Content-Type',  'text/event-stream');
