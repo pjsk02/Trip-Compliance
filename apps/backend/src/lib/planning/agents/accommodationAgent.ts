@@ -88,9 +88,16 @@ OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
   }
 
   protected buildUserPrompt(ctx: PlanningContext): string {
-    const comfortScore  = groupMean(ctx.members.map(m => m.scores.logistics.flightComfort));
-    const budgetScore   = groupMean(ctx.members.map(m => m.scores.logistics.budgetConsciousness));
+    const comfortScore    = groupMean(ctx.members.map(m => m.scores.logistics.flightComfort));
+    const budgetScore     = groupMean(ctx.members.map(m => m.scores.logistics.budgetConsciousness));
     const perPersonBudget = ctx.lockedBudget / ctx.groupSize;
+
+    // Accommodation should be ~30% of the total per-person budget.
+    // Hard cap: pricePerNightPerPersonUsd must not exceed this.
+    const accommodationSharePP  = Math.round(perPersonBudget * 0.30);
+    const maxPricePerNightPP    = ctx.tripDuration > 0
+      ? Math.round(accommodationSharePP / ctx.tripDuration)
+      : accommodationSharePP;
 
     const mobilityMembers = ctx.members
       .filter(m => m.constraints.mobilityLimitations)
@@ -108,6 +115,8 @@ OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
       `  Group budget-consciousness: ${budgetScore}/100`,
       `  Total budget per person: $${Math.round(perPersonBudget)}`,
       `  Trip duration: ${ctx.tripDuration} nights`,
+      `  HARD CAP — accommodation share: $${accommodationSharePP}/person total (≈ $${maxPricePerNightPP}/person/night max)`,
+      `  ALL three options MUST have pricePerNightPerPersonUsd ≤ $${maxPricePerNightPP}. Do NOT exceed this.`,
       mobilityMembers.length
         ? `  Accessibility required for: ${mobilityMembers.join(', ')}`
         : '  No mobility constraints.',
@@ -115,7 +124,7 @@ OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
         ? `  Hard budget caps: ${hardCaps.join(', ')}`
         : '',
       '',
-      'Propose exactly 3 options (budget / mid-range / premium) and pick the best fit.',
+      'Propose exactly 3 options (budget / mid-range / premium) within the hard cap, and pick the best fit.',
     ].filter(Boolean).join('\n');
   }
 }
