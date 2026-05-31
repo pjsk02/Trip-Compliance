@@ -398,13 +398,9 @@ groupsRouter.get(
     if (!memberInfo.isAdmin) { res.status(403).json({ error: 'Admin access required' }); return; }
 
     // ── Validate query params ──────────────────────────────────────────────
-    const tripDuration        = parseInt(req.query.tripDuration as string, 10);
     const maxNegotiationRounds = Math.min(parseInt((req.query.maxNegotiationRounds as string) ?? '3', 10) || 3, 5);
-    if (isNaN(tripDuration) || tripDuration < 1 || tripDuration > 30) {
-      res.status(400).json({ error: 'tripDuration must be 1–30' }); return;
-    }
 
-    // ── Load group (same guards as the POST route) ─────────────────────────
+    // ── Load group ─────────────────────────────────────────────────────────
     const group = await prisma.group.findUnique({
       where: { groupCode: req.params.code.toUpperCase() },
       include: {
@@ -420,6 +416,33 @@ groupsRouter.get(
     }
     if (!group.destination) {
       res.status(409).json({ error: 'Group must have a destination set.' }); return;
+    }
+
+    // ── Resolve trip duration from stored dates OR query param fallback ─────
+    let tripDuration: number;
+    let tripDays: number;
+    let startDate: string;
+    let endDate: string;
+
+    if (group.startDate && group.endDate) {
+      startDate = group.startDate.toISOString().slice(0, 10);
+      endDate   = group.endDate.toISOString().slice(0, 10);
+      const derived = computeTripDuration(startDate, endDate);
+      tripDays     = derived.tripDays;
+      tripDuration = derived.tripDuration;
+    } else {
+      // Fallback: query param (legacy behaviour when dates not set)
+      const qDuration = parseInt(req.query.tripDuration as string, 10);
+      if (isNaN(qDuration) || qDuration < 1 || qDuration > 30) {
+        res.status(400).json({ error: 'No trip dates set on group. Pass ?tripDuration=N (1–30).' }); return;
+      }
+      tripDuration = qDuration;
+      tripDays     = qDuration + 1;
+      // Synthesize start/end from today as placeholder
+      const today  = new Date();
+      startDate    = today.toISOString().slice(0, 10);
+      const endDt  = new Date(today); endDt.setUTCDate(today.getUTCDate() + qDuration);
+      endDate      = endDt.toISOString().slice(0, 10);
     }
 
     const lockedBudget = group.lockedBudget
