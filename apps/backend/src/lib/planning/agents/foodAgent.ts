@@ -14,6 +14,24 @@ export class FoodAgent extends BaseAgent<FoodProposal> {
     return FoodProposalSchema;
   }
 
+  protected safeDefault(ctx: PlanningContext): FoodProposal {
+    const mealPlan: FoodProposal['mealPlan'] = [];
+    const safe = { vegetarian: true, vegan: false, glutenFree: false, halal: false, kosher: false, nutFree: false };
+    for (let day = 1; day <= ctx.tripDuration; day++) {
+      mealPlan.push(
+        { day, type: 'breakfast', venue: 'Hotel / hostel breakfast', cuisineType: 'Continental', estimatedCostPerPersonUsd: 8, dietaryCompatibility: safe, alcoholServed: false },
+        { day, type: 'lunch', venue: 'Local café', cuisineType: 'Local', estimatedCostPerPersonUsd: 14, dietaryCompatibility: safe, alcoholServed: false },
+        { day, type: 'dinner', venue: 'Local restaurant', cuisineType: 'Local', estimatedCostPerPersonUsd: 20, dietaryCompatibility: safe, alcoholServed: true },
+      );
+    }
+    return {
+      agent: 'food',
+      mealPlan,
+      dietaryFlags: [],
+      totalFoodCostPerPersonUsd: 42 * ctx.tripDuration,
+    };
+  }
+
   protected systemPrompt(): string {
     return `You are the TripSync Food Planner agent. You design a meal plan for the trip.
 
