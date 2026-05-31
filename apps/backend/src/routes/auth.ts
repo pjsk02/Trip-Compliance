@@ -76,6 +76,8 @@ authRouter.get('/me', requireUser, async (req: Request, res: Response): Promise<
               destination: true,
               status: true,
               adminMemberId: true,
+              finalItineraryId: true,
+              finalizedAt: true,
             },
           },
         },
