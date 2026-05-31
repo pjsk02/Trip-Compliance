@@ -195,6 +195,7 @@ export abstract class BaseAgent<TProposal> {
         `  Attempt 1: ${attempt1.error}\n` +
         `  Attempt 2: ${attempt2.error}`,
       );
+      onEvent?.({ type: 'agent_error', agent: this.name as AgentName, message: `Parse failed — using estimated defaults. ${attempt1.error}` });
       return fallback;
     }
 
