@@ -76,7 +76,7 @@ export class BudgetAgent extends BaseAgent<BudgetProposal> {
    * Main entry point — overrides BaseAgent.propose() entirely.
    * No LLM calls for numbers. LLM called at most once, only for substitutions.
    */
-  async propose(ctx: PlanningContext): Promise<BudgetProposal> {
+  async propose(ctx: PlanningContext, _onEvent?: OnEvent): Promise<BudgetProposal> {
     const computed = this.computeFromAgents(ctx);
 
     if (!computed.overrunFlag) {
