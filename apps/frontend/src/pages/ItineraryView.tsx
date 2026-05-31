@@ -832,34 +832,43 @@ function TabBar({ active, onChange }: { active: TabId; onChange: (t: TabId) => v
 // ---------------------------------------------------------------------------
 
 function VersionSwitcher({
-  versions, active, onChange,
+  versions, active, finalItineraryId, onChange,
 }: {
   versions: Itinerary[];
   active: number;
+  finalItineraryId: string | null;
   onChange: (v: number) => void;
 }) {
   if (versions.length <= 1) return null;
   return (
     <div className="flex items-center gap-2 flex-wrap px-1">
       <span className="text-[11px] font-semibold uppercase tracking-wider text-gray-400 shrink-0">Version</span>
-      {versions.map(it => (
-        <button
-          key={it.version}
-          onClick={() => onChange(it.version)}
-          className={`rounded-lg px-3 py-1 text-xs font-semibold transition-colors ${
-            it.version === active
-              ? 'bg-indigo-600 text-white'
-              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-          }`}
-        >
-          v{it.version}
-          {it.feedback && it.feedback.length > 0 && it.version !== active && (
-            <span className="ml-1 font-normal text-gray-400">
-              ({it.feedback[0]?.type.replace(/_/g, ' ').toLowerCase()})
-            </span>
-          )}
-        </button>
-      ))}
+      {versions.map(it => {
+        const isFinal = it.id === finalItineraryId;
+        return (
+          <button
+            key={it.version}
+            onClick={() => onChange(it.version)}
+            className={`relative rounded-lg px-3 py-1 text-xs font-semibold transition-colors ${
+              it.version === active
+                ? 'bg-indigo-600 text-white'
+                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+            }`}
+          >
+            v{it.version}
+            {isFinal && (
+              <span className="ml-1 inline-flex items-center rounded-full bg-emerald-500 px-1 py-0.5 text-[9px] font-bold text-white leading-none">
+                FINAL
+              </span>
+            )}
+            {!isFinal && it.feedback && it.feedback.length > 0 && it.version !== active && (
+              <span className="ml-1 font-normal text-gray-400">
+                ({it.feedback[0]?.type.replace(/_/g, ' ').toLowerCase()})
+              </span>
+            )}
+          </button>
+        );
+      })}
     </div>
   );
 }
