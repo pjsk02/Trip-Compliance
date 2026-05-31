@@ -800,6 +800,7 @@ const TABS = [
   { id: 'budget',     label: 'Budget',     icon: '💰' },
   { id: 'scores',     label: 'Scores',     icon: '🎯' },
   { id: 'tradeoffs',  label: 'Tradeoffs',  icon: '⚖️' },
+  { id: 'observe',    label: 'Observe',    icon: '🔬' },
 ] as const;
 type TabId = typeof TABS[number]['id'];
 
