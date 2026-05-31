@@ -146,31 +146,40 @@ async function planningModel(input: EvalInput): Promise<EvalOutput> {
 }
 
 // ---------------------------------------------------------------------------
-// Individual scorer wrappers (Weave expects (input, output) => { score })
+// Individual scorer wrappers
+// Weave Evaluation scorers receive { datasetRow, modelOutput } as one arg.
 // ---------------------------------------------------------------------------
 
+type WeaveDatasetRow = { dataset: EvalDataset };
+type WeaveScorerArg  = { datasetRow: WeaveDatasetRow; modelOutput: EvalOutput };
+
 const weaveSatisfactionScorer = weaveSDK.op(
-  (input: EvalInput, output: EvalOutput) => scoreSatisfaction(input, output),
+  ({ datasetRow, modelOutput }: WeaveScorerArg) =>
+    scoreSatisfaction({ dataset: datasetRow.dataset }, modelOutput),
   { name: 'scorer:satisfaction' },
 );
 
 const weaveFairnessScorer = weaveSDK.op(
-  (input: EvalInput, output: EvalOutput) => scoreFairness(input, output),
+  ({ datasetRow, modelOutput }: WeaveScorerArg) =>
+    scoreFairness({ dataset: datasetRow.dataset }, modelOutput),
   { name: 'scorer:fairness' },
 );
 
 const weaveBudgetScorer = weaveSDK.op(
-  (input: EvalInput, output: EvalOutput) => scoreBudgetCompliance(input, output),
+  ({ datasetRow, modelOutput }: WeaveScorerArg) =>
+    scoreBudgetCompliance({ dataset: datasetRow.dataset }, modelOutput),
   { name: 'scorer:budget_compliance' },
 );
 
 const weaveDiversityScorer = weaveSDK.op(
-  (input: EvalInput, output: EvalOutput) => scoreDiversity(input, output),
+  ({ datasetRow, modelOutput }: WeaveScorerArg) =>
+    scoreDiversity({ dataset: datasetRow.dataset }, modelOutput),
   { name: 'scorer:diversity' },
 );
 
 const weaveConstraintScorer = weaveSDK.op(
-  (input: EvalInput, output: EvalOutput) => scoreConstraintSatisfaction(input, output),
+  ({ datasetRow, modelOutput }: WeaveScorerArg) =>
+    scoreConstraintSatisfaction({ dataset: datasetRow.dataset }, modelOutput),
   { name: 'scorer:constraint_satisfaction' },
 );
 
