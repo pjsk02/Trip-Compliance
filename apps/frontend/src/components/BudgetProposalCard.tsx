@@ -210,7 +210,7 @@ export function BudgetProposalCard({
               <p className="text-xs font-medium text-gray-500 uppercase tracking-wide">Proposed group total</p>
               <p className="mt-0.5 text-3xl font-bold text-gray-900 tabular-nums">{fmt(round.proposed)}</p>
               <p className="text-xs text-gray-400 mt-0.5">
-                ≈ {fmt(Math.round(round.proposed / totalMembers))} per person
+                {fmt(round.perPerson)} per person
               </p>
             </div>
             <span className={`shrink-0 rounded-full px-2.5 py-1 text-[10px] font-semibold
