@@ -9,6 +9,7 @@ import { Dashboard } from './pages/Dashboard';
 import { PreferenceChat } from './pages/PreferenceChat';
 import { BudgetNegotiation } from './pages/BudgetNegotiation';
 import { ItineraryView } from './pages/ItineraryView';
+import { NegotiationView } from './pages/NegotiationView';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID ?? '';
 
