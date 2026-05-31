@@ -257,7 +257,7 @@ export function scoreItineraryCandidate(
   const lockedPerPerson = lockedBudgetUsd / groupSize;
 
   const memberSatisfaction = members.map(m =>
-    scoreMemberSatisfaction(m, candidate.activities),
+    scoreMemberSatisfaction(m, candidate.activities, candidate.meals ?? []),
   );
 
   const groupSatisfactionPct = scoreUserSatisfaction(memberSatisfaction);
