@@ -6,6 +6,7 @@ import type {
   GoogleVerifyResponse, MeResponse,
   BudgetStateResponse, BudgetRound, VoteResponse, LockBudgetResponse,
   Itinerary, SubmitFeedbackResponse, ItineraryListResponse,
+  FinalizeResponse, FinalResponse,
 } from '../types';
 
 // ---------------------------------------------------------------------------
