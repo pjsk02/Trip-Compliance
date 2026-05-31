@@ -14,6 +14,9 @@
 
 import type { OrchestratorResult } from '../lib/planning/schemas';
 import type { EvalDataset } from './datasets';
+import type { FinalItinerary } from '../lib/planning/itinerary';
+import type { ConsensusResult } from '../lib/planning/consensus';
+import type { ActivityProposal, FoodProposal } from '../lib/planning/schemas';
 
 // ---------------------------------------------------------------------------
 // Shared types
@@ -23,8 +26,21 @@ export interface EvalInput {
   dataset: EvalDataset;
 }
 
+export interface TypedOrchestratorResult extends OrchestratorResult {
+  itinerary:  FinalItinerary;
+  consensus:  ConsensusResult;
+  activity:   ActivityProposal;
+  food:       FoodProposal;
+}
+
 export interface EvalOutput {
-  result: OrchestratorResult;
+  result: TypedOrchestratorResult;
+}
+
+// Weave Evaluation scorer signature: single object arg { datasetRow, modelOutput }
+export interface WeaveScoreInput {
+  datasetRow:  { dataset: EvalDataset };
+  modelOutput: EvalOutput;
 }
 
 export interface ScoreResult {
