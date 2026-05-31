@@ -421,15 +421,6 @@ export interface FinalizeResponse {
   warnings:    string[];
 }
 
-export interface FinalItineraryResponse {
-  finalized:   false;
-} | {
-  finalized:   true;
-  finalizedAt: string | null;
-  itinerary:   Itinerary;
-}
-
-// Use a discriminated union via type alias — TS doesn't allow | in interface body
 export type FinalResponse =
   | { finalized: false }
   | { finalized: true; finalizedAt: string | null; itinerary: Itinerary };
