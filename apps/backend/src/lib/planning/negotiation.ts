@@ -17,6 +17,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import type { PlanningContext, ActivityProposal, FoodProposal, BudgetProposal } from './schemas';
 import type { ActivityCandidate } from './schemas';
 import { ActivityProposalSchema, FoodProposalSchema } from './schemas';
+import type { OnEvent, AgentName } from './streamEvents';
 
 const anthropic = new Anthropic();
 
