@@ -106,8 +106,8 @@ groupsRouter.post('/:code/join', requireUser, async (req: Request, res: Response
     return;
   }
 
-  if (group.status === GroupStatus.COMPLETE) {
-    res.status(409).json({ error: 'This trip is already complete and not accepting new members' });
+  if (group.status !== GroupStatus.COLLECTING) {
+    res.status(409).json({ error: 'This group is locked and not accepting new members' });
     return;
   }
 
