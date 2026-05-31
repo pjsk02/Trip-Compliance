@@ -108,10 +108,12 @@ OUTPUT: Return ONLY a valid JSON object matching this schema. No prose, no markd
       localCuisine: groupMean(ctx.members.map(m => m.scores.food.localCuisine)),
     };
 
-    // Food should be ~25% of the per-person budget
+    // Food should be ~25% of the per-person budget; estimated meal count
     const perPersonBudget = ctx.lockedBudget / ctx.groupSize;
     const foodSharePP     = Math.round(perPersonBudget * 0.25);
-    const maxPerMealPP    = Math.round(foodSharePP / Math.max(ctx.tripDuration * 3, 1));
+    // Arrival day has 1 meal, departure 1, middle days 3 each
+    const estimatedMeals  = Math.max(1, 1 + 1 + Math.max(0, ctx.tripDays - 2) * 3);
+    const maxPerMealPP    = Math.round(foodSharePP / Math.max(estimatedMeals, 1));
 
     return [
       contextSummary(ctx),
@@ -123,6 +125,14 @@ OUTPUT: Return ONLY a valid JSON object matching this schema. No prose, no markd
       '',
       `BUDGET CAP: food share ≈ $${foodSharePP}/person total for the trip.`,
       `  Aim for estimatedCostPerPersonUsd ≤ $${maxPerMealPP} per meal on average.`,
+      '',
+      'MEAL PLAN RULES:',
+      `  - Plan exactly ${ctx.tripDays} days of meals (days 1 to ${ctx.tripDays}).`,
+      `  - Day 1 (${ctx.startDate}, arrival): dinner only — group arrives during the day.`,
+      `  - Day ${ctx.tripDays} (${ctx.endDate}, departure): breakfast only — group departs.`,
+      `  - Middle days (2 to ${ctx.tripDays - 1}): breakfast + lunch + dinner.`,
+      '  - Vary cuisines across days — do NOT repeat the same venue on multiple days.',
+      '  - If accommodation provides breakfast (noted in system prompt), omit it for those days.',
       '',
       'DIETARY CONSTRAINTS (HARD — must be respected):',
       ...dietaryByMember.map(d => {
@@ -137,7 +147,7 @@ OUTPUT: Return ONLY a valid JSON object matching this schema. No prose, no markd
         ? `${alcoholNoCount} member(s) do not drink — ensure alcohol-free options at every venue.`
         : '',
       '',
-      `Plan ${ctx.tripDuration} days of meals for ${ctx.groupSize} people.`,
+      `Plan meals for ${ctx.tripDays} days (${ctx.startDate} → ${ctx.endDate}) for ${ctx.groupSize} people.`,
     ].filter(Boolean).join('\n');
   }
 }
