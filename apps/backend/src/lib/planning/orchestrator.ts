@@ -115,7 +115,7 @@ export async function runOrchestrator(
   );
   const budget = activityChanged
     ? await new BudgetAgent()
-        .withInput({ ctx: agentCtx, activity, food, accommodation, transportation })
+        .withInput({ ctx: agentCtx, activity, food, accommodation, transportation, realLockedBudget: ctx.lockedBudget })
         .propose(agentCtx)
     : budgetRaw;
 
