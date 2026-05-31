@@ -49,17 +49,31 @@ export interface ScoreResult {
 }
 
 // ---------------------------------------------------------------------------
+// Helper to extract typed result from Weave or direct call
+// ---------------------------------------------------------------------------
+
+function getResult(output: EvalOutput | WeaveScoreInput): TypedOrchestratorResult | null {
+  if ('modelOutput' in output) return (output as WeaveScoreInput).modelOutput.result;
+  return (output as EvalOutput).result;
+}
+function getDataset(input: EvalInput | WeaveScoreInput): EvalDataset {
+  if ('datasetRow' in input) return (input as WeaveScoreInput).datasetRow.dataset;
+  return (input as EvalInput).dataset;
+}
+
+// ---------------------------------------------------------------------------
 // 1. User Satisfaction — group mean of per-member satisfaction %
 // ---------------------------------------------------------------------------
 
-export function scoreSatisfaction(_input: EvalInput, output: EvalOutput): ScoreResult {
-  const scores = output.result.itinerary?.satisfactionScores;
+export function scoreSatisfaction(input: EvalInput | WeaveScoreInput, output?: EvalOutput): ScoreResult {
+  const result = output ? output.result : getResult(input as WeaveScoreInput);
+  const scores = result?.itinerary?.satisfactionScores;
   if (!scores) return { score: 0, reason: 'No satisfaction scores in output' };
 
-  const pct = scores.groupSatisfactionPct;
+  const p = scores.groupSatisfactionPct;
   return {
-    score:  Math.min(1, pct / 100),
-    reason: `Group mean satisfaction ${pct}% (${scores.perMember.map(m => `${m.memberName}:${m.satisfactionPct}%`).join(', ')})`,
+    score:  Math.min(1, p / 100),
+    reason: `Group mean satisfaction ${p}% (${scores.perMember.map((m: { memberName: string; satisfactionPct: number }) => `${m.memberName}:${m.satisfactionPct}%`).join(', ')})`,
   };
 }
 
@@ -67,11 +81,12 @@ export function scoreSatisfaction(_input: EvalInput, output: EvalOutput): ScoreR
 // 2. Fairness — raw fairness score from the consensus winner
 // ---------------------------------------------------------------------------
 
-export function scoreFairness(_input: EvalInput, output: EvalOutput): ScoreResult {
-  const scores = output.result.itinerary?.satisfactionScores;
+export function scoreFairness(input: EvalInput | WeaveScoreInput, output?: EvalOutput): ScoreResult {
+  const result = output ? output.result : getResult(input as WeaveScoreInput);
+  const scores = result?.itinerary?.satisfactionScores;
   if (!scores) return { score: 0, reason: 'No satisfaction scores in output' };
 
-  const raw = scores.fairnessScore;  // already 0-100
+  const raw = scores.fairnessScore;
   return {
     score:  Math.min(1, raw / 100),
     reason: `Fairness score ${raw}/100, floor met: ${scores.fairnessFloorMet}`,
@@ -82,11 +97,13 @@ export function scoreFairness(_input: EvalInput, output: EvalOutput): ScoreResul
 // 3. Budget Compliance — hard-zero if over locked budget
 // ---------------------------------------------------------------------------
 
-export function scoreBudgetCompliance(input: EvalInput, output: EvalOutput): ScoreResult {
-  const budget = output.result.itinerary?.budgetBreakdown;
+export function scoreBudgetCompliance(input: EvalInput | WeaveScoreInput, output?: EvalOutput): ScoreResult {
+  const result  = output ? output.result : getResult(input as WeaveScoreInput);
+  const dataset = getDataset(input);
+  const budget  = result?.itinerary?.budgetBreakdown;
   if (!budget) return { score: 0, reason: 'No budget breakdown in output' };
 
-  const lockedPP   = input.dataset.context.lockedBudget / input.dataset.context.groupSize;
+  const lockedPP    = dataset.context.lockedBudget / dataset.context.groupSize;
   const estimatedPP = budget.totalPerPersonUsd;
 
   if (estimatedPP > lockedPP) {
@@ -112,18 +129,19 @@ export function scoreBudgetCompliance(input: EvalInput, output: EvalOutput): Sco
 // 4. Diversity — distinct activity categories in the winning itinerary
 // ---------------------------------------------------------------------------
 
-export function scoreDiversity(_input: EvalInput, output: EvalOutput): ScoreResult {
-  const consensus = output.result.consensus;
+export function scoreDiversity(input: EvalInput | WeaveScoreInput, output?: EvalOutput): ScoreResult {
+  const result    = output ? output.result : getResult(input as WeaveScoreInput);
+  const consensus = result?.consensus;
   const winner    = consensus?.winner ?? consensus?.bestAvailable;
 
   if (!winner) return { score: 0, reason: 'No consensus winner' };
 
   const cats  = winner.candidate.distinctCategories;
-  const score = Math.min(1, cats / 5);  // 5 distinct = 100%
+  const score = Math.min(1, cats / 5);
 
   return {
     score,
-    reason: `${cats} distinct activity categories (${winner.candidate.activities.map(a => a.category).join(', ')})`,
+    reason: `${cats} distinct activity categories (${winner.candidate.activities.map((a: { category: string }) => a.category).join(', ')})`,
   };
 }
 
@@ -131,10 +149,12 @@ export function scoreDiversity(_input: EvalInput, output: EvalOutput): ScoreResu
 // 5. Constraint Satisfaction — dietary, mobility, must-avoid hard constraints
 // ---------------------------------------------------------------------------
 
-export function scoreConstraintSatisfaction(input: EvalInput, output: EvalOutput): ScoreResult {
-  const members    = input.dataset.context.members;
-  const foodPlan   = output.result.food?.mealPlan ?? [];
-  const activities = output.result.activity?.candidates ?? [];
+export function scoreConstraintSatisfaction(input: EvalInput | WeaveScoreInput, output?: EvalOutput): ScoreResult {
+  const result   = output ? output.result : getResult(input as WeaveScoreInput);
+  const dataset  = getDataset(input);
+  const members  = dataset.context.members;
+  const foodPlan = result?.food?.mealPlan ?? [];
+  const activities = result?.activity?.candidates ?? [];
 
   let totalConstraints = 0;
   let met = 0;
@@ -143,61 +163,40 @@ export function scoreConstraintSatisfaction(input: EvalInput, output: EvalOutput
   for (const member of members) {
     const c = member.constraints;
 
-    // Dietary restrictions — every meal must be compatible
     for (const restriction of c.dietaryRestrictions) {
-      const restrictionKey = restriction.toLowerCase() as keyof typeof meals[0]['dietaryCompatibility'];
-      const meals = foodPlan;
       totalConstraints++;
-      const allCompatible = meals.every(meal => {
-        const compat = meal.dietaryCompatibility as Record<string, boolean>;
-        // Map common restriction strings to dietaryCompatibility keys
-        const keyMap: Record<string, string> = {
-          'vegetarian': 'vegetarian',
-          'vegan':      'vegan',
-          'gluten-free':'glutenFree',
-          'halal':      'halal',
-          'kosher':     'kosher',
-          'nut-free':   'nutFree',
-        };
-        const compatKey = keyMap[restriction.toLowerCase()] ?? restriction.toLowerCase();
-        return compat[compatKey] !== false;  // undefined = not tracked = assume OK
-      });
-      if (allCompatible) {
-        met++;
-      } else {
-        violations.push(`${member.name}: ${restriction} not respected by some meals`);
-      }
+      const keyMap: Record<string, string> = {
+        'vegetarian': 'vegetarian', 'vegan': 'vegan',
+        'gluten-free': 'glutenFree', 'halal': 'halal',
+        'kosher': 'kosher', 'nut-free': 'nutFree',
+      };
+      const compatKey = keyMap[restriction.toLowerCase()] ?? restriction.toLowerCase();
+      const allCompatible = foodPlan.every((meal: { dietaryCompatibility: Record<string, boolean> }) =>
+        meal.dietaryCompatibility[compatKey] !== false,
+      );
+      if (allCompatible) { met++; }
+      else { violations.push(`${member.name}: ${restriction} not respected by some meals`); }
     }
 
-    // Must-avoid activities — none of the activities should violate must-avoid
     if (c.mustAvoidActivities) {
       totalConstraints++;
-      const avoidTerms = c.mustAvoidActivities.toLowerCase().split(/[,;]+/).map(s => s.trim());
-      const anyViolation = activities.some(act =>
-        avoidTerms.some(term => act.name.toLowerCase().includes(term) || act.category.toLowerCase().includes(term)),
+      const avoidTerms = c.mustAvoidActivities.toLowerCase().split(/[,;]+/).map((s: string) => s.trim());
+      const anyViolation = activities.some((act: { name: string; category: string }) =>
+        avoidTerms.some((term: string) => act.name.toLowerCase().includes(term) || act.category.toLowerCase().includes(term)),
       );
-      if (!anyViolation) {
-        met++;
-      } else {
-        violations.push(`${member.name}: must-avoid constraint violated`);
-      }
+      if (!anyViolation) { met++; }
+      else { violations.push(`${member.name}: must-avoid constraint violated`); }
     }
 
-    // Alcohol: members who don't drink need alcohol-free options
     if (c.alcoholPreference === 'no') {
       totalConstraints++;
-      const alcoholFreeAvail = foodPlan.some(m => !m.alcoholServed);
-      if (alcoholFreeAvail) {
-        met++;
-      } else {
-        violations.push(`${member.name}: no alcohol-free meal options`);
-      }
+      const alcoholFreeAvail = foodPlan.some((m: { alcoholServed: boolean }) => !m.alcoholServed);
+      if (alcoholFreeAvail) { met++; }
+      else { violations.push(`${member.name}: no alcohol-free meal options`); }
     }
   }
 
-  if (totalConstraints === 0) {
-    return { score: 1, reason: 'No hard constraints to evaluate' };
-  }
+  if (totalConstraints === 0) return { score: 1, reason: 'No hard constraints to evaluate' };
 
   const score = met / totalConstraints;
   return {
