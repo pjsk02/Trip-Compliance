@@ -269,7 +269,7 @@ budgetRouter.post('/:code/budget/vote', async (req: Request, res: Response): Pro
   const consensus    = approveCount === totalMembers;
 
   res.json({
-    round:        serializeRound(updatedRound!),
+    round:        serializeRound(updatedRound!, totalMembers),
     consensus,
     approveCount,
     rejectCount,
