@@ -273,12 +273,15 @@ function buildBudgetBreakdown(
   ctx: PlanningContext,
 ): BudgetBreakdown {
   const lockedBudgetUsd = ctx.lockedBudget;
+  const perPersonLocked = ctx.groupSize > 0 ? lockedBudgetUsd / ctx.groupSize : lockedBudgetUsd;
   const lines: BudgetLine[] = budget.lines.map(l => ({
     category: l.category,
     estimatedCostPerPersonUsd: l.estimatedCostPerPersonUsd,
     totalGroupUsd: l.totalUsd,
-    pctOfBudget: lockedBudgetUsd > 0
-      ? Math.round((l.totalUsd / lockedBudgetUsd) * 100)
+    // pctOfBudget: share of the per-person locked budget (not group total)
+    // so percentages sum to ~100% for a well-fitting plan.
+    pctOfBudget: perPersonLocked > 0
+      ? Math.round((l.estimatedCostPerPersonUsd / perPersonLocked) * 100)
       : 0,
   }));
 
