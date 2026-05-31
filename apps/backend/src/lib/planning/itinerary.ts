@@ -30,10 +30,6 @@ function model(): string {
   return process.env.CLAUDE_MODEL ?? 'claude-haiku-4-5-20251001';
 }
 
-function stripFences(raw: string): string {
-  return raw.replace(/^```(?:json)?\s*/m, '').replace(/\s*```\s*$/m, '').trim();
-}
-
 // ---------------------------------------------------------------------------
 // Output types (stored in DB as JSON)
 // ---------------------------------------------------------------------------
