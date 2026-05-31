@@ -10,7 +10,9 @@
     "prisma:generate": "prisma generate",
     "prisma:studio": "prisma studio",
     "test": "jest --runInBand --forceExit",
-    "test:itinerary": "tsx --env-file=.env scripts/test-itinerary-pipeline.ts"
+    "test:itinerary": "tsx --env-file=.env scripts/test-itinerary-pipeline.ts",
+    "eval": "tsx --env-file=.env scripts/run-eval.ts",
+    "eval:save": "tsx --env-file=.env scripts/run-eval.ts -- --save"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.27.0",
