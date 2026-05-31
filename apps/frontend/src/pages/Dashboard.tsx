@@ -598,17 +598,41 @@ export function Dashboard() {
           </div>
         )}
 
-        {/* Itinerary CTA — shown to all members when plan is complete */}
-        {isComplete && (
-          <div className="rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 px-5 py-4 space-y-3">
+        {/* Finalized trip CTA — shown to ALL members when admin has finalized */}
+        {isComplete && group.finalizedAt && (
+          <div className="rounded-2xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-teal-50 px-5 py-4 space-y-3">
+            <div className="flex items-start gap-2.5">
+              <span className="text-xl shrink-0">✅</span>
+              <div>
+                <p className="text-sm font-semibold text-emerald-900">Trip finalized ✓</p>
+                <p className="mt-0.5 text-xs text-emerald-700">
+                  Your organizer has officially selected the final itinerary.
+                  Finalized {new Date(group.finalizedAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}.
+                </p>
+              </div>
+            </div>
+            <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+              onClick={() => navigate(`/group/${group.groupCode}/final`)}>
+              View final trip →
+            </Button>
+          </div>
+        )}
+
+        {/* Itinerary CTA — shown to all members when plan is complete (no final yet, or admin) */}
+        {isComplete && (!group.finalizedAt || isAdmin) && (
+          <div className={`rounded-2xl border border-indigo-100 bg-gradient-to-br from-indigo-50 to-violet-50 px-5 py-4 space-y-3 ${group.finalizedAt ? 'opacity-80' : ''}`}>
             <div>
-              <p className="text-sm font-semibold text-indigo-900">🎉 Your trip is planned!</p>
+              <p className="text-sm font-semibold text-indigo-900">
+                {group.finalizedAt ? '🔧 Organizer: all versions' : '🎉 Your trip is planned!'}
+              </p>
               <p className="mt-0.5 text-xs text-indigo-700">
-                The AI has generated a day-by-day itinerary with budget breakdown and satisfaction scores for everyone.
+                {group.finalizedAt
+                  ? 'View or change the finalized version from the full itinerary page.'
+                  : 'The AI has generated a day-by-day itinerary with budget breakdown and satisfaction scores.'}
               </p>
             </div>
             <Button className="w-full" onClick={() => navigate(`/group/${group.groupCode}/itinerary`)}>
-              View trip itinerary →
+              {group.finalizedAt ? 'Manage versions →' : 'View trip itinerary →'}
             </Button>
           </div>
         )}
