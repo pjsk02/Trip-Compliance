@@ -100,6 +100,11 @@ OUTPUT: Return ONLY a valid JSON object matching this schema. No prose, no markd
       localCuisine: groupMean(ctx.members.map(m => m.scores.food.localCuisine)),
     };
 
+    // Food should be ~25% of the per-person budget
+    const perPersonBudget = ctx.lockedBudget / ctx.groupSize;
+    const foodSharePP     = Math.round(perPersonBudget * 0.25);
+    const maxPerMealPP    = Math.round(foodSharePP / Math.max(ctx.tripDuration * 3, 1));
+
     return [
       contextSummary(ctx),
       '',
@@ -107,6 +112,9 @@ OUTPUT: Return ONLY a valid JSON object matching this schema. No prose, no markd
       `  Street food: ${foodScores.streetFood}`,
       `  Fine dining: ${foodScores.fineDining}`,
       `  Local cuisine: ${foodScores.localCuisine}`,
+      '',
+      `BUDGET CAP: food share ≈ $${foodSharePP}/person total for the trip.`,
+      `  Aim for estimatedCostPerPersonUsd ≤ $${maxPerMealPP} per meal on average.`,
       '',
       'DIETARY CONSTRAINTS (HARD — must be respected):',
       ...dietaryByMember.map(d => {
