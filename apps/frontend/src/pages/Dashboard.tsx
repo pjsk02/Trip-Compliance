@@ -149,6 +149,8 @@ export function Dashboard() {
     try {
       const g = await api.getGroup(code);
       setGroup(g);
+      if (g.startDate && !datesStart) setDatesStart(g.startDate.slice(0, 10));
+      if (g.endDate   && !datesEnd)   setDatesEnd(g.endDate.slice(0, 10));
       if (g.submissionDeadline && !deadline) {
         setDeadline(new Date(g.submissionDeadline).toISOString().slice(0, 16));
       }
