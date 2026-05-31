@@ -1,28 +1,37 @@
 /**
  * Unit tests for budget proposal consistency.
  *
- * These tests cover the pure functions in budgetAgent.ts and the
- * serializeRound helper in budget.ts to assert that the structured
- * proposal and the narrative message always report identical numbers.
+ * Verifies that computed figures (proposed, perPerson, median, min, max) are
+ * always authoritative — never invented by the LLM — and that the narrative
+ * summary is reconciled to match those exact figures.
  *
- * No LLM calls are made — we test the reconciliation / injection layer.
+ * No live LLM calls are made; the Anthropic SDK is mocked at the instance level.
  */
 
-// ---------------------------------------------------------------------------
-// We reach into the module's non-exported helpers via re-export shims below.
-// Because the helpers are not exported, we inline-test the exported surface
-// (analyzeBudgets / reproposeBudget return type) and the reconciliation logic
-// by calling the exported functions with a mocked Anthropic client.
-// ---------------------------------------------------------------------------
-
 import Anthropic from '@anthropic-ai/sdk';
-
-// Mock the Anthropic SDK before importing the module under test
-jest.mock('@anthropic-ai/sdk');
-
-const MockAnthropic = Anthropic as jest.MockedClass<typeof Anthropic>;
-
 import { analyzeBudgets, reproposeBudget, type BudgetAnalysis } from '../lib/budgetAgent';
+
+// ---------------------------------------------------------------------------
+// Mock the Anthropic SDK.
+// budgetAgent.ts creates the client at module load time:
+//   const client = new Anthropic();
+// We mock the class constructor so that `new Anthropic()` returns a controlled
+// object with a spy on messages.create.
+// ---------------------------------------------------------------------------
+
+const mockCreate = jest.fn();
+
+jest.mock('@anthropic-ai/sdk', () => {
+  return {
+    __esModule: true,
+    default: jest.fn().mockImplementation(() => ({
+      messages: { create: mockCreate },
+    })),
+  };
+});
+
+// Silence the unused-import warning for Anthropic — it's used by the mock factory
+void (Anthropic as unknown);
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -32,27 +41,27 @@ function fmt(n: number) {
   return `$${n.toLocaleString('en-US', { maximumFractionDigits: 0 })}`;
 }
 
-/** Build the fake Anthropic response the mock will return. */
-function mockLLMResponse(json: object) {
-  const instance = {
-    messages: {
-      create: jest.fn().mockResolvedValue({
-        content: [{ type: 'text', text: JSON.stringify(json) }],
-      }),
-    },
-  };
-  MockAnthropic.mockImplementation(() => instance as unknown as Anthropic);
-  return instance;
+/** Wire mockCreate to return a JSON payload as though Claude returned it. */
+function setLLMResponse(json: object) {
+  mockCreate.mockResolvedValueOnce({
+    content: [{ type: 'text', text: JSON.stringify(json) }],
+  });
+}
+
+/** Wire mockCreate to return non-JSON garbage. */
+function setLLMGarbage(text = 'Sorry, I cannot help with that.') {
+  mockCreate.mockResolvedValueOnce({
+    content: [{ type: 'text', text }],
+  });
 }
 
 // ---------------------------------------------------------------------------
-// computeStats — tested indirectly via analyzeBudgets return value
+// Stats — median / min / max computed in code
 // ---------------------------------------------------------------------------
 
 describe('analyzeBudgets — authoritative stats', () => {
-  it('computes median, min, max in code regardless of what LLM returns', async () => {
-    // LLM returns wrong stats — should be ignored
-    mockLLMResponse({
+  it('computes median, min, max in code regardless of LLM response', async () => {
+    setLLMResponse({
       rationale: 'Some rationale.',
       summary: 'Proposing {{TOTAL}} total ({{PER_PERSON}} per person).',
       strategy: 'consensus',
@@ -63,19 +72,19 @@ describe('analyzeBudgets — authoritative stats', () => {
       privateBudgets: [400, 600, 800],
       groupSize: 3,
       destination: 'Tokyo',
-      tripName: 'Test Trip',
+      tripName: 'Odd median',
       hardCaps: [],
       avgBudgetConsciousness: 50,
     });
 
-    // sorted = [400, 600, 800], median = 600 (middle element)
+    // sorted = [400, 600, 800] → median = 600
     expect(result.median).toBe(600);
     expect(result.min).toBe(400);
     expect(result.max).toBe(800);
   });
 
   it('computes median correctly for an even-count array', async () => {
-    mockLLMResponse({
+    setLLMResponse({
       rationale: 'r',
       summary: 'Proposing {{TOTAL}} ({{PER_PERSON}}/person).',
       strategy: 'consensus',
@@ -86,12 +95,12 @@ describe('analyzeBudgets — authoritative stats', () => {
       privateBudgets: [300, 500, 700, 900],
       groupSize: 4,
       destination: null,
-      tripName: 'Even Trip',
+      tripName: 'Even median',
       hardCaps: [],
       avgBudgetConsciousness: 50,
     });
 
-    // sorted = [300, 500, 700, 900], median = (500+700)/2 = 600
+    // sorted = [300, 500, 700, 900] → median = (500+700)/2 = 600
     expect(result.median).toBe(600);
     expect(result.min).toBe(300);
     expect(result.max).toBe(900);
@@ -99,12 +108,12 @@ describe('analyzeBudgets — authoritative stats', () => {
 });
 
 // ---------------------------------------------------------------------------
-// perPerson = proposed / groupSize, always an integer
+// perPerson = proposed / groupSize (always a clean integer)
 // ---------------------------------------------------------------------------
 
 describe('analyzeBudgets — perPerson consistency', () => {
-  it('perPerson equals proposed divided by groupSize exactly', async () => {
-    mockLLMResponse({
+  it('perPerson equals proposed / groupSize exactly', async () => {
+    setLLMResponse({
       rationale: 'r',
       summary: 'Proposing {{TOTAL}} ({{PER_PERSON}}/person).',
       strategy: 'consensus',
@@ -115,7 +124,7 @@ describe('analyzeBudgets — perPerson consistency', () => {
       privateBudgets: [500, 500, 500],
       groupSize: 3,
       destination: 'Bali',
-      tripName: '3-member equal',
+      tripName: '3-equal',
       hardCaps: [],
       avgBudgetConsciousness: 40,
     });
@@ -125,7 +134,7 @@ describe('analyzeBudgets — perPerson consistency', () => {
   });
 
   it('perPerson × groupSize === proposed for an asymmetric group', async () => {
-    mockLLMResponse({
+    setLLMResponse({
       rationale: 'r',
       summary: 'Here is {{TOTAL}} and {{PER_PERSON}} per person.',
       strategy: 'scope_reduction',
@@ -136,7 +145,7 @@ describe('analyzeBudgets — perPerson consistency', () => {
       privateBudgets: [300, 400, 500, 800],
       groupSize: 4,
       destination: 'Paris',
-      tripName: 'Asymmetric group',
+      tripName: 'Asymmetric',
       hardCaps: [450],
       avgBudgetConsciousness: 70,
     });
@@ -147,15 +156,15 @@ describe('analyzeBudgets — perPerson consistency', () => {
 });
 
 // ---------------------------------------------------------------------------
-// summary narrative must contain the same numbers as the structured fields
+// Summary / narrative must contain the same figures as the structured fields
 // ---------------------------------------------------------------------------
 
 describe('summary / narrative consistency', () => {
-  it('summary uses authoritative proposed and perPerson, not LLM-invented figures', async () => {
-    // LLM tries to insert its own (wrong) dollar amounts
-    mockLLMResponse({
+  it('discards LLM-invented dollar figures and uses authoritative values', async () => {
+    // LLM inserts wrong numbers — reconcileSummary must replace with fallback
+    setLLMResponse({
       rationale: 'Budget based on the group.',
-      summary: 'I propose $9,999 total ($3,333/person).', // LLM invented different numbers
+      summary: 'I propose $9,999 total ($3,333/person).',
       strategy: 'consensus',
       tierSplit: null,
     });
@@ -164,27 +173,24 @@ describe('summary / narrative consistency', () => {
       privateBudgets: [500, 500, 500],
       groupSize: 3,
       destination: 'Bali',
-      tripName: 'Stray numbers trip',
+      tripName: 'Stray numbers',
       hardCaps: [],
       avgBudgetConsciousness: 50,
     });
 
-    const totalStr    = fmt(result.proposed);
-    const perPersonStr = fmt(result.perPerson);
-
-    // Summary must NOT contain the LLM's invented $9,999 or $3,333
+    // Summary must NOT contain LLM's invented amounts
     expect(result.summary).not.toContain('9,999');
     expect(result.summary).not.toContain('3,333');
 
     // Summary MUST contain the authoritative values
-    expect(result.summary).toContain(totalStr);
-    expect(result.summary).toContain(perPersonStr);
+    expect(result.summary).toContain(fmt(result.proposed));
+    expect(result.summary).toContain(fmt(result.perPerson));
   });
 
-  it('summary keeps placeholder-injected values when LLM uses {{TOTAL}} and {{PER_PERSON}}', async () => {
-    mockLLMResponse({
-      rationale: 'Based on everyone\'s budgets.',
-      summary: 'Based on everyone\'s budgets, I\'m proposing {{TOTAL}} total ({{PER_PERSON}} per person).',
+  it('keeps placeholder-injected values when LLM uses {{TOTAL}} / {{PER_PERSON}}', async () => {
+    setLLMResponse({
+      rationale: "Based on everyone's budgets.",
+      summary: "Based on everyone's budgets, I'm proposing {{TOTAL}} total ({{PER_PERSON}} per person).",
       strategy: 'consensus',
       tierSplit: null,
     });
@@ -193,38 +199,30 @@ describe('summary / narrative consistency', () => {
       privateBudgets: [600, 600, 600],
       groupSize: 3,
       destination: 'Rome',
-      tripName: 'Placeholder trip',
+      tripName: 'Placeholder',
       hardCaps: [],
       avgBudgetConsciousness: 30,
     });
 
     expect(result.summary).toContain(fmt(result.proposed));
     expect(result.summary).toContain(fmt(result.perPerson));
-    // No raw placeholders should remain
+    // Placeholders must be fully replaced
     expect(result.summary).not.toContain('{{TOTAL}}');
     expect(result.summary).not.toContain('{{PER_PERSON}}');
   });
 
-  it('falls back to template when LLM response is not valid JSON', async () => {
-    const instance = {
-      messages: {
-        create: jest.fn().mockResolvedValue({
-          content: [{ type: 'text', text: 'Sorry, I cannot help with that.' }],
-        }),
-      },
-    };
-    MockAnthropic.mockImplementation(() => instance as unknown as Anthropic);
+  it('falls back to template when LLM returns non-JSON', async () => {
+    setLLMGarbage();
 
     const result = await analyzeBudgets({
       privateBudgets: [400, 600],
       groupSize: 2,
       destination: null,
-      tripName: 'Fallback trip',
+      tripName: 'Fallback',
       hardCaps: [],
       avgBudgetConsciousness: 50,
     });
 
-    // Should still have valid numeric structure
     expect(result.proposed).toBeGreaterThan(0);
     expect(result.perPerson).toBe(result.proposed / 2);
     expect(result.summary).toContain(fmt(result.proposed));
@@ -238,9 +236,9 @@ describe('summary / narrative consistency', () => {
 
 describe('reproposeBudget — perPerson consistency', () => {
   it('perPerson × groupSize === proposed on re-proposal', async () => {
-    mockLLMResponse({
+    setLLMResponse({
       rationale: 'Revised based on feedback.',
-      summary: 'I hear you — revised to {{TOTAL}} ({{PER_PERSON}} per person).',
+      summary: "I hear you — revised to {{TOTAL}} ({{PER_PERSON}} per person).",
       strategy: 'scope_reduction',
       tierSplit: null,
     });
@@ -254,7 +252,7 @@ describe('reproposeBudget — perPerson consistency', () => {
         privateBudgets: [500, 600, 700],
         groupSize: 3,
         destination: 'Lisbon',
-        tripName: 'Repropose trip',
+        tripName: 'Repropose',
         hardCaps: [],
         avgBudgetConsciousness: 60,
       },
@@ -266,15 +264,15 @@ describe('reproposeBudget — perPerson consistency', () => {
     expect(result.summary).toContain(fmt(result.perPerson));
   });
 
-  it('re-proposal is lower than the original when members rejected', async () => {
-    mockLLMResponse({
-      rationale: 'Cutting scope to meet lower budgets.',
-      summary: 'New proposal: {{TOTAL}} ({{PER_PERSON}} per person).',
+  it('re-proposal total is lower than original when members rejected', async () => {
+    setLLMResponse({
+      rationale: 'Cutting scope.',
+      summary: 'New: {{TOTAL}} ({{PER_PERSON}}/person).',
       strategy: 'scope_reduction',
       tierSplit: null,
     });
 
-    const originalProposed = 2100; // $700/person × 3
+    const originalProposed = 2100;
     const result = await reproposeBudget({
       currentProposed: originalProposed,
       rejectComments: ['Way too much'],
@@ -295,59 +293,40 @@ describe('reproposeBudget — perPerson consistency', () => {
 });
 
 // ---------------------------------------------------------------------------
-// serializeRound — perPerson propagated to API response
+// serializeRound logic — perPerson propagation
 // ---------------------------------------------------------------------------
 
 describe('serializeRound — perPerson in API response', () => {
-  it('exposes perPerson from the stored analysis blob', () => {
-    // Import the helper via the module (it's not exported, so we test via
-    // a BudgetAnalysis blob stored in the round's analysis field)
+  it('uses perPerson from the stored analysis blob', () => {
     const analysis: BudgetAnalysis = {
-      median:    500,
-      min:       400,
-      max:       600,
-      proposed:  1500,
-      perPerson: 500,
+      median: 500, min: 400, max: 600,
+      proposed: 1500, perPerson: 500,
       rationale: 'Fair split.',
-      summary:   '$1,500 total ($500 per person).',
-      strategy:  'consensus',
+      summary: '$1,500 total ($500 per person).',
+      strategy: 'consensus',
     };
 
-    // Reconstruct what the route does when it reads from DB and serializes:
-    const simulatedDbRound = {
-      id:        'test-round-id',
-      roundNum:  1,
-      proposed:  { toNumber: () => 1500 }, // Prisma Decimal
-      analysis:  analysis as unknown as object,
-      createdAt: new Date(),
-      votes:     [],
-    };
-
-    // Inline the serialization logic (mirrors serializeRound in budget.ts)
-    const storedAnalysis = simulatedDbRound.analysis as unknown as BudgetAnalysis;
-    const proposed = (simulatedDbRound.proposed as { toNumber(): number }).toNumber();
+    // Mirror what serializeRound does:
+    const proposed = 1500;
     const liveMemberCount = 3;
-    const perPerson = storedAnalysis.perPerson ?? (liveMemberCount > 0 ? proposed / liveMemberCount : 0);
+    const perPerson = analysis.perPerson ?? (liveMemberCount > 0 ? proposed / liveMemberCount : 0);
 
     expect(perPerson).toBe(500);
     expect(proposed).toBe(1500);
     expect(perPerson * liveMemberCount).toBe(proposed);
   });
 
-  it('falls back to proposed / liveMemberCount when perPerson missing from old record', () => {
-    const legacyAnalysis = {
+  it('falls back to proposed / liveMemberCount for legacy records without perPerson', () => {
+    const legacyAnalysis: Partial<BudgetAnalysis> = {
       median: 400, min: 300, max: 500,
       proposed: 1200,
-      // perPerson intentionally absent (old record)
-      rationale: 'old',
-      summary: '$1,200 total.',
-      strategy: 'consensus',
+      rationale: 'old', summary: '$1,200 total.', strategy: 'consensus',
+      // perPerson intentionally absent
     };
 
     const proposed = 1200;
     const liveMemberCount = 3;
-    const storedPerPerson = (legacyAnalysis as Partial<BudgetAnalysis>).perPerson;
-    const perPerson = storedPerPerson ?? (liveMemberCount > 0 ? proposed / liveMemberCount : 0);
+    const perPerson = legacyAnalysis.perPerson ?? (liveMemberCount > 0 ? proposed / liveMemberCount : 0);
 
     expect(perPerson).toBe(400);
     expect(perPerson * liveMemberCount).toBe(proposed);
