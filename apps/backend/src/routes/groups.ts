@@ -680,3 +680,90 @@ groupsRouter.patch(
     res.json({ deadline: updated.submissionDeadline?.toISOString() ?? null });
   }
 );
+
+// ---------------------------------------------------------------------------
+// DELETE /groups/:code/members/:memberId  [admin only, member token]
+// Admin kicks a member. Admin cannot kick themselves.
+// Deletes member's PreferenceProfile, ChatMessages, BudgetVotes, Feedback.
+// (Cascade on Member → those all delete automatically via onDelete: Cascade)
+// ---------------------------------------------------------------------------
+
+groupsRouter.delete(
+  '/:code/members/:memberId',
+  authenticate,
+  requireAdmin,
+  async (req: Request, res: Response): Promise<void> => {
+    const group = await prisma.group.findUnique({
+      where: { groupCode: req.params.code.toUpperCase() },
+    });
+    if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
+    if (req.member!.groupId !== group.id) { res.status(403).json({ error: 'Forbidden' }); return; }
+
+    const { memberId } = req.params;
+
+    // Admin cannot remove themselves via this endpoint
+    if (memberId === req.member!.memberId) {
+      res.status(400).json({ error: 'You cannot remove yourself as admin. Use "leave group" to transfer admin or disband.' });
+      return;
+    }
+
+    const target = await prisma.member.findFirst({
+      where: { id: memberId, groupId: group.id },
+    });
+    if (!target) {
+      res.status(404).json({ error: 'Member not found in this group' });
+      return;
+    }
+
+    await prisma.member.delete({ where: { id: memberId } });
+
+    res.json({ removed: true, memberId });
+  }
+);
+
+// ---------------------------------------------------------------------------
+// POST /groups/:code/leave  [any member, member token]
+// Member leaves the group. Their Member row + all related data is deleted.
+// - If the admin tries to leave while other members remain → blocked (must transfer admin first).
+// - If the last member leaves → group is archived (deleted).
+// ---------------------------------------------------------------------------
+
+groupsRouter.post(
+  '/:code/leave',
+  authenticate,
+  async (req: Request, res: Response): Promise<void> => {
+    if (!req.member) {
+      res.status(401).json({ error: 'Member token required' });
+      return;
+    }
+
+    const group = await prisma.group.findUnique({
+      where: { groupCode: req.params.code.toUpperCase() },
+      include: { members: { select: { id: true, isAdmin: true } } },
+    });
+    if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
+    if (req.member.groupId !== group.id) { res.status(403).json({ error: 'Forbidden' }); return; }
+
+    const me = group.members.find(m => m.id === req.member!.memberId);
+    if (!me) { res.status(404).json({ error: 'You are not in this group' }); return; }
+
+    const remainingAfterLeave = group.members.filter(m => m.id !== me.id);
+
+    // Admin cannot leave if other members remain — must transfer admin first
+    if (me.isAdmin && remainingAfterLeave.length > 0) {
+      res.status(409).json({
+        error: 'As the organizer, you cannot leave while other members remain. Transfer organizer role first.',
+      });
+      return;
+    }
+
+    if (remainingAfterLeave.length === 0) {
+      // Last member — delete the whole group (cascade deletes everything)
+      await prisma.group.delete({ where: { id: group.id } });
+      res.json({ left: true, groupDeleted: true });
+    } else {
+      await prisma.member.delete({ where: { id: me.id } });
+      res.json({ left: true, groupDeleted: false });
+    }
+  }
+);
