@@ -8,30 +8,28 @@
  * No live LLM calls are made; the Anthropic SDK is mocked at the instance level.
  */
 
-import Anthropic from '@anthropic-ai/sdk';
 import { analyzeBudgets, reproposeBudget, type BudgetAnalysis } from '../lib/budgetAgent';
 
 // ---------------------------------------------------------------------------
 // Mock the Anthropic SDK.
-// budgetAgent.ts creates the client at module load time:
-//   const client = new Anthropic();
-// We mock the class constructor so that `new Anthropic()` returns a controlled
-// object with a spy on messages.create.
+// jest.mock is hoisted before variable declarations, so we cannot reference
+// a `const mockCreate` defined in the module body inside the factory.
+// Instead we store the spy on the mock module itself so tests can reach it.
 // ---------------------------------------------------------------------------
 
-const mockCreate = jest.fn();
-
 jest.mock('@anthropic-ai/sdk', () => {
-  return {
-    __esModule: true,
-    default: jest.fn().mockImplementation(() => ({
-      messages: { create: mockCreate },
-    })),
-  };
+  const createSpy = jest.fn();
+  const MockClass = jest.fn().mockImplementation(() => ({
+    messages: { create: createSpy },
+  }));
+  // Attach spy to class so tests can access it via require
+  (MockClass as unknown as Record<string, unknown>).__createSpy = createSpy;
+  return { __esModule: true, default: MockClass };
 });
 
-// Silence the unused-import warning for Anthropic — it's used by the mock factory
-void (Anthropic as unknown);
+// Grab the spy after mocks are set up
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const mockCreate: jest.Mock = (require('@anthropic-ai/sdk').default as unknown as Record<string, unknown>).__createSpy as jest.Mock;
 
 // ---------------------------------------------------------------------------
 // Helpers
