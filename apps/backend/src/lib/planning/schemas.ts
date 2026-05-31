@@ -26,7 +26,10 @@ export interface MemberPreferenceSnapshot {
 
 export interface PlanningContext {
   destination:  string;
-  tripDuration: number;        // nights
+  tripDuration: number;        // nights (tripDays - 1 for overnight stays)
+  tripDays:     number;        // inclusive calendar days (startDate → endDate)
+  startDate:    string;        // ISO date e.g. "2025-08-10"
+  endDate:      string;        // ISO date e.g. "2025-08-13"
   groupSize:    number;
   lockedBudget: number;        // USD total for the group
   members:      MemberPreferenceSnapshot[];
