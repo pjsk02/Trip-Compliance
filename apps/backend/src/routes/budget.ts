@@ -199,7 +199,7 @@ budgetRouter.post(
       },
     });
 
-    res.status(201).json({ round: serializeRound(round) });
+    res.status(201).json({ round: serializeRound(round, group.members.length) });
   },
 );
 
