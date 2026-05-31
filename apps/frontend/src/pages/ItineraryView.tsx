@@ -1163,6 +1163,13 @@ function ItineraryViewInner() {
             negotiationRounds={itinerary.negotiationRounds ?? 0}
           />
         )}
+        {activeTab === 'observe' && (
+          <ObserveSection
+            timeline={itinerary.agentTimeline ?? []}
+            audit={itinerary.decisionAudit ?? []}
+            weaveUrl={itinerary.weaveTraceUrl}
+          />
+        )}
 
         <FeedbackBox onSubmit={handleFeedback} loading={feedbackLoading} result={feedbackResult} />
         <FeedbackHistory versions={versions} />
