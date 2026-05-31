@@ -530,7 +530,7 @@ function SatisfactionSection({
 
       {/* Per-member rows */}
       <div className="rounded-2xl border border-gray-100 bg-white shadow-sm px-5 py-2 divide-y divide-gray-50">
-        {scores.perMember.map(score => (
+        {(scores.perMember ?? []).map(score => (
           <MemberSatisfactionRow
             key={score.memberId}
             score={score}
