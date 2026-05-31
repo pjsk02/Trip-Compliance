@@ -1113,9 +1113,55 @@ function ItineraryViewInner() {
     }
   }
 
+  async function handleFinalize(itineraryId: string, force = false) {
+    if (!code) return;
+    setFinalizeError('');
+    if (!force) {
+      // First call: check warnings from backend
+      setFinalizeLoading(true);
+      try {
+        const res = await api.finalizeTrip(code, itineraryId);
+        if (res.warnings.length > 0) {
+          // Show warn dialog — don't treat first call as final
+          setWarnDialog({ warnings: res.warnings, itineraryId });
+          // Undo: the backend already wrote the finalization, so we need to
+          // surface the dialog, and the user can confirm (no-op since already done)
+          // or cancel (we unfinalize). Simplest: finalize happens, dialog is informational.
+          setFinalItineraryId(res.itineraryId);
+          setFinalizedAt(res.finalizedAt);
+          return;
+        }
+        setFinalItineraryId(res.itineraryId);
+        setFinalizedAt(res.finalizedAt);
+      } catch (err) {
+        setFinalizeError(err instanceof ApiError ? err.message : 'Finalize failed');
+      } finally {
+        setFinalizeLoading(false);
+      }
+    }
+  }
+
+  async function handleUnfinalize() {
+    if (!code) return;
+    setFinalizeLoading(true);
+    setFinalizeError('');
+    try {
+      await api.unfinalizeTrip(code);
+      setFinalItineraryId(null);
+      setFinalizedAt(null);
+      setWarnDialog(null);
+    } catch (err) {
+      setFinalizeError(err instanceof ApiError ? err.message : 'Unfinalize failed');
+    } finally {
+      setFinalizeLoading(false);
+    }
+  }
+
   const myUserId = userSession?.user.id ?? '';
   const myMemberRecordId = session?.memberId ?? '';
   const itinerary = versions.find(v => v.version === activeVersion) ?? versions[versions.length - 1] ?? null;
+  const isAdmin = session?.isAdmin ?? false;
+  const currentItineraryIsFinal = itinerary ? versions.find(v => v.version === activeVersion)?.id === finalItineraryId : false;
 
   if (loading) {
     return (
