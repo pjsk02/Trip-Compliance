@@ -291,7 +291,7 @@ async function _runOrchestratorImpl(
 function buildDecisionAudit(
   consensus: ReturnType<typeof runConsensus>,
   activity: ActivityProposal,
-  food: ReturnType<typeof logisticsStub> extends never ? never : Parameters<typeof assembleItinerary>[2],
+  _food: FoodProposal,
   budget: BudgetProposal,
   ctx: PlanningContext,
 ): DecisionAuditEntry[] {
