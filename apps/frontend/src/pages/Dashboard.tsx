@@ -35,11 +35,54 @@ function GroupStatusBar({ status }: { status: GroupStatus }) {
   );
 }
 
-function MemberRow({ member, isMe }: { member: Group['members'][0]; isMe: boolean }) {
+// ---------------------------------------------------------------------------
+// Confirmation dialog (inline modal)
+// ---------------------------------------------------------------------------
+
+interface ConfirmDialogProps {
+  title: string;
+  body: string;
+  confirmLabel?: string;
+  danger?: boolean;
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+function ConfirmDialog({ title, body, confirmLabel = 'Confirm', danger = false, onConfirm, onCancel }: ConfirmDialogProps) {
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <div className="w-full max-w-sm rounded-2xl bg-white p-5 shadow-xl space-y-4">
+        <p className="text-sm font-semibold text-gray-900">{title}</p>
+        <p className="text-xs text-gray-500">{body}</p>
+        <div className="flex gap-2 pt-1">
+          <Button variant="secondary" className="flex-1" onClick={onCancel}>Cancel</Button>
+          <Button
+            className={`flex-1 ${danger ? 'bg-red-600 hover:bg-red-700 text-white border-red-600' : ''}`}
+            onClick={onConfirm}
+          >
+            {confirmLabel}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// MemberRow — shows name, status badge, and (admin only) remove button
+// ---------------------------------------------------------------------------
+
+interface MemberRowProps {
+  member: Group['members'][0];
+  isMe: boolean;
+  isAdmin: boolean;       // is the viewer the admin?
+  onRemove?: () => void;  // only provided if viewer is admin and target is not self
+}
+
+function MemberRow({ member, isMe, isAdmin, onRemove }: MemberRowProps) {
   return (
     <div className="flex items-center justify-between gap-3 py-3">
       <div className="flex items-center gap-3 min-w-0">
-        {/* Avatar initial */}
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-indigo-100 text-sm font-semibold text-indigo-700">
           {member.name[0]?.toUpperCase()}
         </div>
@@ -58,10 +101,25 @@ function MemberRow({ member, isMe }: { member: Group['members'][0]; isMe: boolea
           </p>
         </div>
       </div>
-      <StatusBadge status={member.preferenceStatus} />
+      <div className="flex items-center gap-2 shrink-0">
+        <StatusBadge status={member.preferenceStatus} />
+        {isAdmin && !isMe && (
+          <button
+            onClick={onRemove}
+            className="ml-1 rounded-lg bg-red-50 px-2 py-1 text-[10px] font-medium text-red-600 hover:bg-red-100 transition"
+            title={`Remove ${member.name}`}
+          >
+            Remove
+          </button>
+        )}
+      </div>
     </div>
   );
 }
+
+// ---------------------------------------------------------------------------
+// Dashboard
+// ---------------------------------------------------------------------------
 
 export function Dashboard() {
   const { code } = useParams<{ code: string }>();
@@ -77,13 +135,17 @@ export function Dashboard() {
   const [deadline, setDeadline] = useState('');
   const [deadlineLoading, setDeadlineLoading] = useState(false);
 
+  // Confirmation dialogs
+  const [confirmLeave, setConfirmLeave] = useState(false);
+  const [confirmUnlock, setConfirmUnlock] = useState<{ show: boolean; hasDownstream: boolean }>({ show: false, hasDownstream: false });
+  const [confirmKick, setConfirmKick] = useState<{ memberId: string; name: string } | null>(null);
+
   const fetchGroup = useCallback(async () => {
     if (!code) return;
     try {
       const g = await api.getGroup(code);
       setGroup(g);
       if (g.submissionDeadline && !deadline) {
-        // Pre-fill deadline input with existing value (datetime-local format)
         setDeadline(new Date(g.submissionDeadline).toISOString().slice(0, 16));
       }
     } catch (err) {
@@ -105,6 +167,10 @@ export function Dashboard() {
     return () => clearInterval(interval);
   }, [session, fetchGroup, navigate]);
 
+  // -------------------------------------------------------------------------
+  // Handlers
+  // -------------------------------------------------------------------------
+
   async function handleAction(action: 'lock' | 'generate') {
     if (!code) return;
     setActionLoading(action);
@@ -121,6 +187,62 @@ export function Dashboard() {
     } catch (err) {
       setActionError(err instanceof ApiError ? err.message : 'Action failed');
     } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleUnlock(confirm: boolean) {
+    if (!code) return;
+    setConfirmUnlock({ show: false, hasDownstream: false });
+    setActionLoading('unlock');
+    setActionError('');
+    try {
+      const res = await api.unlockPreferences(code, confirm || undefined);
+      if (res.requiresConfirmation) {
+        // Backend says there's downstream data — show warning dialog
+        setConfirmUnlock({ show: true, hasDownstream: true });
+        setActionLoading(null);
+        return;
+      }
+      await fetchGroup();
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : 'Unlock failed');
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleKick(memberId: string) {
+    if (!code) return;
+    setConfirmKick(null);
+    setActionLoading(`kick-${memberId}`);
+    setActionError('');
+    try {
+      await api.kickMember(code, memberId);
+      await fetchGroup();
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : 'Could not remove member');
+    } finally {
+      setActionLoading(null);
+    }
+  }
+
+  async function handleLeave() {
+    if (!code) return;
+    setConfirmLeave(false);
+    setActionLoading('leave');
+    setActionError('');
+    try {
+      const res = await api.leaveGroup(code);
+      if (res.groupDeleted) {
+        logout();
+        navigate('/');
+      } else {
+        logout();
+        navigate('/home');
+      }
+    } catch (err) {
+      setActionError(err instanceof ApiError ? err.message : 'Could not leave group');
       setActionLoading(null);
     }
   }
@@ -152,6 +274,10 @@ export function Dashboard() {
     }
   }
 
+  // -------------------------------------------------------------------------
+  // Render
+  // -------------------------------------------------------------------------
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -173,14 +299,54 @@ export function Dashboard() {
   const totalCount = group.members.length;
   const allComplete = completedCount === totalCount && totalCount > 0;
 
-  // Admin action button states
-  const canLock     = group.status === 'COLLECTING';
-  const inBudget    = group.status === 'BUDGET_NEGOTIATION';
-  const inPlanning  = group.status === 'PLANNING';
-  const isComplete  = group.status === 'COMPLETE';
+  const isAdmin    = session?.isAdmin ?? false;
+  const canLock    = group.status === 'COLLECTING';
+  const canUnlock  = group.status === 'BUDGET_NEGOTIATION';
+  const inBudget   = group.status === 'BUDGET_NEGOTIATION';
+  const inPlanning = group.status === 'PLANNING';
+  const isComplete = group.status === 'COMPLETE';
+  const isLocked   = group.status !== 'COLLECTING';
 
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* Confirmation dialogs */}
+      {confirmLeave && (
+        <ConfirmDialog
+          title="Leave this group?"
+          body={
+            isAdmin
+              ? 'As the organizer, leaving will disband the group and delete all data. This cannot be undone.'
+              : 'You will be removed from the group and your preferences will be deleted.'
+          }
+          confirmLabel="Leave group"
+          danger
+          onConfirm={handleLeave}
+          onCancel={() => setConfirmLeave(false)}
+        />
+      )}
+
+      {confirmUnlock.show && (
+        <ConfirmDialog
+          title="Discard budget data and unlock?"
+          body="There are existing budget proposals or a locked budget. Unlocking preferences will delete all budget rounds, votes, and any generated itinerary so members can re-edit. This cannot be undone."
+          confirmLabel="Yes, unlock and discard"
+          danger
+          onConfirm={() => handleUnlock(true)}
+          onCancel={() => setConfirmUnlock({ show: false, hasDownstream: false })}
+        />
+      )}
+
+      {confirmKick && (
+        <ConfirmDialog
+          title={`Remove ${confirmKick.name}?`}
+          body="Their preferences and any budget votes for this group will be deleted. They can re-join if the group is still open."
+          confirmLabel="Remove member"
+          danger
+          onConfirm={() => handleKick(confirmKick.memberId)}
+          onCancel={() => setConfirmKick(null)}
+        />
+      )}
+
       {/* Top bar */}
       <header className="sticky top-0 z-10 border-b border-gray-200 bg-white/80 backdrop-blur-sm">
         <div className="mx-auto flex max-w-xl items-center justify-between px-4 py-3">
@@ -194,8 +360,8 @@ export function Dashboard() {
             <span className="font-semibold text-gray-900 text-sm">TripSync AI</span>
           </div>
           <button
-            onClick={() => { logout(); navigate('/'); }}
-            className="text-xs text-gray-400 hover:text-gray-600 transition"
+            onClick={() => setConfirmLeave(true)}
+            className="text-xs text-gray-400 hover:text-red-500 transition"
           >
             Leave group
           </button>
@@ -219,9 +385,16 @@ export function Dashboard() {
                   </p>
                 )}
               </div>
-              <span className="shrink-0 rounded-lg bg-gray-100 px-2.5 py-1 font-mono text-xs font-medium text-gray-600 tracking-widest">
-                {group.groupCode}
-              </span>
+              <div className="flex flex-col items-end gap-1 shrink-0">
+                <span className="rounded-lg bg-gray-100 px-2.5 py-1 font-mono text-xs font-medium text-gray-600 tracking-widest">
+                  {group.groupCode}
+                </span>
+                {isLocked && (
+                  <span className="rounded-md bg-amber-50 px-2 py-0.5 text-[10px] font-medium text-amber-700">
+                    Closed to new members
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
@@ -230,7 +403,7 @@ export function Dashboard() {
         </div>
 
         {/* Admin actions */}
-        {session?.isAdmin && (
+        {isAdmin && (
           <div className="rounded-2xl bg-white p-5 shadow-sm border border-gray-100 space-y-3">
             <p className="text-sm font-semibold text-gray-700">Organizer actions</p>
 
@@ -239,26 +412,43 @@ export function Dashboard() {
             )}
 
             <div className="flex flex-col gap-2 sm:flex-row">
-              {/* Step 1 — Lock preferences */}
+              {/* Step 1 — Lock / Unlock preferences */}
               <div className="flex-1">
-                <Button
-                  variant={canLock ? 'primary' : 'secondary'}
-                  disabled={!canLock}
-                  loading={actionLoading === 'lock'}
-                  className="w-full"
-                  onClick={() => handleAction('lock')}
-                >
-                  Lock preferences
-                </Button>
                 {canLock && (
-                  <p className="mt-1 text-center text-xs text-gray-400">
-                    {allComplete
-                      ? 'All preferences in — ready to lock!'
-                      : `${completedCount}/${totalCount} members done`}
-                  </p>
+                  <>
+                    <Button
+                      variant="primary"
+                      loading={actionLoading === 'lock'}
+                      className="w-full"
+                      onClick={() => handleAction('lock')}
+                    >
+                      Lock preferences
+                    </Button>
+                    <p className="mt-1 text-center text-xs text-gray-400">
+                      {allComplete
+                        ? 'All preferences in — ready to lock!'
+                        : `${completedCount}/${totalCount} members done`}
+                    </p>
+                  </>
                 )}
-                {!canLock && (
-                  <p className="mt-1 text-center text-xs text-gray-400">Preferences locked ✓</p>
+                {canUnlock && (
+                  <>
+                    <Button
+                      variant="secondary"
+                      loading={actionLoading === 'unlock'}
+                      className="w-full"
+                      onClick={() => handleUnlock(false)}
+                    >
+                      Unlock preferences
+                    </Button>
+                    <p className="mt-1 text-center text-xs text-gray-400">Re-opens preference editing</p>
+                  </>
+                )}
+                {!canLock && !canUnlock && (
+                  <>
+                    <Button variant="secondary" disabled className="w-full">Lock preferences</Button>
+                    <p className="mt-1 text-center text-xs text-gray-400">Preferences locked ✓</p>
+                  </>
                 )}
               </div>
 
@@ -380,6 +570,12 @@ export function Dashboard() {
                 key={member.id}
                 member={member}
                 isMe={member.id === session?.memberId}
+                isAdmin={isAdmin}
+                onRemove={
+                  isAdmin && member.id !== session?.memberId
+                    ? () => setConfirmKick({ memberId: member.id, name: member.name })
+                    : undefined
+                }
               />
             ))}
           </div>
@@ -431,8 +627,8 @@ export function Dashboard() {
                 </p>
                 <p className="mt-0.5 text-xs text-indigo-700">
                   {me.preferenceStatus === 'PENDING'
-                    ? 'Chat with the AI agent to tell us what kind of trip you\'d love. Takes ~3 minutes.'
-                    : 'You started but haven\'t finished yet. Pick up where you left off.'}
+                    ? "Chat with the AI agent to tell us what kind of trip you'd love. Takes ~3 minutes."
+                    : "You started but haven't finished yet. Pick up where you left off."}
                 </p>
               </div>
               <Button
