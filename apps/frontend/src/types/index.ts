@@ -330,6 +330,24 @@ export interface SatisfactionScores {
   fairnessFloorMet:     boolean;
 }
 
+export interface AgentTimelineEntry {
+  agent:         string;
+  wave:          1 | 2 | 3;
+  startedAt:     number;
+  completedAt:   number;
+  durationMs:    number;
+  status:        'ok' | 'repaired' | 'fallback';
+  outputSummary: string;
+}
+
+export interface DecisionAuditEntry {
+  decision:  string;
+  chosen:    string;
+  rejected:  string[];
+  reason:    string;
+  scores?:   Record<string, number>;
+}
+
 export interface Itinerary {
   id:                 string;
   version:            number;
@@ -342,6 +360,9 @@ export interface Itinerary {
   generatedAt:        string;
   createdAt:          string;
   feedback?:          FeedbackRecord[];
+  agentTimeline?:     AgentTimelineEntry[];
+  decisionAudit?:     DecisionAuditEntry[];
+  weaveTraceUrl?:     string;
 }
 
 // ---------------------------------------------------------------------------
