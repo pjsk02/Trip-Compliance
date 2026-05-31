@@ -88,8 +88,10 @@ const BUDGET_BUFFER_PCT = 0.12;
 export async function runOrchestrator(
   ctx: PlanningContext,
   maxNegotiationRounds = 3,
+  onEvent?: OnEvent,
 ): Promise<OrchestratorResult> {
   const start = Date.now();
+  const emit  = onEvent ?? (() => {});
 
   // Apply buffer: agents plan against a slightly reduced budget so the final
   // itinerary stays within the real locked budget even if estimates run high.
@@ -97,23 +99,46 @@ export async function runOrchestrator(
   const agentCtx: PlanningContext = { ...ctx, lockedBudget: bufferedBudget };
 
   // ── Wave 1: independent agents (plan against buffered budget) ────────────
+  // Emit agent_started for all four before launching them in parallel so the
+  // UI shows all agents thinking at once; each emits agent_proposal as it lands.
+  (['activity', 'food', 'accommodation', 'transportation'] as const).forEach(a =>
+    emit({ type: 'agent_started', agent: a }),
+  );
+
   const [activityRaw, foodRaw, accommodation, transportation] = await Promise.all([
-    new ActivityAgent().propose(agentCtx),
-    new FoodAgent().propose(agentCtx),
-    new AccommodationAgent().propose(agentCtx),
-    new TransportationAgent().propose(agentCtx),
+    new ActivityAgent().propose(agentCtx, emit).then(r => {
+      emit({ type: 'agent_proposal', agent: 'activity', ...activityStatement(r, ctx) });
+      return r;
+    }),
+    new FoodAgent().propose(agentCtx, emit).then(r => {
+      emit({ type: 'agent_proposal', agent: 'food', ...foodStatement(r, ctx) });
+      return r;
+    }),
+    new AccommodationAgent().propose(agentCtx, emit).then(r => {
+      emit({ type: 'agent_proposal', agent: 'accommodation', ...accommodationStatement(r) });
+      return r;
+    }),
+    new TransportationAgent().propose(agentCtx, emit).then(r => {
+      emit({ type: 'agent_proposal', agent: 'transportation', ...transportationStatement(r) });
+      return r;
+    }),
   ]);
 
   // ── Wave 2: Budget + Logistics ────────────────────────────────────────────
+  emit({ type: 'agent_started', agent: 'budget' });
   const [budgetRaw, logistics] = await Promise.all([
     new BudgetAgent()
       .withInput({ ctx: agentCtx, activity: activityRaw, food: foodRaw, accommodation, transportation, realLockedBudget: ctx.lockedBudget })
-      .propose(agentCtx),
+      .propose(agentCtx, emit)
+      .then(r => {
+        emit({ type: 'agent_proposal', agent: 'budget', ...budgetStatement(r, ctx) });
+        return r;
+      }),
     Promise.resolve(logisticsStub()),
   ]);
 
   // ── Wave 3: Negotiate conflicts ───────────────────────────────────────────
-  const negotiation = await negotiate(agentCtx, activityRaw, foodRaw, budgetRaw, maxNegotiationRounds);
+  const negotiation = await negotiate(agentCtx, activityRaw, foodRaw, budgetRaw, maxNegotiationRounds, emit);
 
   const activity = negotiation.activity;
   const food     = negotiation.food;
@@ -125,15 +150,30 @@ export async function runOrchestrator(
   const budget = activityChanged
     ? await new BudgetAgent()
         .withInput({ ctx: agentCtx, activity, food, accommodation, transportation, realLockedBudget: ctx.lockedBudget })
-        .propose(agentCtx)
+        .propose(agentCtx, emit)
     : budgetRaw;
 
   // ── Consensus — score against the REAL locked budget (not buffered) ───────
   const consensus = runConsensus({
     candidates:      buildCandidates(activity, budget, agentCtx),
     members:         ctx.members,
-    lockedBudgetUsd: ctx.lockedBudget,   // real locked budget for hard check
+    lockedBudgetUsd: ctx.lockedBudget,
     tripDuration:    ctx.tripDuration,
+  });
+
+  // Emit orchestrator decision with dimension scores from the winning scorecard
+  const winner = consensus.winner ?? consensus.bestAvailable;
+  emit({
+    type: 'orchestrator_decision',
+    statement: orchestratorDecisionStatement(consensus, ctx),
+    consensusStatus: consensus.status,
+    dimensionScores: winner ? {
+      satisfaction: winner.dimensions.userSatisfaction.raw,
+      fairness:     winner.dimensions.fairness.raw,
+      budget:       winner.dimensions.budgetCompliance.raw,
+      feasibility:  winner.dimensions.feasibility.raw,
+      diversity:    winner.dimensions.diversity.raw,
+    } : { satisfaction: 0, fairness: 0, budget: 0, feasibility: 0, diversity: 0 },
   });
 
   // ── Assemble final itinerary ──────────────────────────────────────────────
