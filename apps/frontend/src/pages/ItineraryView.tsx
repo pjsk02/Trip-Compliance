@@ -995,6 +995,14 @@ function ItineraryViewInner() {
   );
 }
 
+export function ItineraryView() {
+  return (
+    <ItineraryErrorBoundary>
+      <ItineraryViewInner />
+    </ItineraryErrorBoundary>
+  );
+}
+
 // ---------------------------------------------------------------------------
 // Stat pill (hero strip)
 // ---------------------------------------------------------------------------
