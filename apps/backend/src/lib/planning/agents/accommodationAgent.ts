@@ -65,8 +65,9 @@ RANKING RULES:
 4. If any member has mobility limitations → flag accessibilityFriendly: false for options without lifts/accessibility features.
 5. Compute groupFitScore (0-100) as a weighted combination of: comfort match (40%), budget fit (40%), group-size fit (20%).
 6. Propose one budget, one mid-range, and one premium option. The recommended index is the best overall fit.
-7. totalCostUsd = pricePerNightPerPersonUsd × groupSize × tripDuration.
+7. totalCostUsd = pricePerNightPerPersonUsd × groupSize × numberOfNights (check-in Day 1, check-out last day).
 8. CRITICAL: You will receive a HARD CAP for pricePerNightPerPersonUsd in the user message. ALL three options MUST be at or below that cap. Budget option should be 50-65% of the cap; mid-range 75-90%; premium AT the cap. Never exceed the cap.
+9. numberOfNights = tripDays - 1 (e.g. a 4-day trip = 3 nights). This will be stated explicitly in the user message.
 
 OUTPUT: Return ONLY valid JSON. No prose, no markdown fences:
 {
