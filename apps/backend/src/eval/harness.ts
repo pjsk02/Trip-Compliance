@@ -241,16 +241,17 @@ export async function runEvaluation(options: {
         rows:        [{ dataset }],  // each row has { dataset } — matches WeaveDatasetRow
       });
 
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const evaluation = new weaveSDK.Evaluation({
         name:    `tripsync_eval_${dataset.id}`,
         dataset: weaveDataset,
         scorers: [
-          weaveSatisfactionScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
-          weaveFairnessScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
-          weaveBudgetScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
-          weaveDiversityScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
-          weaveConstraintScorer as Parameters<typeof weaveSDK.Evaluation['prototype']['evaluate']>[0]['model'],
-        ],
+          weaveSatisfactionScorer,
+          weaveFairnessScorer,
+          weaveBudgetScorer,
+          weaveDiversityScorer,
+          weaveConstraintScorer,
+        ] as any,
       });
 
       // Run evaluation — Weave automatically traces model + all scorers
