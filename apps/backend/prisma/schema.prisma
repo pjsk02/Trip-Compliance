@@ -70,10 +70,15 @@ model Group {
   submissionDeadline   DateTime?
   createdAt            DateTime    @default(now())
 
-  members       Member[]
-  itineraries   Itinerary[]
-  budgetRounds  BudgetRound[]
-  feedback      Feedback[]
+  // Finalization — admin picks the official version of the trip
+  finalItineraryId  String?   @unique
+  finalizedAt       DateTime?
+
+  members        Member[]
+  itineraries    Itinerary[]
+  budgetRounds   BudgetRound[]
+  feedback       Feedback[]
+  finalItinerary Itinerary? @relation("FinalItinerary", fields: [finalItineraryId], references: [id], onDelete: SetNull)
 
   @@index([groupCode])
 }
