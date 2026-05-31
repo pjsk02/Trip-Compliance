@@ -10,9 +10,9 @@
     "semantic_hash": "5d6ecd96cf065b16e8bb9fbf5d7d8f0d"
   },
   "D:\\vsc\\NEU\\Trip\\.claude\\settings.local.json": {
-    "mtime": 1780259393.0318158,
-    "ast_hash": "73f67b7738ba22fdb3fd706b9a8e3a85",
-    "semantic_hash": "73f67b7738ba22fdb3fd706b9a8e3a85"
+    "mtime": 1780260284.0198784,
+    "ast_hash": "88b71780c69af4e0c580aa88c6e40039",
+    "semantic_hash": "88b71780c69af4e0c580aa88c6e40039"
   },
   "D:\\vsc\\NEU\\Trip\\apps\\backend\\jest.setup.ts": {
     "mtime": 1780257486.6226912,
@@ -165,9 +165,9 @@
     "semantic_hash": "04a0fccd50799b70e4fb27e50500c50a"
   },
   "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\routes\\groups.ts": {
-    "mtime": 1780258145.2087493,
-    "ast_hash": "53323af2e5e278e95c9987e7e4e5b694",
-    "semantic_hash": "53323af2e5e278e95c9987e7e4e5b694"
+    "mtime": 1780260449.6505878,
+    "ast_hash": "eb70c82f20f5be5b40be19717edf2d62",
+    "semantic_hash": "eb70c82f20f5be5b40be19717edf2d62"
   },
   "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\routes\\itinerary.ts": {
     "mtime": 1780258228.278542,
@@ -225,9 +225,9 @@
     "semantic_hash": "e7f0b28d6fafc62b3bcdb6e3b779ed6a"
   },
   "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\api\\client.ts": {
-    "mtime": 1780258334.1981258,
-    "ast_hash": "0f57416bcc7463ddde3b1d13354f3d05",
-    "semantic_hash": "0f57416bcc7463ddde3b1d13354f3d05"
+    "mtime": 1780260454.8433595,
+    "ast_hash": "163e43c00b2dc70ddc64b77be78be883",
+    "semantic_hash": "163e43c00b2dc70ddc64b77be78be883"
   },
   "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\BudgetProposalCard.tsx": {
     "mtime": 1780257487.738778,
@@ -305,14 +305,14 @@
     "semantic_hash": "0e8898ba8092e3c2dee801c484457d5c"
   },
   "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\Home.tsx": {
-    "mtime": 1780256375.236878,
-    "ast_hash": "cf30b92190b032666befffb49fc12591",
-    "semantic_hash": "cf30b92190b032666befffb49fc12591"
+    "mtime": 1780260468.1199303,
+    "ast_hash": "08372417e22e5672b8e794a01e841079",
+    "semantic_hash": "08372417e22e5672b8e794a01e841079"
   },
   "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\ItineraryView.tsx": {
-    "mtime": 1780258609.7177558,
-    "ast_hash": "ae1dffdbf8219bb3ac5ac54475355eb9",
-    "semantic_hash": "ae1dffdbf8219bb3ac5ac54475355eb9"
+    "mtime": 1780259719.00027,
+    "ast_hash": "879b6ed088f0c620e2c9cf0f5e42ef15",
+    "semantic_hash": "879b6ed088f0c620e2c9cf0f5e42ef15"
   },
   "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\JoinGroup.tsx": {
     "mtime": 1780256344.837066,

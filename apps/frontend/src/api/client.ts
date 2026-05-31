@@ -88,6 +88,10 @@ export const api = {
     return request<JoinGroupResponse>('POST', `/groups/${code}/join`, payload, 'user');
   },
 
+  enterGroup(code: string) {
+    return request<JoinGroupResponse>('POST', `/groups/${code}/enter`, {}, 'user');
+  },
+
   getGroup(code: string) {
     return request<Group>('GET', `/groups/${code}`, undefined, 'member');
   },

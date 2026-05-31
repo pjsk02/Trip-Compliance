@@ -1,5 +1,18 @@
 {
   "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "shell": "powershell",
+            "command": "$raw = [Console]::In.ReadToEnd(); $data = $raw | ConvertFrom-Json; $file = $data.tool_input.file_path; if (-not $file) { $file = $data.tool_response.filePath }; if ($file) { $basename = Split-Path $file -Leaf; git add \"$file\" 2>$null; $status = git status --porcelain \"$file\" 2>$null; if ($status) { git commit -m \"chore: update $basename\" 2>$null } }",
+            "timeout": 15
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",

@@ -139,6 +139,38 @@ groupsRouter.post('/:code/join', requireUser, async (req: Request, res: Response
 });
 
 // ---------------------------------------------------------------------------
+// POST /groups/:code/enter — re-issue a member token for an existing member
+// Uses only the user token (no password). For re-entering from the Home page.
+// ---------------------------------------------------------------------------
+
+groupsRouter.post('/:code/enter', requireUser, async (req: Request, res: Response): Promise<void> => {
+  const { userId } = req.user!;
+
+  const group = await prisma.group.findUnique({
+    where: { groupCode: req.params.code.toUpperCase() },
+  });
+  if (!group) {
+    res.status(404).json({ error: 'Group not found' });
+    return;
+  }
+
+  const member = await prisma.member.findFirst({
+    where: { groupId: group.id, userId },
+  });
+  if (!member) {
+    res.status(403).json({ error: 'You are not a member of this group' });
+    return;
+  }
+
+  const token = signToken({ memberId: member.id, groupId: group.id, isAdmin: member.isAdmin });
+  res.json({
+    token,
+    member: { id: member.id, name: member.name, isAdmin: member.isAdmin },
+    group:  { id: group.id, name: group.name, destination: group.destination, status: group.status },
+  });
+});
+
+// ---------------------------------------------------------------------------
 // GET /groups/:code — group state + member roster
 // ---------------------------------------------------------------------------
 

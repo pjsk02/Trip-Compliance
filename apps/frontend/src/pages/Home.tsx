@@ -24,7 +24,7 @@ const PREF_COLOR: Record<string, string> = {
 };
 
 export function Home() {
-  const { userSession, logout } = useAuth();
+  const { userSession, loginGroup, logout } = useAuth();
   const navigate = useNavigate();
 
   const [memberships, setMemberships] = useState<Membership[]>([]);
@@ -38,13 +38,21 @@ export function Home() {
       .finally(() => setLoading(false));
   }, []);
 
-  function enterGroup(m: Membership) {
-    // Entering a group requires a member-scoped token — we re-join (idempotent) via joinGroup.
-    // Instead we navigate to the group page and let Dashboard fetch the group.
-    // To do so we need to set the member token. We store memberId in the membership so we can
-    // issue a lightweight token-exchange call. For now we navigate and let Dashboard request
-    // the user to re-authenticate into the group if needed.
-    navigate(`/group/${m.group.groupCode}`);
+  async function enterGroup(m: Membership) {
+    try {
+      const res = await api.enterGroup(m.group.groupCode);
+      loginGroup({
+        token:      res.token,
+        memberId:   res.member.id,
+        groupId:    res.group.id,
+        isAdmin:    res.member.isAdmin,
+        memberName: res.member.name,
+        groupCode:  m.group.groupCode,
+      });
+      navigate(`/group/${m.group.groupCode}`);
+    } catch {
+      setError('Could not enter group. Please try again.');
+    }
   }
 
   if (!userSession) return null;
