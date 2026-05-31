@@ -166,7 +166,8 @@ async function _runOrchestratorImpl(
   ]);
 
   // ── Wave 3: Negotiate conflicts ───────────────────────────────────────────
-  const negotiation = await negotiate(agentCtx, activityRaw, foodRaw, budgetRaw, maxNegotiationRounds, emit);
+  const tracedNegotiate = wop('pipeline:negotiate', negotiate);
+  const negotiation = await tracedNegotiate(agentCtx, activityRaw, foodRaw, budgetRaw, maxNegotiationRounds, emit);
 
   const activity = negotiation.activity;
   const food     = negotiation.food;
