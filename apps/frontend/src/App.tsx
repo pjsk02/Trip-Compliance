@@ -66,6 +66,10 @@ function AppRoutes() {
         path="/group/:code/itinerary"
         element={<RequireGroupAuth><ItineraryView /></RequireGroupAuth>}
       />
+      <Route
+        path="/eval"
+        element={<RequireUserAuth><EvalDashboard /></RequireUserAuth>}
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
