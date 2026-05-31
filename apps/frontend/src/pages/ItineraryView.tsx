@@ -6,7 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Spinner } from '../components/Spinner';
 import type {
   Itinerary, DayPlan, ScheduledBlock, BudgetBreakdownLine,
-  PerMemberScore, TimeBlock,
+  PerMemberScore, TimeBlock, AgentTimelineEntry, DecisionAuditEntry,
 } from '../types';
 
 // ---------------------------------------------------------------------------
