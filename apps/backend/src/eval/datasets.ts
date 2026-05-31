@@ -96,6 +96,9 @@ function member(
 export const BUDGET_TRAVELERS: PlanningContext = {
   destination:  'Lisbon, Portugal',
   tripDuration: 3,
+  tripDays:     4,
+  startDate:    '2025-09-10',
+  endDate:      '2025-09-13',
   groupSize:    3,
   lockedBudget: 800,  // $267/person total
   members: [
