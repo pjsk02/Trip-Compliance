@@ -1,0 +1,377 @@
+{
+  "D:\\vsc\\NEU\\Trip\\package.json": {
+    "mtime": 1780250647.060632,
+    "ast_hash": "2089a17cc428d798249ec5373b164c5d",
+    "semantic_hash": "2089a17cc428d798249ec5373b164c5d"
+  },
+  "D:\\vsc\\NEU\\Trip\\.claude\\settings.json": {
+    "mtime": 1780253935.676747,
+    "ast_hash": "5d6ecd96cf065b16e8bb9fbf5d7d8f0d",
+    "semantic_hash": "5d6ecd96cf065b16e8bb9fbf5d7d8f0d"
+  },
+  "D:\\vsc\\NEU\\Trip\\.claude\\settings.local.json": {
+    "mtime": 1780259393.0318158,
+    "ast_hash": "73f67b7738ba22fdb3fd706b9a8e3a85",
+    "semantic_hash": "73f67b7738ba22fdb3fd706b9a8e3a85"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\jest.setup.ts": {
+    "mtime": 1780257486.6226912,
+    "ast_hash": "8e2b8be0366ac1bdefe511cfa3d99162",
+    "semantic_hash": "8e2b8be0366ac1bdefe511cfa3d99162"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\package.json": {
+    "mtime": 1780257900.9179363,
+    "ast_hash": "2654a2bb873940f37ff086b888734d39",
+    "semantic_hash": "2654a2bb873940f37ff086b888734d39"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\tsconfig.json": {
+    "mtime": 1780250701.5290847,
+    "ast_hash": "bfc525587ec835cf62d31a1c3b4819d6",
+    "semantic_hash": "bfc525587ec835cf62d31a1c3b4819d6"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\prisma\\seed.ts": {
+    "mtime": 1780251232.1770935,
+    "ast_hash": "af09380ed5f8a5c877eb78db30d97972",
+    "semantic_hash": "af09380ed5f8a5c877eb78db30d97972"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\scripts\\backfill-users.ts": {
+    "mtime": 1780255905.7343452,
+    "ast_hash": "6abb19df2f28f6c694a010044147831a",
+    "semantic_hash": "6abb19df2f28f6c694a010044147831a"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\scripts\\test-itinerary-pipeline.ts": {
+    "mtime": 1780257788.4960103,
+    "ast_hash": "e6771a49ea3e0e876892d4d4270cec2f",
+    "semantic_hash": "e6771a49ea3e0e876892d4d4270cec2f"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\index.ts": {
+    "mtime": 1780258245.9545484,
+    "ast_hash": "c1e9162a178a913aa79b63a1545e4318",
+    "semantic_hash": "c1e9162a178a913aa79b63a1545e4318"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\budgetAgent.ts": {
+    "mtime": 1780257294.024232,
+    "ast_hash": "e3f83db742f79b0278d92324d82cb027",
+    "semantic_hash": "e3f83db742f79b0278d92324d82cb027"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\groupCode.ts": {
+    "mtime": 1780251401.9088566,
+    "ast_hash": "895c468e8df52f212dbcdea6708f2f54",
+    "semantic_hash": "895c468e8df52f212dbcdea6708f2f54"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\jwt.ts": {
+    "mtime": 1780255946.1232185,
+    "ast_hash": "b599c6178e4450c2f882c70b7a928c54",
+    "semantic_hash": "b599c6178e4450c2f882c70b7a928c54"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\preferenceAgent.ts": {
+    "mtime": 1780255143.2972808,
+    "ast_hash": "ea06f4e097e8dd7bd0453bc125b2b59d",
+    "semantic_hash": "ea06f4e097e8dd7bd0453bc125b2b59d"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\preferenceSchema.ts": {
+    "mtime": 1780255078.1080725,
+    "ast_hash": "5e79eee2d7a355903773ecc4b084bd75",
+    "semantic_hash": "5e79eee2d7a355903773ecc4b084bd75"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\prisma.ts": {
+    "mtime": 1780251383.448431,
+    "ast_hash": "cacbaf4fcb7e5be6b7aef7eabfce49bb",
+    "semantic_hash": "cacbaf4fcb7e5be6b7aef7eabfce49bb"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\agent.ts": {
+    "mtime": 1780258055.08955,
+    "ast_hash": "4a9ee78ead0feaa23165c301f4c31c15",
+    "semantic_hash": "4a9ee78ead0feaa23165c301f4c31c15"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\consensus.ts": {
+    "mtime": 1780257531.437322,
+    "ast_hash": "e73876873d24313b8f24064f2710611d",
+    "semantic_hash": "e73876873d24313b8f24064f2710611d"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\feedbackClassifier.ts": {
+    "mtime": 1780258138.3260026,
+    "ast_hash": "ba5819af906d9675115fe1a43de04181",
+    "semantic_hash": "ba5819af906d9675115fe1a43de04181"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\itinerary.ts": {
+    "mtime": 1780257603.0693111,
+    "ast_hash": "8d623d75b39797e5606ab876528fb936",
+    "semantic_hash": "8d623d75b39797e5606ab876528fb936"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\negotiation.ts": {
+    "mtime": 1780257496.2156248,
+    "ast_hash": "1b379bfea5672fbdbdfb00c24c7948d0",
+    "semantic_hash": "1b379bfea5672fbdbdfb00c24c7948d0"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\orchestrator.ts": {
+    "mtime": 1780258093.1036904,
+    "ast_hash": "840c59b46f9ce128a56992e5ef80eb2a",
+    "semantic_hash": "840c59b46f9ce128a56992e5ef80eb2a"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\replanOrchestrator.ts": {
+    "mtime": 1780258453.8319552,
+    "ast_hash": "04ca36da062d38b7749e3721b91b7522",
+    "semantic_hash": "04ca36da062d38b7749e3721b91b7522"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\schemas.ts": {
+    "mtime": 1780258111.3135839,
+    "ast_hash": "5eaca713800dd4b811d4ab7b75baef7f",
+    "semantic_hash": "5eaca713800dd4b811d4ab7b75baef7f"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\scoring.ts": {
+    "mtime": 1780257747.8946579,
+    "ast_hash": "8d8936be51647942a2e59d0d6510c115",
+    "semantic_hash": "8d8936be51647942a2e59d0d6510c115"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\agents\\accommodationAgent.ts": {
+    "mtime": 1780257220.867107,
+    "ast_hash": "f41d1c0320a24669cb8f064056d7474b",
+    "semantic_hash": "f41d1c0320a24669cb8f064056d7474b"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\agents\\activityAgent.ts": {
+    "mtime": 1780257168.286785,
+    "ast_hash": "d6d1c79626ec5b906a288330846a2dda",
+    "semantic_hash": "d6d1c79626ec5b906a288330846a2dda"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\agents\\budgetAgent.ts": {
+    "mtime": 1780257277.5885785,
+    "ast_hash": "83090010c69b2a0f4461cd734b67f658",
+    "semantic_hash": "83090010c69b2a0f4461cd734b67f658"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\agents\\foodAgent.ts": {
+    "mtime": 1780257593.5042758,
+    "ast_hash": "7f82b0fbdf6519e251e33e931313f80a",
+    "semantic_hash": "7f82b0fbdf6519e251e33e931313f80a"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\lib\\planning\\agents\\transportationAgent.ts": {
+    "mtime": 1780257245.3506548,
+    "ast_hash": "cf68cb47c4b0902a9a68d4ff116c1f3a",
+    "semantic_hash": "cf68cb47c4b0902a9a68d4ff116c1f3a"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\middleware\\auth.ts": {
+    "mtime": 1780255957.3387153,
+    "ast_hash": "8d14b9ae619b0fdf9e65e44f453e8b4d",
+    "semantic_hash": "8d14b9ae619b0fdf9e65e44f453e8b4d"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\routes\\auth.ts": {
+    "mtime": 1780255982.3569896,
+    "ast_hash": "cd80eb678750c313e5c1f546ee7a3be4",
+    "semantic_hash": "cd80eb678750c313e5c1f546ee7a3be4"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\routes\\budget.ts": {
+    "mtime": 1780257384.1321998,
+    "ast_hash": "04a0fccd50799b70e4fb27e50500c50a",
+    "semantic_hash": "04a0fccd50799b70e4fb27e50500c50a"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\routes\\groups.ts": {
+    "mtime": 1780258145.2087493,
+    "ast_hash": "53323af2e5e278e95c9987e7e4e5b694",
+    "semantic_hash": "53323af2e5e278e95c9987e7e4e5b694"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\routes\\itinerary.ts": {
+    "mtime": 1780258228.278542,
+    "ast_hash": "62a936e1c96fcf9db24a55d66d70c1d3",
+    "semantic_hash": "62a936e1c96fcf9db24a55d66d70c1d3"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\routes\\members.ts": {
+    "mtime": 1780256393.2224505,
+    "ast_hash": "8e4de2eb664a6ef4a4a70cbf286a2ad3",
+    "semantic_hash": "8e4de2eb664a6ef4a4a70cbf286a2ad3"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\__tests__\\groups.test.ts": {
+    "mtime": 1780251470.1125467,
+    "ast_hash": "1133e9070f533701f2cacbbb9351d13c",
+    "semantic_hash": "1133e9070f533701f2cacbbb9351d13c"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\backend\\src\\__tests__\\orchestrator.test.ts": {
+    "mtime": 1780257679.3625178,
+    "ast_hash": "b9b5bb2fc47cea23968212fbe6d9d295",
+    "semantic_hash": "b9b5bb2fc47cea23968212fbe6d9d295"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\package.json": {
+    "mtime": 1780255928.6642382,
+    "ast_hash": "43f1c414a4395a0459ce60ba896ee3fa",
+    "semantic_hash": "43f1c414a4395a0459ce60ba896ee3fa"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\postcss.config.js": {
+    "mtime": 1780250732.409895,
+    "ast_hash": "c735540bb63936a123bc867d950c9f69",
+    "semantic_hash": "c735540bb63936a123bc867d950c9f69"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\tailwind.config.js": {
+    "mtime": 1780250735.918598,
+    "ast_hash": "5e9001435b67fd819c59969c30edf830",
+    "semantic_hash": "5e9001435b67fd819c59969c30edf830"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\tsconfig.json": {
+    "mtime": 1780250725.6312068,
+    "ast_hash": "6b0318b9b75bbb74c7893a0e5ebfd76a",
+    "semantic_hash": "6b0318b9b75bbb74c7893a0e5ebfd76a"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\vite.config.ts": {
+    "mtime": 1780250729.2363193,
+    "ast_hash": "8a477d6a38c13c7021e148696806b81a",
+    "semantic_hash": "8a477d6a38c13c7021e148696806b81a"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\App.tsx": {
+    "mtime": 1780258170.140785,
+    "ast_hash": "0c4cdd6ab754ba7a1e81205a56c93957",
+    "semantic_hash": "0c4cdd6ab754ba7a1e81205a56c93957"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\main.tsx": {
+    "mtime": 1780250743.723067,
+    "ast_hash": "e7f0b28d6fafc62b3bcdb6e3b779ed6a",
+    "semantic_hash": "e7f0b28d6fafc62b3bcdb6e3b779ed6a"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\api\\client.ts": {
+    "mtime": 1780258334.1981258,
+    "ast_hash": "0f57416bcc7463ddde3b1d13354f3d05",
+    "semantic_hash": "0f57416bcc7463ddde3b1d13354f3d05"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\BudgetProposalCard.tsx": {
+    "mtime": 1780257487.738778,
+    "ast_hash": "766352ba19387e822883b7af581a75c7",
+    "semantic_hash": "766352ba19387e822883b7af581a75c7"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\Button.tsx": {
+    "mtime": 1780251850.234257,
+    "ast_hash": "d14d76cc2aa9e2ad15341611ef021704",
+    "semantic_hash": "d14d76cc2aa9e2ad15341611ef021704"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\CategoryProgress.tsx": {
+    "mtime": 1780252280.0750847,
+    "ast_hash": "9ad6efab90f3b7e3e7cc9d8037b75a95",
+    "semantic_hash": "9ad6efab90f3b7e3e7cc9d8037b75a95"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\ChatBubble.tsx": {
+    "mtime": 1780252289.6418345,
+    "ast_hash": "e0e241cd579bf1d15eeaa51c3a0018b1",
+    "semantic_hash": "e0e241cd579bf1d15eeaa51c3a0018b1"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\CopyCard.tsx": {
+    "mtime": 1780251910.0316746,
+    "ast_hash": "1146f9fbcbaa74b7d05c2c08877a6d80",
+    "semantic_hash": "1146f9fbcbaa74b7d05c2c08877a6d80"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\Input.tsx": {
+    "mtime": 1780251856.8878322,
+    "ast_hash": "be216917b657118db131edb27bc4d9bd",
+    "semantic_hash": "be216917b657118db131edb27bc4d9bd"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\PreferenceReview.tsx": {
+    "mtime": 1780255562.7279088,
+    "ast_hash": "e339e8eeea50435534ab715ccfed8fe1",
+    "semantic_hash": "e339e8eeea50435534ab715ccfed8fe1"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\SliderPanel.tsx": {
+    "mtime": 1780255539.117472,
+    "ast_hash": "0b846c0bfd61d1d4a5603c1f4ed73123",
+    "semantic_hash": "0b846c0bfd61d1d4a5603c1f4ed73123"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\Spinner.tsx": {
+    "mtime": 1780251861.4776628,
+    "ast_hash": "36fd058e692d4a8d0b73c2ab8f543fd2",
+    "semantic_hash": "36fd058e692d4a8d0b73c2ab8f543fd2"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\StatusBadge.tsx": {
+    "mtime": 1780251868.2795022,
+    "ast_hash": "8b448a5a9f3b42d8c39026d9fb5ffa54",
+    "semantic_hash": "8b448a5a9f3b42d8c39026d9fb5ffa54"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\components\\StepProgress.tsx": {
+    "mtime": 1780255343.899642,
+    "ast_hash": "00d8ab06498a57c16368e01aecd88291",
+    "semantic_hash": "00d8ab06498a57c16368e01aecd88291"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\context\\AuthContext.tsx": {
+    "mtime": 1780256137.6921031,
+    "ast_hash": "62a245983824f4e1667ff11548411126",
+    "semantic_hash": "62a245983824f4e1667ff11548411126"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\BudgetNegotiation.tsx": {
+    "mtime": 1780257628.4184108,
+    "ast_hash": "a9eefe1a81f4f2ad91e6f22b1ad2b644",
+    "semantic_hash": "a9eefe1a81f4f2ad91e6f22b1ad2b644"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\CreateGroup.tsx": {
+    "mtime": 1780256315.1200218,
+    "ast_hash": "b3dcc0cd07619f125dd660e079d6980d",
+    "semantic_hash": "b3dcc0cd07619f125dd660e079d6980d"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\Dashboard.tsx": {
+    "mtime": 1780258296.91432,
+    "ast_hash": "0e8898ba8092e3c2dee801c484457d5c",
+    "semantic_hash": "0e8898ba8092e3c2dee801c484457d5c"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\Home.tsx": {
+    "mtime": 1780256375.236878,
+    "ast_hash": "cf30b92190b032666befffb49fc12591",
+    "semantic_hash": "cf30b92190b032666befffb49fc12591"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\ItineraryView.tsx": {
+    "mtime": 1780258609.7177558,
+    "ast_hash": "ae1dffdbf8219bb3ac5ac54475355eb9",
+    "semantic_hash": "ae1dffdbf8219bb3ac5ac54475355eb9"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\JoinGroup.tsx": {
+    "mtime": 1780256344.837066,
+    "ast_hash": "3021277c4832ba9bbae9d6145f2a8a05",
+    "semantic_hash": "3021277c4832ba9bbae9d6145f2a8a05"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\Landing.tsx": {
+    "mtime": 1780256194.3542027,
+    "ast_hash": "eb41d44711cb520c1e781da0f9c0dca4",
+    "semantic_hash": "eb41d44711cb520c1e781da0f9c0dca4"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\pages\\PreferenceChat.tsx": {
+    "mtime": 1780255417.9603949,
+    "ast_hash": "b3c39becb1b3771ebefd1665089ee1e1",
+    "semantic_hash": "b3c39becb1b3771ebefd1665089ee1e1"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\src\\types\\index.ts": {
+    "mtime": 1780258306.3446982,
+    "ast_hash": "3b30f0e6baa16d422f207afad6bbe3df",
+    "semantic_hash": "3b30f0e6baa16d422f207afad6bbe3df"
+  },
+  "D:\\vsc\\NEU\\Trip\\packages\\shared\\package.json": {
+    "mtime": 1780250677.753708,
+    "ast_hash": "345a07caa749c2f5a2410335af4031fc",
+    "semantic_hash": "345a07caa749c2f5a2410335af4031fc"
+  },
+  "D:\\vsc\\NEU\\Trip\\packages\\shared\\tsconfig.json": {
+    "mtime": 1780250681.8424356,
+    "ast_hash": "0797c6adfddda5df5cc9291feae0234c",
+    "semantic_hash": "0797c6adfddda5df5cc9291feae0234c"
+  },
+  "D:\\vsc\\NEU\\Trip\\packages\\shared\\src\\index.ts": {
+    "mtime": 1780250687.9880025,
+    "ast_hash": "a60efcf73ce814d60dd4567363e33bf5",
+    "semantic_hash": "a60efcf73ce814d60dd4567363e33bf5"
+  },
+  "D:\\vsc\\NEU\\Trip\\CLAUDE.md": {
+    "mtime": 1780253935.6755,
+    "ast_hash": "8a6643a420fdad6bfb583523bc6cef16",
+    "semantic_hash": "8a6643a420fdad6bfb583523bc6cef16"
+  },
+  "D:\\vsc\\NEU\\Trip\\docker-compose.yml": {
+    "mtime": 1780250669.823936,
+    "ast_hash": "bbc4d835c9cd32f09b340a549258cafa",
+    "semantic_hash": "bbc4d835c9cd32f09b340a549258cafa"
+  },
+  "D:\\vsc\\NEU\\Trip\\README.md": {
+    "mtime": 1780250662.6708682,
+    "ast_hash": "ec33a21ffc46dffd3a41e9eeca369b57",
+    "semantic_hash": "ec33a21ffc46dffd3a41e9eeca369b57"
+  },
+  "D:\\vsc\\NEU\\Trip\\USAGE.md": {
+    "mtime": 1780258389.2209458,
+    "ast_hash": "5ad0b4063ce085f15f18f74a37f65f3d",
+    "semantic_hash": "5ad0b4063ce085f15f18f74a37f65f3d"
+  },
+  "D:\\vsc\\NEU\\Trip\\apps\\frontend\\index.html": {
+    "mtime": 1780250739.7947676,
+    "ast_hash": "adaecee628f145d01c52a9622ca43022",
+    "semantic_hash": "adaecee628f145d01c52a9622ca43022"
+  }
+}

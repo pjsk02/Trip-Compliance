@@ -60,7 +60,14 @@
       "Bash(DOTENV_CONFIG_PATH=apps/backend/.env npx tsx --env-file=apps/backend/.env apps/backend/scripts/test-itinerary-pipeline.ts)",
       "Bash(Get-ChildItem -Path \"d:\\\\vsc\\\\NEU\\\\Trip\" -Recurse -Directory)",
       "Bash(Select-Object -First 20)",
-      "Bash(Format-Table FullName)"
+      "Bash(Format-Table FullName)",
+      "PowerShell(Copy-Item graphify-out/graph.json graphify-out\\\\.graphify_old.json)",
+      "Bash(Test-Path \"D:\\\\vsc\\\\NEU\\\\Trip\\\\graphify-out\\\\.graphify_chunk_01.json\")",
+      "Bash(python3 /tmp/write_chunk.py)",
+      "Bash(python3 -c \"print\\('test'\\)\")",
+      "Bash(node -e \"const fs=require\\('fs'\\); const d={nodes:[{id:'test',label:'test',file_type:'code',source_file:'x',source_location:null,source_url:null,captured_at:null,author:null,contributor:null}],edges:[],hyperedges:[],input_tokens:0,output_tokens:0}; fs.writeFileSync\\('D:/vsc/NEU/Trip/graphify-out/.graphify_chunk_01.json',JSON.stringify\\(d\\)\\); console.log\\('ok'\\);\")",
+      "Bash(node \"D:/vsc/NEU/Trip/graphify-out/.graphify_chunk_01_build.js\")",
+      "Bash(node -e \"const d=JSON.parse\\(require\\('fs'\\).readFileSync\\('D:/vsc/NEU/Trip/graphify-out/.graphify_chunk_01.json','utf8'\\)\\); console.log\\(d.nodes.length,'nodes,',d.edges.length,'edges,',d.hyperedges.length,'hyperedges'\\);\")"
     ]
   }
 }
