@@ -512,7 +512,7 @@ function SatisfactionSection({
           <div className="text-right">
             <p className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Fairness</p>
             <p className={`mt-0.5 text-xl font-bold ${scores.fairnessFloorMet ? 'text-emerald-600' : 'text-amber-500'}`}>
-              {pct(scores.fairnessScore * 100)}
+              {pct(scores.fairnessScore)}
             </p>
           </div>
         </div>
