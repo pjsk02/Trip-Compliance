@@ -10,6 +10,7 @@ import {
   type TransportationProposal,
   groupMean,
 } from '../schemas';
+import type { OnEvent } from '../streamEvents';
 
 export interface BudgetAgentInput {
   ctx:              PlanningContext;
