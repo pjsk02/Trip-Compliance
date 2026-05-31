@@ -146,17 +146,25 @@ export abstract class BaseAgent<TProposal> {
     // ── Attempt 2: repair prompt ───────────────────────────────────────────
     // Feed Claude its own bad output + the specific validation error so it
     // can correct just the structural/schema issues.
+    const isEnumError = attempt1.error.toLowerCase().includes('enum');
+    const enumNote = isEnumError
+      ? `\nIMPORTANT: One or more fields have an invalid enum value. ` +
+        `Replace each bad value with EXACTLY ONE value from the allowed list — ` +
+        `never a phrase, never two values joined with "or" or "/". ` +
+        `If unsure, pick the most likely single value and put alternatives in "notes".\n`
+      : '';
+
     const repairPrompt = [
       `The "${this.name}" agent returned invalid output.`,
       ``,
       `VALIDATION ERROR: ${attempt1.error}`,
-      ``,
+      enumNote,
       `BAD OUTPUT (truncated):`,
       attempt1.rawJson,
       ``,
       `Return ONLY the corrected JSON object — no prose, no fences.`,
-      `Required schema:`,
-      this.systemPrompt().slice(0, 1000),
+      `Required schema (includes allowed enum values):`,
+      this.systemPrompt().slice(0, 1500),
     ].join('\n');
 
     let raw2 = '';
