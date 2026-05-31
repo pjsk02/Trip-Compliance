@@ -105,6 +105,11 @@ OUTPUT: Return ONLY a valid JSON object matching this exact schema. No prose, no
       .map(m => `${m.name}: ${m.constraints.mobilityLimitations}`)
       .join('; ');
 
+    // Activities should be ~20% of the per-person budget
+    const perPersonBudget    = ctx.lockedBudget / ctx.groupSize;
+    const activitySharePP    = Math.round(perPersonBudget * 0.20);
+    const maxPerActivityPP   = Math.round(activitySharePP / Math.max(ctx.tripDuration, 1));
+
     return [
       contextSummary(ctx),
       '',
@@ -115,6 +120,9 @@ OUTPUT: Return ONLY a valid JSON object matching this exact schema. No prose, no
       `  Beaches/water:   ${groupScores.beaches}`,
       `  Adventure:       ${groupScores.adventure}`,
       '',
+      `BUDGET CAP: total activity share ≈ $${activitySharePP}/person for the whole trip.`,
+      `  Aim for estimatedCostPerPersonUsd ≤ $${maxPerActivityPP} per activity on average.`,
+      `  Include free or low-cost options to keep the slate affordable.`,
       mustAvoid ? `MUST-AVOID ACTIVITIES (hard block — exclude these): ${mustAvoid}` : '',
       mobilityNotes ? `MOBILITY CONSTRAINTS: ${mobilityNotes}` : '',
       '',
