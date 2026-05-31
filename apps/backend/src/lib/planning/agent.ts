@@ -129,102 +129,92 @@ export abstract class BaseAgent<TProposal> {
   }
 
   async propose(ctx: PlanningContext, onEvent?: OnEvent): Promise<TProposal> {
-    return this._tracedPropose(ctx, onEvent);
+    const agentName = this.name;
+    const tracedFn = wop(`agent:${agentName}`, this._proposeCore.bind(this));
+    return tracedFn(ctx, onEvent);
   }
 
-  private _tracedPropose = wop(
-    `agent:${this.name ?? 'unknown'}`,
-    async (ctx: PlanningContext, onEvent?: OnEvent): Promise<TProposal> => {
-      const startMs = Date.now();
+  private async _proposeCore(ctx: PlanningContext, onEvent?: OnEvent): Promise<TProposal> {
+    const startMs = Date.now();
 
-      // ── Attempt 1: normal call ───────────────────────────────────────────
-      const response = await getClient().messages.create({
+    // ── Attempt 1: normal call ─────────────────────────────────────────────
+    const response = await getClient().messages.create({
+      model: model(),
+      max_tokens: 4000,
+      system: this.systemPrompt(),
+      messages: [{ role: 'user', content: this.buildUserPrompt(ctx) }],
+    });
+
+    const raw1 = response.content
+      .filter(b => b.type === 'text')
+      .map(b => (b as { type: 'text'; text: string }).text)
+      .join('');
+
+    console.log(`[weave][${this.name}] attempt1 ${Date.now() - startMs}ms | tokens in=${response.usage.input_tokens} out=${response.usage.output_tokens}`);
+
+    const attempt1 = parseAndValidate(raw1, this.schema(), this.name);
+    if ('data' in attempt1) return attempt1.data;
+
+    // ── Attempt 2: repair prompt ───────────────────────────────────────────
+    const isEnumError = attempt1.error.toLowerCase().includes('enum');
+    const enumNote = isEnumError
+      ? `\nIMPORTANT: One or more fields have an invalid enum value. ` +
+        `Replace each bad value with EXACTLY ONE value from the allowed list — ` +
+        `never a phrase, never two values joined with "or" or "/". ` +
+        `If unsure, pick the most likely single value and put alternatives in "notes".\n`
+      : '';
+
+    const repairPrompt = [
+      `The "${this.name}" agent returned invalid output.`,
+      ``,
+      `VALIDATION ERROR: ${attempt1.error}`,
+      enumNote,
+      `BAD OUTPUT (truncated):`,
+      attempt1.rawJson,
+      ``,
+      `Return ONLY the corrected JSON object — no prose, no fences.`,
+      `Required schema (includes allowed enum values):`,
+      this.systemPrompt().slice(0, 1500),
+    ].join('\n');
+
+    let raw2 = '';
+    try {
+      const repair = await getClient().messages.create({
         model: model(),
         max_tokens: 4000,
-        system: this.systemPrompt(),
-        messages: [{ role: 'user', content: this.buildUserPrompt(ctx) }],
+        system: REPAIR_SYSTEM,
+        messages: [{ role: 'user', content: repairPrompt }],
       });
-
-      const raw1 = response.content
+      raw2 = repair.content
         .filter(b => b.type === 'text')
         .map(b => (b as { type: 'text'; text: string }).text)
         .join('');
+    } catch (repairErr) {
+      console.error(`[${this.name}] Repair call failed:`, repairErr);
+    }
 
-      const tokenUsage = {
-        inputTokens:  response.usage.input_tokens,
-        outputTokens: response.usage.output_tokens,
-      };
+    const attempt2 = parseAndValidate(raw2, this.schema(), this.name);
+    if ('data' in attempt2) return attempt2.data;
 
-      const attempt1 = parseAndValidate(raw1, this.schema(), this.name);
-      if ('data' in attempt1) {
-        console.log(`[weave][${this.name}] ok in ${Date.now() - startMs}ms | tokens in=${tokenUsage.inputTokens} out=${tokenUsage.outputTokens}`);
-        return attempt1.data;
-      }
-
-      // ── Attempt 2: repair prompt ─────────────────────────────────────────
-      const isEnumError = attempt1.error.toLowerCase().includes('enum');
-      const enumNote = isEnumError
-        ? `\nIMPORTANT: One or more fields have an invalid enum value. ` +
-          `Replace each bad value with EXACTLY ONE value from the allowed list — ` +
-          `never a phrase, never two values joined with "or" or "/". ` +
-          `If unsure, pick the most likely single value and put alternatives in "notes".\n`
-        : '';
-
-      const repairPrompt = [
-        `The "${this.name}" agent returned invalid output.`,
-        ``,
-        `VALIDATION ERROR: ${attempt1.error}`,
-        enumNote,
-        `BAD OUTPUT (truncated):`,
-        attempt1.rawJson,
-        ``,
-        `Return ONLY the corrected JSON object — no prose, no fences.`,
-        `Required schema (includes allowed enum values):`,
-        this.systemPrompt().slice(0, 1500),
-      ].join('\n');
-
-      let raw2 = '';
-      try {
-        const repair = await getClient().messages.create({
-          model: model(),
-          max_tokens: 4000,
-          system: REPAIR_SYSTEM,
-          messages: [{ role: 'user', content: repairPrompt }],
-        });
-        raw2 = repair.content
-          .filter(b => b.type === 'text')
-          .map(b => (b as { type: 'text'; text: string }).text)
-          .join('');
-      } catch (repairErr) {
-        console.error(`[${this.name}] Repair call failed:`, repairErr);
-      }
-
-      const attempt2 = parseAndValidate(raw2, this.schema(), this.name);
-      if ('data' in attempt2) {
-        console.log(`[weave][${this.name}] repaired in ${Date.now() - startMs}ms`);
-        return attempt2.data;
-      }
-
-      // ── Both failed — try safe default before throwing ───────────────────
-      const fallback = this.safeDefault(ctx);
-      if (fallback !== null) {
-        console.error(
-          `[${this.name}] Both parse attempts failed — using safe default.\n` +
-          `  Attempt 1: ${attempt1.error}\n` +
-          `  Attempt 2: ${attempt2.error}`,
-        );
-        onEvent?.({ type: 'agent_error', agent: this.name as AgentName, message: `Parse failed — using estimated defaults. ${attempt1.error}` });
-        return fallback;
-      }
-
-      throw new Error(
-        `[${this.name}] Both parse attempts failed.\n` +
-        `Attempt 1: ${attempt1.error}\n` +
-        `Attempt 2: ${attempt2.error}\n` +
-        `Last raw output: ${attempt2.rawJson}`,
+    // ── Both failed — try safe default before throwing ─────────────────────
+    const fallback = this.safeDefault(ctx);
+    if (fallback !== null) {
+      console.error(
+        `[${this.name}] Both parse attempts failed — using safe default.\n` +
+        `  Attempt 1: ${attempt1.error}\n` +
+        `  Attempt 2: ${attempt2.error}`,
       );
-    },
-  );
+      onEvent?.({ type: 'agent_error', agent: this.name as AgentName, message: `Parse failed — using estimated defaults. ${attempt1.error}` });
+      return fallback;
+    }
+
+    throw new Error(
+      `[${this.name}] Both parse attempts failed.\n` +
+      `Attempt 1: ${attempt1.error}\n` +
+      `Attempt 2: ${attempt2.error}\n` +
+      `Last raw output: ${attempt2.rawJson}`,
+    );
+  }
 }
 
 /** Serialise the PlanningContext into a compact summary string for prompts. */
