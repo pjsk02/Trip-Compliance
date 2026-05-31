@@ -21,7 +21,18 @@ const CreateGroupSchema = z.object({
   name:        z.string().min(1).max(100),
   destination: z.string().max(100).optional(),
   password:    z.string().min(4).max(72),
+  startDate:   z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(), // YYYY-MM-DD
+  endDate:     z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
 });
+
+/** Compute tripDays (inclusive) and tripDuration (nights) from ISO date strings. */
+function computeTripDuration(startDate: string, endDate: string): { tripDays: number; tripDuration: number } {
+  const start = new Date(startDate);
+  const end   = new Date(endDate);
+  const msPerDay = 1000 * 60 * 60 * 24;
+  const tripDays = Math.round((end.getTime() - start.getTime()) / msPerDay) + 1;
+  return { tripDays, tripDuration: tripDays - 1 };
+}
 
 const JoinGroupSchema = z.object({
   password: z.string().min(1),
