@@ -309,13 +309,20 @@ function NegotiationViewInner() {
 
     const es = new EventSource(url.toString());
     eventRef.current = es;
-    setStatus('running');
-    setConnectionOk(true);
 
-    // Add opening divider
+    // Add opening divider immediately — don't wait for first event
     setEntries([{ id: nextId(), kind: 'wave_divider', label: 'Wave 1 · Agent proposals' }]);
 
+    es.onopen = () => {
+      // Connection established — switch from 'connecting' to 'running'
+      setStatus('running');
+      setConnectionOk(true);
+    };
+
     es.onmessage = (e: MessageEvent) => {
+      // Server-sent comments (heartbeat ": keepalive") have no `data` — skip
+      if (!e.data) return;
+
       let event: StreamEvent;
       try { event = JSON.parse(e.data) as StreamEvent; }
       catch { return; }
