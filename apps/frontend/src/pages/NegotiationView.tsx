@@ -418,10 +418,11 @@ function NegotiationViewInner() {
       } else {
         // Repeated failure — give up.
         es.close();
-        if (statusRef.current !== 'done') {
+        setStatus(s => {
+          if (s === 'done') return s;
           setErrorMsg('Connection lost — generation may still complete in the background. Check the itinerary page.');
-          setStatus('error');
-        }
+          return 'error';
+        });
       }
     };
 
