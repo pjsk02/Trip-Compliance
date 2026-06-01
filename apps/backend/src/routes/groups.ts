@@ -489,15 +489,36 @@ groupsRouter.get(
     };
 
     // ── Open SSE stream ────────────────────────────────────────────────────
-    res.setHeader('Content-Type',  'text/event-stream');
-    res.setHeader('Cache-Control', 'no-cache');
-    res.setHeader('Connection',    'keep-alive');
+    res.setHeader('Content-Type',      'text/event-stream');
+    res.setHeader('Cache-Control',     'no-cache');
+    res.setHeader('Connection',        'keep-alive');
     res.setHeader('X-Accel-Buffering', 'no');
+    res.setHeader('Transfer-Encoding', 'chunked');
     res.flushHeaders();
 
+    // Raise the socket timeout for this individual response so it isn't cut
+    // by Express's per-socket idle timer (separate from server.keepAliveTimeout).
+    res.socket?.setTimeout(10 * 60 * 1000);
+
     function sendEvent(event: StreamEvent): void {
-      if (!res.writableEnded) res.write(`data: ${JSON.stringify(event)}\n\n`);
+      if (res.writableEnded) return;
+      res.write(`data: ${JSON.stringify(event)}\n\n`);
+      // Flush immediately — bypasses any internal Node/Express write buffering.
+      // ServerResponse doesn't expose flush() directly; calling write() on an
+      // un-buffered chunked response is sufficient, but we cork/uncork to ensure
+      // the chunk is dispatched to the socket immediately.
+      (res as unknown as { flush?: () => void }).flush?.();
     }
+
+    // Send an SSE comment every 15s to prevent proxy/browser idle timeouts.
+    // Comments (lines starting with ':') are ignored by EventSource but reset
+    // the browser's inactivity timer and keep TCP alive through any intermediary.
+    const heartbeat = setInterval(() => {
+      if (!res.writableEnded) {
+        res.write(': keepalive\n\n');
+        (res as unknown as { flush?: () => void }).flush?.();
+      }
+    }, 15_000);
 
     // ── Run pipeline — save completes even if client disconnects ───────────
     try {
@@ -534,6 +555,7 @@ groupsRouter.get(
       const msg = err instanceof Error ? err.message : 'Pipeline failed';
       sendEvent({ type: 'agent_error', agent: 'orchestrator', message: msg });
     } finally {
+      clearInterval(heartbeat);
       res.end();
     }
   },
