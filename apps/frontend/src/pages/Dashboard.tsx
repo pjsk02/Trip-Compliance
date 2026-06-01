@@ -450,6 +450,21 @@ export function Dashboard() {
                     {group.destination}
                   </p>
                 )}
+                {group.startDate && group.endDate && (() => {
+                  const days = Math.round((new Date(group.endDate).getTime() - new Date(group.startDate).getTime()) / 86400000) + 1;
+                  return (
+                    <p className="mt-0.5 flex items-center gap-1 text-xs text-gray-400">
+                      <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      {new Date(group.startDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                      {' – '}
+                      {new Date(group.endDate).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                      {' · '}{days} day{days !== 1 ? 's' : ''}
+                    </p>
+                  );
+                })()}
               </div>
               <div className="flex flex-col items-end gap-1 shrink-0">
                 <span className="rounded-lg bg-gray-100 px-2.5 py-1 font-mono text-xs font-medium text-gray-600 tracking-widest">
