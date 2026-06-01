@@ -387,14 +387,37 @@ function NegotiationViewInner() {
       });
     };
 
+    // Track whether we've already tried a reconnect so we don't loop.
+    let reconnectAttempted = false;
+
     es.onerror = () => {
-      // Only surface as error if we haven't successfully completed
-      setStatus(s => {
-        if (s === 'done') return s;
-        setErrorMsg('Connection lost — generation may still complete in the background. Check the itinerary page.');
-        return 'error';
-      });
-      es.close();
+      // If we're done, ignore the close event fired after res.end().
+      if (status === 'done') { es.close(); return; }
+
+      // EventSource fires onerror both for transient glitches and permanent
+      // failures. Give it one automatic reconnect (browser already retries
+      // automatically via the EventSource spec, but we gate on a flag so we
+      // don't surface an error until we've given it a chance).
+      if (!reconnectAttempted) {
+        reconnectAttempted = true;
+        // Browser EventSource will retry automatically — just wait 3s before
+        // surfacing a UI error. If it recovers, onerror won't fire again.
+        setTimeout(() => {
+          setStatus(s => {
+            if (s === 'done' || s === 'running') return s;  // recovered
+            setErrorMsg('Connection lost — generation may still complete in the background. Check the itinerary page.');
+            return 'error';
+          });
+        }, 3000);
+      } else {
+        // Second failure — give up and surface the error.
+        es.close();
+        setStatus(s => {
+          if (s === 'done') return s;
+          setErrorMsg('Connection lost — generation may still complete in the background. Check the itinerary page.');
+          return 'error';
+        });
+      }
     };
 
     return () => { es.close(); };
