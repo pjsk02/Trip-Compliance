@@ -283,6 +283,9 @@ function NegotiationViewInner() {
 
   function nextId() { return String(++entryIdRef.current); }
 
+  // Keep statusRef in sync so SSE error handler can read latest value without closure staleness
+  useEffect(() => { statusRef.current = status; }, [status]);
+
   // Auto-scroll to bottom on new entries
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
