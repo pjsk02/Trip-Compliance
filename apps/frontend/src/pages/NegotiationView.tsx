@@ -279,6 +279,7 @@ function NegotiationViewInner() {
   const bottomRef  = useRef<HTMLDivElement>(null);
   const eventRef   = useRef<EventSource | null>(null);
   const entryIdRef = useRef(0);
+  const statusRef  = useRef<'connecting' | 'running' | 'done' | 'error'>('connecting');
 
   function nextId() { return String(++entryIdRef.current); }
 
