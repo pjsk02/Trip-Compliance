@@ -277,7 +277,14 @@ function DayByDaySection({ dayPlans, myMemberId }: { dayPlans: DayPlan[]; myMemb
       <SectionHeader
         icon="📅"
         title="Day-by-Day Plan"
-        subtitle={`${dayPlans.length} day${dayPlans.length !== 1 ? 's' : ''} · Tap a day to expand`}
+        subtitle={(() => {
+          const first = dayPlans[0]?.date;
+          const last  = dayPlans[dayPlans.length - 1]?.date;
+          const dateRange = first && last
+            ? `${new Date(first).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${new Date(last).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`
+            : null;
+          return `${dayPlans.length} day${dayPlans.length !== 1 ? 's' : ''}${dateRange ? ` · ${dateRange}` : ''} · Tap to expand`;
+        })()}
       />
       {dayPlans.map(day => (
         <DayCard key={day.day} day={day} myMemberId={myMemberId} />
