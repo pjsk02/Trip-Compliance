@@ -601,7 +601,8 @@ groupsRouter.post(
     if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
     if (req.member!.groupId !== group.id) { res.status(403).json({ error: 'Forbidden' }); return; }
 
-    if (group.status !== GroupStatus.PLANNING && group.status !== GroupStatus.BUDGET_NEGOTIATION) {
+    const allowedPostStatuses: GroupStatus[] = [GroupStatus.PLANNING, GroupStatus.BUDGET_NEGOTIATION, GroupStatus.COMPLETE];
+    if (!allowedPostStatuses.includes(group.status)) {
       res.status(409).json({ error: `Cannot generate itinerary from status "${group.status}"` });
       return;
     }
