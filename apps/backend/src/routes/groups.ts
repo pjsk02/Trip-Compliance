@@ -411,7 +411,9 @@ groupsRouter.get(
     if (!group) { res.status(404).json({ error: 'Group not found' }); return; }
     if (memberInfo.groupId !== group.id) { res.status(403).json({ error: 'Forbidden' }); return; }
 
-    if (group.status !== GroupStatus.PLANNING && group.status !== GroupStatus.BUDGET_NEGOTIATION) {
+    // Allow re-generation from COMPLETE so admin can regenerate after editing preferences/dates.
+    const allowedStatuses: GroupStatus[] = [GroupStatus.PLANNING, GroupStatus.BUDGET_NEGOTIATION, GroupStatus.COMPLETE];
+    if (!allowedStatuses.includes(group.status)) {
       res.status(409).json({ error: `Cannot generate from status "${group.status}"` }); return;
     }
     if (!group.destination) {
