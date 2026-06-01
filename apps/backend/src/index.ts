@@ -29,9 +29,16 @@ app.use('/eval', evalRouter);
 // Only start listening when run directly, not when imported by tests.
 if (require.main === module) {
   initWeave().then(() => {
-    app.listen(port, () => {
+    const server = app.listen(port, () => {
       console.log(`Backend running at http://localhost:${port}`);
     });
+
+    // Raise timeouts well above the 30-90s generation window.
+    // Node defaults: keepAliveTimeout=5s, headersTimeout=60s — both kill SSE streams.
+    const TEN_MINUTES = 10 * 60 * 1000;
+    server.keepAliveTimeout = TEN_MINUTES;
+    server.headersTimeout   = TEN_MINUTES + 1000; // must be > keepAliveTimeout
+    server.requestTimeout   = TEN_MINUTES;
   });
 }
 
